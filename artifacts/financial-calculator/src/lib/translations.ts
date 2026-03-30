@@ -49,26 +49,32 @@ export const translations = {
       liquidity: {
         name: "Liquidity",
         description: "Measure a company's ability to pay off its short-term debt obligations.",
+        shortDescription: "Short-term financial health",
       },
       profitability: {
         name: "Profitability",
         description: "Evaluate a company's ability to generate earnings relative to revenue, assets, or equity.",
+        shortDescription: "Earnings & returns",
       },
       leverage: {
         name: "Leverage",
         description: "Determine the extent to which a company uses debt to finance its assets and its ability to meet long-term obligations.",
+        shortDescription: "Debt & financial risk",
       },
       efficiency: {
         name: "Efficiency",
         description: "Measure how well a company uses its assets and liabilities internally.",
+        shortDescription: "Asset utilization",
       },
       valuation: {
         name: "Valuation",
         description: "Assess the attractiveness of a stock or investment.",
+        shortDescription: "Market value metrics",
       },
       "fair-value": {
         name: "Fair Value",
         description: "Estimate the intrinsic value of a stock using fundamental valuation models.",
+        shortDescription: "Intrinsic value models",
       },
     },
     // Ratio definitions
@@ -438,26 +444,32 @@ export const translations = {
       liquidity: {
         name: "Likuiditas",
         description: "Mengukur kemampuan perusahaan untuk membayar kewajiban utang jangka pendeknya.",
+        shortDescription: "Kesehatan keuangan jangka pendek",
       },
       profitability: {
         name: "Profitabilitas",
         description: "Mengevaluasi kemampuan perusahaan menghasilkan laba relatif terhadap pendapatan, aset, atau ekuitas.",
+        shortDescription: "Laba & imbal hasil",
       },
       leverage: {
         name: "Leverage",
         description: "Menentukan sejauh mana perusahaan menggunakan utang untuk membiayai aset dan kemampuannya memenuhi kewajiban jangka panjang.",
+        shortDescription: "Utang & risiko keuangan",
       },
       efficiency: {
         name: "Efisiensi",
         description: "Mengukur seberapa baik perusahaan menggunakan aset dan kewajibannya secara internal.",
+        shortDescription: "Pemanfaatan aset",
       },
       valuation: {
         name: "Valuasi",
         description: "Menilai daya tarik suatu saham atau investasi.",
+        shortDescription: "Metrik nilai pasar",
       },
       "fair-value": {
         name: "Nilai Wajar",
         description: "Estimasi nilai intrinsik saham menggunakan model penilaian fundamental.",
+        shortDescription: "Model nilai intrinsik",
       },
     },
     ratios: {

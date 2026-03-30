@@ -65,7 +65,7 @@ export function HomePage() {
                     <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all" />
                   </div>
                   <h2 className="font-semibold text-foreground text-base mb-1">{catT.name}</h2>
-                  <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2">{catT.description}</p>
+                  <p className="text-muted-foreground text-sm leading-relaxed">{(catT as any).shortDescription ?? catT.description}</p>
                   <div className="mt-3 pt-3 border-t border-border">
                     <span className="text-xs text-muted-foreground">{t.home.ratios(category.ratios.length)}</span>
                   </div>
