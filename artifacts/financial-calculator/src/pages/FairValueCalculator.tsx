@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Info, ChevronUp, ArrowUp, ArrowDown, Target, AlertCircle } from 'lucide-react';
+import { Info, ChevronUp, Target, AlertCircle } from 'lucide-react';
 import { useLanguage } from '@/lib/LanguageContext';
 import { cn, formatNumber } from '@/lib/utils';
 import { NumericInput } from '@/components/ui/NumericInput';
@@ -369,59 +369,44 @@ export function FairValueCalculator() {
 
         {/* ── INPUTS column ── */}
         <div className="order-2 lg:order-1 flex flex-col gap-4">
-          <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-            {language === 'en' ? 'Inputs' : 'Input'}
-          </p>
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
+              {language === 'en' ? 'Inputs' : 'Input'}
+            </p>
+            <button
+              onClick={() => setVals({ ...INITIAL })}
+              className="text-xs font-semibold text-red-500 hover:text-red-600 transition-colors"
+            >
+              {language === 'en' ? 'Clear' : 'Hapus'}
+            </button>
+          </div>
 
           <div className="space-y-3">
             {inputs.map((inp, i) => {
               const label = language === 'en' ? inp.en : inp.id_;
               const subtitle = language === 'en' ? inp.subtitleEn : inp.subtitleId;
-              const isNeg = parseFloat(vals[inp.id] || '0') < 0;
-              const isFocused = false;
-
               return (
                 <motion.div
                   key={inp.id}
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.04 }}
-                  className="bg-card border border-border rounded-2xl p-4"
+                  className="bg-card border border-border rounded-2xl px-4 py-3.5"
                 >
-                  <div className="flex items-start justify-between gap-3 mb-2">
-                    <div>
-                      <p className="font-bold text-sm text-foreground leading-tight">
-                        {label}
-                        {!inp.required && (
-                          <span className="ml-1.5 text-[10px] font-medium text-muted-foreground">
-                            ({language === 'en' ? 'optional' : 'opsional'})
-                          </span>
-                        )}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{subtitle}</p>
-                    </div>
-                    {inp.id !== 'growthRate' && inp.id !== 'inflationRate' && inp.id !== 'sharesOutstanding' && (
-                      <button
-                        onClick={() => toggleSign(inp.id)}
-                        className={cn(
-                          'shrink-0 mt-0.5 flex items-center gap-0.5 text-[11px] font-semibold px-2 py-1 rounded-lg border transition-colors',
-                          isNeg
-                            ? 'bg-rose-50 dark:bg-rose-950/30 text-rose-500 border-rose-200 dark:border-rose-800'
-                            : 'bg-muted text-muted-foreground border-border hover:border-foreground/30'
-                        )}
-                      >
-                        {isNeg ? <ArrowDown className="w-3 h-3" /> : <ArrowUp className="w-3 h-3" />}
-                        {isNeg ? '−' : '+'}
-                      </button>
-                    )}
-                  </div>
-
-                  <div className="rounded-xl border border-border bg-background px-3 py-2 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+                  <p className="font-bold text-sm text-foreground mb-0.5">{label}</p>
+                  <p className="text-xs text-muted-foreground mb-2.5">{subtitle}</p>
+                  <div className="flex items-center rounded-xl overflow-hidden border border-border bg-muted/40 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all">
+                    <button
+                      onClick={() => toggleSign(inp.id)}
+                      className="px-3 py-2.5 text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors border-r border-border shrink-0 select-none"
+                    >
+                      +/−
+                    </button>
                     <NumericInput
                       value={vals[inp.id]}
-                      onChange={v => setVals(prev => ({ ...prev, [inp.id]: v }))}
-                      placeholder={inp.required ? '0' : language === 'en' ? 'optional' : 'opsional'}
-                      className="w-full bg-transparent outline-none text-sm font-semibold text-foreground placeholder:text-muted-foreground/40 tabular-nums"
+                      onChange={raw => setVals(prev => ({ ...prev, [inp.id]: raw }))}
+                      placeholder="0"
+                      className="flex-1 bg-transparent px-3 py-2.5 text-sm text-foreground focus:outline-none min-w-0"
                     />
                   </div>
                 </motion.div>
