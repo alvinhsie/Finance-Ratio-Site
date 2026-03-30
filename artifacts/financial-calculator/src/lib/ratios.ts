@@ -1,6 +1,6 @@
 import { formatNumber, formatPercentage } from "./utils";
 import { 
-  Briefcase, 
+  Droplets, 
   TrendingUp, 
   Scale, 
   Activity, 
@@ -45,7 +45,7 @@ export const CATEGORIES: CategoryDef[] = [
     id: "liquidity",
     name: "Liquidity",
     description: "Measure a company's ability to pay off its short-term debt obligations.",
-    icon: Briefcase,
+    icon: Droplets,
     ratios: [
       {
         id: "current-ratio",
