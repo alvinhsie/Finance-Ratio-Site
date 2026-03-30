@@ -1,0 +1,15 @@
+packages:
+  "framer-motion": "For smooth page transitions and interactive element animations"
+  "clsx": "Utility for constructing className strings conditionally"
+  "tailwind-merge": "Utility function to efficiently merge Tailwind CSS classes"
+  "@radix-ui/react-slot": "For accessible component composition"
+  "number-format.js": "For formatting financial numbers easily if needed (though we can use Intl.NumberFormat)"
+
+images:
+  - path: "artifacts/financial-calculator/public/images/auth-bg.png"
+    description: "Abstract geometric background in deep professional blues and soft slate grays, representing financial data and growth with subtle light leaks and premium corporate aesthetics."
+    aspect_ratio: "16:9"
+
+notes:
+  - App is entirely frontend-based; no backend API is required for the calculations.
+  - Calculations are performed in the browser state.
