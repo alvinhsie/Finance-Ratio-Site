@@ -123,13 +123,13 @@ export function LiquidityCalculator() {
   ];
 
   const inputs = [
-    { id: 'currentAssets',      en: 'Current Assets',            id_: 'Aset Lancar',            subtitleEn: 'Assets convertible to cash within 1 year',       subtitleId: 'Aset yang dapat dikonversi menjadi kas dalam 1 tahun' },
-    { id: 'currentLiabilities', en: 'Current Liabilities',       id_: 'Liabilitas Lancar',       subtitleEn: 'Obligations due within 1 year',                  subtitleId: 'Kewajiban yang jatuh tempo dalam 1 tahun' },
-    { id: 'inventory',          en: 'Inventory',                  id_: 'Persediaan',              subtitleEn: 'Goods held for sale or production',               subtitleId: 'Barang yang dimiliki untuk dijual atau produksi' },
-    { id: 'cash',               en: 'Cash & Equivalents',         id_: 'Kas & Setara Kas',        subtitleEn: 'Cash on hand and short-term liquid deposits',     subtitleId: 'Kas di tangan dan deposito cair jangka pendek' },
+    { id: 'currentAssets',      en: 'Current Assets',            id_: 'Aset Lancar',            subtitleEn: 'Assets convertible to cash within 1 year',        subtitleId: 'Aset yang dapat dikonversi menjadi kas dalam 1 tahun' },
+    { id: 'currentLiabilities', en: 'Current Liabilities',       id_: 'Liabilitas Lancar',       subtitleEn: 'Obligations due within 1 year',                   subtitleId: 'Kewajiban yang jatuh tempo dalam 1 tahun' },
+    { id: 'inventory',          en: 'Inventory',                  id_: 'Persediaan',              subtitleEn: 'Goods held for sale or production',                subtitleId: 'Barang yang dimiliki untuk dijual atau produksi' },
+    { id: 'cash',               en: 'Cash & Equivalents',         id_: 'Kas & Setara Kas',        subtitleEn: 'Cash on hand and short-term liquid deposits',      subtitleId: 'Kas di tangan dan deposito cair jangka pendek' },
     { id: 'cfFromOps',          en: 'Cash Flow from Operations',  id_: 'Arus Kas dari Operasi',   subtitleEn: 'Net cash generated from core business activities', subtitleId: 'Kas bersih dari aktivitas bisnis utama' },
-    { id: 'ebit',               en: 'Operating Income (EBIT)',    id_: 'Laba Operasi (EBIT)',     subtitleEn: 'Earnings before interest and taxes',              subtitleId: 'Laba sebelum bunga dan pajak' },
-    { id: 'interestExpense',    en: 'Interest Expense',           id_: 'Beban Bunga',             subtitleEn: 'Total interest charges on outstanding debt',      subtitleId: 'Total beban bunga atas utang yang beredar' },
+    { id: 'ebit',               en: 'Operating Income (EBIT)',    id_: 'Laba Operasi (EBIT)',     subtitleEn: 'Earnings before interest and taxes',               subtitleId: 'Laba sebelum bunga dan pajak' },
+    { id: 'interestExpense',    en: 'Interest Expense',           id_: 'Beban Bunga',             subtitleEn: 'Total interest charges on outstanding debt',       subtitleId: 'Total beban bunga atas utang yang beredar' },
   ];
 
   const handleSave = () => {
@@ -150,7 +150,7 @@ export function LiquidityCalculator() {
   const catT = t.categories['liquidity' as keyof typeof t.categories] as any;
 
   return (
-    <div className="flex-1 w-full max-w-2xl mx-auto p-4 sm:p-6">
+    <div className="flex-1 w-full max-w-5xl mx-auto p-4 sm:p-6">
       <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
         <h1 className="text-2xl sm:text-3xl font-extrabold font-display text-foreground tracking-tight mb-1">
           {catT?.name ?? 'Liquidity'}
@@ -160,100 +160,110 @@ export function LiquidityCalculator() {
         </p>
       </motion.div>
 
-      {/* RESULTS */}
-      <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3">
-        {language === 'en' ? 'Results' : 'Hasil'}
-      </p>
-      <div className="space-y-2 mb-5">
-        {results.map((result, i) => {
-          const label = language === 'en' ? result.label : result.labelId;
-          const isCalculated = result.value !== null;
-          const color = isCalculated ? valueColor[result.interpretation] : 'text-muted-foreground/40';
+      {/*
+        Mobile  : Results on top (order-1), Inputs on bottom (order-2)
+        Desktop : Inputs on left (lg:order-1), Results on right (lg:order-2)
+      */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
 
-          return (
-            <motion.div
-              key={result.label}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.04 }}
-              className="bg-card border border-border rounded-2xl px-4 py-3.5"
-            >
-              <div className="flex items-center justify-between gap-3">
-                <span className="font-bold text-sm text-foreground leading-tight">{label}</span>
-                <div className="flex items-center gap-2 shrink-0">
-                  <span className={cn('text-base font-bold tabular-nums', color)}>
-                    {result.formatted}
-                  </span>
-                  <button className="text-muted-foreground/50 hover:text-muted-foreground transition-colors">
-                    <Info className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-              <p className="text-xs text-muted-foreground mt-0.5">{result.formula}</p>
-            </motion.div>
-          );
-        })}
-      </div>
+        {/* ── RESULTS column ── */}
+        <div className="order-1 lg:order-2 flex flex-col gap-4">
+          <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
+            {language === 'en' ? 'Results' : 'Hasil'}
+          </p>
 
-      {/* SAVE BUTTON */}
-      <button
-        onClick={handleSave}
-        className={cn(
-          "w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-semibold text-sm transition-all mb-6",
-          savedToast
-            ? "bg-green-500 text-white"
-            : "bg-primary text-primary-foreground hover:bg-primary/90"
-        )}
-      >
-        <Bookmark className="w-4 h-4" />
-        {savedToast
-          ? (language === 'en' ? 'Saved!' : 'Tersimpan!')
-          : (language === 'en' ? 'Save to History' : 'Simpan ke Riwayat')}
-      </button>
-
-      {/* INPUTS */}
-      <div className="flex items-center justify-between mb-3">
-        <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
-          {language === 'en' ? 'Inputs' : 'Input'}
-        </p>
-        <button
-          onClick={() => setVals({ ...EMPTY })}
-          className="text-xs font-semibold text-red-500 hover:text-red-600 transition-colors"
-        >
-          {language === 'en' ? 'Clear' : 'Hapus'}
-        </button>
-      </div>
-      <div className="space-y-3">
-        {inputs.map((inp, i) => {
-          const label = language === 'en' ? inp.en : inp.id_;
-          const subtitle = language === 'en' ? inp.subtitleEn : inp.subtitleId;
-          return (
-            <motion.div
-              key={inp.id}
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.04 }}
-              className="bg-card border border-border rounded-2xl px-4 py-3.5"
-            >
-              <p className="font-bold text-sm text-foreground mb-0.5">{label}</p>
-              <p className="text-xs text-muted-foreground mb-2.5">{subtitle}</p>
-              <div className="flex items-center rounded-xl overflow-hidden border border-border bg-muted/40">
-                <button
-                  onClick={() => toggleSign(inp.id)}
-                  className="px-3 py-2.5 text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors border-r border-border shrink-0 select-none"
+          <div className="space-y-2">
+            {results.map((result, i) => {
+              const label = language === 'en' ? result.label : result.labelId;
+              const isCalculated = result.value !== null;
+              const color = isCalculated ? valueColor[result.interpretation] : 'text-muted-foreground/40';
+              return (
+                <motion.div
+                  key={result.label}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.04 }}
+                  className="bg-card border border-border rounded-2xl px-4 py-3.5"
                 >
-                  +/−
-                </button>
-                <NumericInput
-                  value={vals[inp.id]}
-                  onChange={raw => setVals(prev => ({ ...prev, [inp.id]: raw }))}
-                  placeholder="0"
-                  className="flex-1 bg-transparent px-3 py-2.5 text-sm text-foreground focus:outline-none min-w-0"
-                />
-              </div>
-            </motion.div>
-          );
-        })}
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="font-bold text-sm text-foreground leading-tight">{label}</span>
+                    <div className="flex items-center gap-2 shrink-0">
+                      <span className={cn('text-base font-bold tabular-nums', color)}>
+                        {result.formatted}
+                      </span>
+                      <button className="text-muted-foreground/50 hover:text-muted-foreground transition-colors">
+                        <Info className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">{result.formula}</p>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          <button
+            onClick={handleSave}
+            className={cn(
+              'w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-semibold text-sm transition-all',
+              savedToast ? 'bg-green-500 text-white' : 'bg-primary text-primary-foreground hover:bg-primary/90'
+            )}
+          >
+            <Bookmark className="w-4 h-4" />
+            {savedToast
+              ? (language === 'en' ? 'Saved!' : 'Tersimpan!')
+              : (language === 'en' ? 'Save to History' : 'Simpan ke Riwayat')}
+          </button>
+        </div>
+
+        {/* ── INPUTS column ── */}
+        <div className="order-2 lg:order-1 flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
+              {language === 'en' ? 'Inputs' : 'Input'}
+            </p>
+            <button
+              onClick={() => setVals({ ...EMPTY })}
+              className="text-xs font-semibold text-red-500 hover:text-red-600 transition-colors"
+            >
+              {language === 'en' ? 'Clear' : 'Hapus'}
+            </button>
+          </div>
+
+          <div className="space-y-3">
+            {inputs.map((inp, i) => {
+              const label = language === 'en' ? inp.en : inp.id_;
+              const subtitle = language === 'en' ? inp.subtitleEn : inp.subtitleId;
+              return (
+                <motion.div
+                  key={inp.id}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.04 }}
+                  className="bg-card border border-border rounded-2xl px-4 py-3.5"
+                >
+                  <p className="font-bold text-sm text-foreground mb-0.5">{label}</p>
+                  <p className="text-xs text-muted-foreground mb-2.5">{subtitle}</p>
+                  <div className="flex items-center rounded-xl overflow-hidden border border-border bg-muted/40">
+                    <button
+                      onClick={() => toggleSign(inp.id)}
+                      className="px-3 py-2.5 text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors border-r border-border shrink-0 select-none"
+                    >
+                      +/−
+                    </button>
+                    <NumericInput
+                      value={vals[inp.id]}
+                      onChange={raw => setVals(prev => ({ ...prev, [inp.id]: raw }))}
+                      placeholder="0"
+                      className="flex-1 bg-transparent px-3 py-2.5 text-sm text-foreground focus:outline-none min-w-0"
+                    />
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+
       </div>
     </div>
   );
