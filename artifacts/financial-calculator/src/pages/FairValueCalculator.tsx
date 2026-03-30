@@ -141,21 +141,17 @@ export function FairValueCalculator() {
 
   // ── "How it works" formulas ──────────────────────────────────────
   const stdFormulas = [
-    'Book Value/Share = Total Equity ÷ Shares',
-    'Total EPS = Σ EPS × (1+CAGR)ⁱ  for i=1→10',
-    'Intrinsic Value = (Total EPS + BV/Share) ÷ (1+Inflation)¹⁰',
-    ...(calc?.upside !== null && calc?.upside !== undefined ? ['Upside/Downside = (Intrinsic − Price) ÷ Price × 100'] : []),
-    ...(calc?.mos    !== null && calc?.mos    !== undefined ? ['Margin of Safety = (Intrinsic − Price) ÷ Intrinsic × 100'] : []),
+    { label: language === 'en' ? 'Book Value / Share' : 'Nilai Buku / Saham',      eq: 'Total Equity ÷ Shares Outstanding' },
+    { label: language === 'en' ? 'Total EPS (10 yrs)' : 'Total EPS (10 thn)',       eq: 'Σ EPS × (1+CAGR)ⁱ  for i = 1 → 10' },
+    { label: language === 'en' ? 'Intrinsic Value'    : 'Nilai Intrinsik',          eq: '(Total EPS + BV/Share) ÷ (1+Inflation)¹⁰' },
   ];
 
   const cycFormulas = [
-    'Book Value/Share = Total Equity ÷ Shares',
-    'Stage 1 = Σ NormEPS × (1+SCAGR)ⁱ  for i=1→5',
-    'Stage 2 = Σ EPS₅ × (1+LCAGR)ⁱ  for i=1→5',
-    'Total EPS = Stage 1 + Stage 2',
-    'Intrinsic Value = (Total EPS + BV/Share) ÷ (1+Inflation)¹⁰',
-    ...(calc?.upside !== null && calc?.upside !== undefined ? ['Upside/Downside = (Intrinsic − Price) ÷ Price × 100'] : []),
-    ...(calc?.mos    !== null && calc?.mos    !== undefined ? ['Margin of Safety = (Intrinsic − Price) ÷ Intrinsic × 100'] : []),
+    { label: language === 'en' ? 'Book Value / Share' : 'Nilai Buku / Saham',      eq: 'Total Equity ÷ Shares Outstanding' },
+    { label: language === 'en' ? 'Stage 1 (Yr 1–5)'  : 'Tahap 1 (Thn 1–5)',       eq: 'Σ NormEPS × (1+SCAGR)ⁱ  for i = 1 → 5' },
+    { label: language === 'en' ? 'Stage 2 (Yr 6–10)' : 'Tahap 2 (Thn 6–10)',      eq: 'Σ EPS₅ × (1+LCAGR)ⁱ  for i = 1 → 5' },
+    { label: language === 'en' ? 'Total EPS'         : 'Total EPS',                eq: 'Stage 1 + Stage 2' },
+    { label: language === 'en' ? 'Intrinsic Value'   : 'Nilai Intrinsik',          eq: '(Total EPS + BV/Share) ÷ (1+Inflation)¹⁰' },
   ];
 
   return (
@@ -319,16 +315,24 @@ export function FairValueCalculator() {
               </div>
 
               {/* ── How it works ── */}
-              <div className="bg-muted/50 border border-border rounded-2xl px-4 py-3.5">
-                <div className="flex items-center gap-2 mb-2.5">
+              <div className="border border-border rounded-2xl overflow-hidden">
+                <div className="flex items-center gap-2 px-4 py-3 border-b border-border/60 bg-muted/30">
                   <BookOpen className="w-3.5 h-3.5 text-muted-foreground" />
-                  <p className="text-xs font-bold text-foreground">
+                  <p className="text-xs font-bold text-foreground tracking-wide">
                     {language === 'en' ? 'How it works' : 'Cara kerjanya'}
                   </p>
                 </div>
-                <div className="space-y-1">
-                  {(mode === 'standard' ? stdFormulas : cycFormulas).map(line => (
-                    <p key={line} className="text-xs text-muted-foreground font-mono leading-relaxed">{line}</p>
+                <div className="divide-y divide-border/40">
+                  {(mode === 'standard' ? stdFormulas : cycFormulas).map((f, i) => (
+                    <div key={f.label} className="flex items-start gap-3 px-4 py-2.5">
+                      <span className="flex-shrink-0 mt-0.5 w-5 h-5 rounded-full bg-teal-500/10 text-teal-600 text-[10px] font-bold flex items-center justify-center">
+                        {i + 1}
+                      </span>
+                      <div className="flex flex-col gap-0.5 min-w-0">
+                        <p className="text-[11px] font-semibold text-foreground/80">{f.label}</p>
+                        <p className="text-[11px] font-mono text-muted-foreground leading-relaxed">{f.eq}</p>
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>
