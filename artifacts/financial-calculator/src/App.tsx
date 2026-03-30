@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { LanguageProvider } from "@/lib/LanguageContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { CategoryPage } from "@/pages/CategoryPage";
+import { LiquidityCalculator } from "@/pages/LiquidityCalculator";
 import { HomePage } from "@/pages/HomePage";
 import { LoginPage } from "@/pages/LoginPage";
 import NotFound from "@/pages/not-found";
@@ -15,6 +16,7 @@ function Router() {
     <AppLayout>
       <Switch>
         <Route path="/" component={HomePage} />
+        <Route path="/category/liquidity" component={LiquidityCalculator} />
         <Route path="/category/:id" component={CategoryPage} />
         <Route component={NotFound} />
       </Switch>
