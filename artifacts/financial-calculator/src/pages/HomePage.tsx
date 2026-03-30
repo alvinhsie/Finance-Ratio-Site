@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { CATEGORIES } from "@/lib/ratios";
-import { ArrowRight, BarChart2 } from "lucide-react";
+import { ArrowRight, BarChart2, Info } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/lib/LanguageContext";
 
@@ -76,14 +76,15 @@ export function HomePage() {
         })}
       </div>
 
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.5 }}
-        className="text-xs text-muted-foreground text-center mt-10"
+        className="mt-8 flex items-start gap-3 bg-blue-50 border border-blue-100 rounded-2xl p-4"
       >
-        {t.home.cta}
-      </motion.p>
+        <Info className="w-4 h-4 text-blue-500 mt-0.5 shrink-0" />
+        <p className="text-xs text-blue-700 leading-relaxed">{t.home.infoBox}</p>
+      </motion.div>
     </div>
   );
 }

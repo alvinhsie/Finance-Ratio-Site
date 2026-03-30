@@ -28,6 +28,7 @@ export const translations = {
       subtitle: "Accurate ratio analysis for investment decisions.",
       ratios: (n: number) => `${n} ratio${n !== 1 ? "s" : ""}`,
       cta: "Select a category above to start calculating",
+      infoBox: "Select a category above to calculate specific financial ratios. Enter values and get instant, accurate results with benchmark guidance.",
     },
     // Category page
     category: {
@@ -419,6 +420,7 @@ export const translations = {
       subtitle: "Analisis rasio yang akurat untuk keputusan investasi.",
       ratios: (n: number) => `${n} rasio`,
       cta: "Pilih kategori di atas untuk mulai menghitung",
+      infoBox: "Pilih kategori di atas untuk menghitung rasio keuangan tertentu. Masukkan nilai dan dapatkan hasil yang instan dan akurat beserta panduan benchmark.",
     },
     category: {
       calculators: "Kalkulator",
