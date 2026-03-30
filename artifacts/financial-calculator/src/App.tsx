@@ -8,6 +8,7 @@ import { LiquidityCalculator } from "@/pages/LiquidityCalculator";
 import { ProfitabilityCalculator } from "@/pages/ProfitabilityCalculator";
 import { LeverageCalculator } from "@/pages/LeverageCalculator";
 import { EfficiencyCalculator } from "@/pages/EfficiencyCalculator";
+import { ValuationCalculator } from "@/pages/ValuationCalculator";
 import { GlossaryPage } from "@/pages/GlossaryPage";
 import { HomePage } from "@/pages/HomePage";
 import { LoginPage } from "@/pages/LoginPage";
@@ -24,6 +25,7 @@ function Router() {
         <Route path="/category/profitability" component={ProfitabilityCalculator} />
         <Route path="/category/leverage" component={LeverageCalculator} />
         <Route path="/category/efficiency" component={EfficiencyCalculator} />
+        <Route path="/category/valuation" component={ValuationCalculator} />
         <Route path="/category/:id" component={CategoryPage} />
         <Route path="/glossary" component={GlossaryPage} />
         <Route component={NotFound} />
