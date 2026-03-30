@@ -68,13 +68,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               <LanguageSwitcher />
             </div>
 
-            <div className="px-6 pb-2 pt-4 md:pt-0">
-              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
-                {t.layout.categories}
-              </p>
-            </div>
-
-            <nav className="flex-1 overflow-y-auto px-4 pb-6 space-y-1">
+            <nav className="flex flex-col flex-1 justify-evenly px-4 py-4">
               <Link
                 href="/"
                 className={cn(
@@ -126,7 +120,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 );
               })}
 
-              <div className="my-2 border-t border-border/60" />
+              <div className="border-t border-border/60" />
 
               <Link
                 href="/glossary"
@@ -149,16 +143,6 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 )}
               </Link>
             </nav>
-
-            <div className="p-6 border-t border-border bg-muted/20">
-              <div className="bg-gradient-to-br from-indigo-900 to-slate-900 rounded-xl p-4 text-white relative overflow-hidden">
-                <div className="absolute inset-0 opacity-10 bg-[url('https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&q=80')] bg-cover mix-blend-overlay"></div>
-                <h4 className="font-display font-semibold mb-1 relative z-10">{t.layout.proTip}</h4>
-                <p className="text-xs text-white/80 relative z-10 leading-relaxed">
-                  {t.layout.proTipText}
-                </p>
-              </div>
-            </div>
           </motion.aside>
         )}
       </AnimatePresence>
