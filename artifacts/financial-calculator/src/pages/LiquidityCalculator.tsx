@@ -1,11 +1,20 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Info, X } from 'lucide-react';
+import { Info, X, ArrowUp, ArrowDown, Target } from 'lucide-react';
 import { useLanguage } from '@/lib/LanguageContext';
 import { cn, formatNumber } from '@/lib/utils';
 import { NumericInput } from '@/components/ui/NumericInput';
 
 type InterpretationType = 'good' | 'average' | 'poor' | 'neutral';
+type Direction = 'higher' | 'lower' | 'range';
+
+interface RatioInfo {
+  descEn: string;
+  descId: string;
+  benchmarkEn: string;
+  benchmarkId: string;
+  direction: Direction;
+}
 
 interface OutputResult {
   label: string;
@@ -16,6 +25,7 @@ interface OutputResult {
   interpretationText: string;
   interpretationTextId: string;
   formula: string;
+  info: RatioInfo;
 }
 
 const valueColor: Record<InterpretationType, string> = {
@@ -23,6 +33,12 @@ const valueColor: Record<InterpretationType, string> = {
   average: 'text-yellow-600',
   poor:    'text-red-500',
   neutral: 'text-blue-600',
+};
+
+const directionConfig: Record<Direction, { labelEn: string; labelId: string; icon: React.ReactNode }> = {
+  higher: { labelEn: 'Higher is better', labelId: 'Lebih tinggi lebih baik', icon: <ArrowUp className="w-3 h-3 text-green-500" /> },
+  lower:  { labelEn: 'Lower is better',  labelId: 'Lebih rendah lebih baik', icon: <ArrowDown className="w-3 h-3 text-blue-500" /> },
+  range:  { labelEn: 'In range is better', labelId: 'Dalam rentang terbaik', icon: <Target className="w-3 h-3 text-yellow-500" /> },
 };
 
 function fmt(val: number): string {
@@ -61,7 +77,19 @@ export function LiquidityCalculator() {
         else if (val > 3) { interp = 'neutral'; en = 'Very high — may indicate inefficient use of assets.'; id = 'Sangat tinggi — mungkin menunjukkan penggunaan aset yang tidak efisien.'; }
         else if (val < 1) { interp = 'poor'; en = 'Poor liquidity — may struggle with short-term obligations.'; id = 'Likuiditas buruk — mungkin kesulitan memenuhi kewajiban jangka pendek.'; }
       }
-      return { label: 'Current Ratio', labelId: 'Rasio Lancar', value: val, formatted: val !== null ? fmt(val) : '—', interpretation: interp, interpretationText: en, interpretationTextId: id, formula: 'Current Assets ÷ Current Liabilities' };
+      return {
+        label: 'Current Ratio', labelId: 'Rasio Lancar', value: val,
+        formatted: val !== null ? fmt(val) : '—', interpretation: interp,
+        interpretationText: en, interpretationTextId: id,
+        formula: 'Current Assets ÷ Current Liabilities',
+        info: {
+          descEn: "Measures a company's ability to pay short-term obligations with short-term assets.",
+          descId: 'Mengukur kemampuan perusahaan membayar kewajiban jangka pendek menggunakan aset lancar.',
+          benchmarkEn: '1.5–3× is generally healthy',
+          benchmarkId: '1,5–3× umumnya dianggap sehat',
+          direction: 'range',
+        },
+      };
     })(),
     (() => {
       const hasInputs = has('currentAssets') && has('inventory') && has('currentLiabilities') && n('currentLiabilities') !== 0;
@@ -72,7 +100,19 @@ export function LiquidityCalculator() {
         if (val > 1) { interp = 'good'; en = 'Strong — can cover obligations without selling inventory.'; id = 'Kuat — dapat memenuhi kewajiban tanpa menjual persediaan.'; }
         else if (val < 1) { interp = 'poor'; en = 'Relies heavily on inventory to meet short-term obligations.'; id = 'Sangat bergantung pada persediaan untuk memenuhi kewajiban.'; }
       }
-      return { label: 'Quick Ratio (Acid-Test)', labelId: 'Rasio Cepat (Uji Asam)', value: val, formatted: val !== null ? fmt(val) : '—', interpretation: interp, interpretationText: en, interpretationTextId: id, formula: '(Current Assets − Inventory) ÷ Current Liabilities' };
+      return {
+        label: 'Quick Ratio (Acid-Test)', labelId: 'Rasio Cepat (Uji Asam)', value: val,
+        formatted: val !== null ? fmt(val) : '—', interpretation: interp,
+        interpretationText: en, interpretationTextId: id,
+        formula: '(Current Assets − Inventory) ÷ Current Liabilities',
+        info: {
+          descEn: 'A more conservative liquidity measure excluding less-liquid assets like inventory.',
+          descId: 'Ukuran likuiditas lebih konservatif, mengecualikan aset kurang likuid seperti persediaan.',
+          benchmarkEn: '≥ 1.0× is generally considered healthy',
+          benchmarkId: '≥ 1,0× umumnya dianggap sehat',
+          direction: 'higher',
+        },
+      };
     })(),
     (() => {
       const hasInputs = has('cash') && has('currentLiabilities') && n('currentLiabilities') !== 0;
@@ -83,7 +123,19 @@ export function LiquidityCalculator() {
         if (val >= 0.5) { interp = 'good'; en = 'Very strong cash position.'; id = 'Posisi kas sangat kuat.'; }
         else if (val < 0.1) { interp = 'poor'; en = 'Very low cash — high reliance on receivables/inventory.'; id = 'Kas sangat rendah — ketergantungan tinggi pada piutang/persediaan.'; }
       }
-      return { label: 'Cash Ratio', labelId: 'Rasio Kas', value: val, formatted: val !== null ? fmt(val) : '—', interpretation: interp, interpretationText: en, interpretationTextId: id, formula: 'Cash & Equivalents ÷ Current Liabilities' };
+      return {
+        label: 'Cash Ratio', labelId: 'Rasio Kas', value: val,
+        formatted: val !== null ? fmt(val) : '—', interpretation: interp,
+        interpretationText: en, interpretationTextId: id,
+        formula: 'Cash & Equivalents ÷ Current Liabilities',
+        info: {
+          descEn: 'The most conservative liquidity measure — only cash and equivalents, no receivables or inventory.',
+          descId: 'Ukuran likuiditas paling konservatif — hanya kas dan setara kas, tanpa piutang atau persediaan.',
+          benchmarkEn: 'Very strong: ≥ 0.5×. Most companies operate between 0.1× – 0.5×',
+          benchmarkId: 'Sangat kuat: ≥ 0,5×. Kebanyakan perusahaan beroperasi antara 0,1× – 0,5×',
+          direction: 'higher',
+        },
+      };
     })(),
     (() => {
       const hasInputs = has('currentAssets') && has('currentLiabilities');
@@ -95,7 +147,19 @@ export function LiquidityCalculator() {
         else if (val < 0) { interp = 'poor'; en = `Negative working capital of ${fmtCurrency(val)} — liabilities exceed assets.`; id = `Modal kerja negatif sebesar ${fmtCurrency(val)} — liabilitas melebihi aset.`; }
         else { interp = 'average'; en = 'Zero working capital — breakeven position.'; id = 'Modal kerja nol — posisi impas.'; }
       }
-      return { label: 'Working Capital', labelId: 'Modal Kerja', value: val, formatted: val !== null ? fmtCurrency(val) : '—', interpretation: interp, interpretationText: en, interpretationTextId: id, formula: 'Current Assets − Current Liabilities' };
+      return {
+        label: 'Working Capital', labelId: 'Modal Kerja', value: val,
+        formatted: val !== null ? fmtCurrency(val) : '—', interpretation: interp,
+        interpretationText: en, interpretationTextId: id,
+        formula: 'Current Assets − Current Liabilities',
+        info: {
+          descEn: 'Net liquid assets available for day-to-day operations. Positive means the company can fund short-term needs.',
+          descId: 'Aset likuid bersih untuk operasional harian. Positif berarti perusahaan dapat mendanai kebutuhan jangka pendek.',
+          benchmarkEn: 'Positive: healthy buffer. Negative: may struggle to meet current obligations',
+          benchmarkId: 'Positif: penyangga sehat. Negatif: mungkin kesulitan memenuhi kewajiban saat ini',
+          direction: 'higher',
+        },
+      };
     })(),
     (() => {
       const hasInputs = has('cfFromOps') && has('currentLiabilities') && n('currentLiabilities') !== 0;
@@ -107,7 +171,19 @@ export function LiquidityCalculator() {
         else if (val >= 0.5) { interp = 'average'; en = 'Moderate — covers a portion of current liabilities.'; id = 'Sedang — menutup sebagian liabilitas lancar.'; }
         else { interp = 'poor'; en = 'Weak — operating cash flow insufficient.'; id = 'Lemah — arus kas operasi tidak mencukupi.'; }
       }
-      return { label: 'Operating Cash Flow Ratio', labelId: 'Rasio Arus Kas Operasi', value: val, formatted: val !== null ? fmt(val) : '—', interpretation: interp, interpretationText: en, interpretationTextId: id, formula: 'Cash Flow from Operations ÷ Current Liabilities' };
+      return {
+        label: 'Operating Cash Flow Ratio', labelId: 'Rasio Arus Kas Operasi', value: val,
+        formatted: val !== null ? fmt(val) : '—', interpretation: interp,
+        interpretationText: en, interpretationTextId: id,
+        formula: 'Cash Flow from Operations ÷ Current Liabilities',
+        info: {
+          descEn: 'Shows how well operating cash flow covers current liabilities. Preferred over Current Ratio by analysts.',
+          descId: 'Menunjukkan seberapa baik arus kas operasi menutup liabilitas lancar. Lebih disukai analis daripada Rasio Lancar.',
+          benchmarkEn: 'Strong: ≥ 1×. Moderate: 0.5× – 1×. Weak: < 0.5×',
+          benchmarkId: 'Kuat: ≥ 1×. Sedang: 0,5× – 1×. Lemah: < 0,5×',
+          direction: 'higher',
+        },
+      };
     })(),
     (() => {
       const hasInputs = has('ebit') && has('interestExpense') && n('interestExpense') !== 0;
@@ -119,7 +195,19 @@ export function LiquidityCalculator() {
         else if (val >= 1.5) { interp = 'average'; en = 'Adequate — covers interest with limited buffer.'; id = 'Memadai — menutup bunga dengan penyangga terbatas.'; }
         else { interp = 'poor'; en = 'Risky — earnings barely cover interest. Risk of default.'; id = 'Berisiko — laba hampir tidak menutup bunga. Risiko gagal bayar.'; }
       }
-      return { label: 'Interest Coverage Ratio', labelId: 'Rasio Perlindungan Bunga', value: val, formatted: val !== null ? fmt(val) : '—', interpretation: interp, interpretationText: en, interpretationTextId: id, formula: 'EBIT ÷ Interest Expense' };
+      return {
+        label: 'Interest Coverage Ratio', labelId: 'Rasio Perlindungan Bunga', value: val,
+        formatted: val !== null ? fmt(val) : '—', interpretation: interp,
+        interpretationText: en, interpretationTextId: id,
+        formula: 'EBIT ÷ Interest Expense',
+        info: {
+          descEn: 'Indicates how easily a company can pay interest on outstanding debt from operating earnings.',
+          descId: 'Menunjukkan seberapa mudah perusahaan membayar bunga utang dari laba operasi.',
+          benchmarkEn: 'Safe: > 3×. Adequate: 1.5× – 3×. Risky: < 1.5×',
+          benchmarkId: 'Aman: > 3×. Memadai: 1,5× – 3×. Berisiko: < 1,5×',
+          direction: 'higher',
+        },
+      };
     })(),
   ];
 
@@ -156,13 +244,9 @@ export function LiquidityCalculator() {
         </p>
       </motion.div>
 
-      {/*
-        Mobile  : Results on top (order-1), Inputs on bottom (order-2)
-        Desktop : Inputs on left (lg:order-1), Results on right (lg:order-2)
-      */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
 
-        {/* ── RESULTS column ── */}
+        {/* ── RESULTS column — top on mobile, right on desktop ── */}
         <div className="order-1 lg:order-2 flex flex-col gap-4">
           <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
             {language === 'en' ? 'Results' : 'Hasil'}
@@ -171,39 +255,45 @@ export function LiquidityCalculator() {
           <div className="space-y-2">
             {results.map((result, i) => {
               const label = language === 'en' ? result.label : result.labelId;
-              const interpText = language === 'en' ? result.interpretationText : result.interpretationTextId;
               const isCalculated = result.value !== null;
               const color = isCalculated ? valueColor[result.interpretation] : 'text-muted-foreground/40';
               const infoKey = result.label;
               const isInfoOpen = !!openInfo[infoKey];
+              const dir = directionConfig[result.info.direction];
+              const desc = language === 'en' ? result.info.descEn : result.info.descId;
+              const benchmark = language === 'en' ? result.info.benchmarkEn : result.info.benchmarkId;
+
               return (
                 <motion.div
                   key={result.label}
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.04 }}
-                  className="bg-card border border-border rounded-2xl px-4 py-3.5"
+                  className="bg-card border border-border rounded-2xl overflow-hidden"
                 >
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="font-bold text-sm text-foreground leading-tight">{label}</span>
-                    <div className="flex items-center gap-2 shrink-0">
-                      <span className={cn('text-base font-bold tabular-nums', color)}>
-                        {result.formatted}
-                      </span>
-                      <button
-                        onClick={() => toggleInfo(infoKey)}
-                        className={cn(
-                          'transition-colors rounded-full p-0.5',
-                          isInfoOpen
-                            ? 'text-primary'
-                            : 'text-muted-foreground/50 hover:text-muted-foreground'
-                        )}
-                      >
-                        {isInfoOpen ? <X className="w-4 h-4" /> : <Info className="w-4 h-4" />}
-                      </button>
+                  {/* Header row */}
+                  <div className="px-4 py-3.5">
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="font-bold text-sm text-foreground leading-tight">{label}</span>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className={cn('text-base font-bold tabular-nums', color)}>
+                          {result.formatted}
+                        </span>
+                        <button
+                          onClick={() => toggleInfo(infoKey)}
+                          className={cn(
+                            'transition-colors rounded-full p-0.5',
+                            isInfoOpen ? 'text-primary' : 'text-muted-foreground/50 hover:text-muted-foreground'
+                          )}
+                        >
+                          {isInfoOpen ? <X className="w-4 h-4" /> : <Info className="w-4 h-4" />}
+                        </button>
+                      </div>
                     </div>
+                    <p className="text-xs text-muted-foreground mt-0.5">{result.formula}</p>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-0.5">{result.formula}</p>
+
+                  {/* Glossary-style dropdown */}
                   <AnimatePresence initial={false}>
                     {isInfoOpen && (
                       <motion.div
@@ -214,9 +304,38 @@ export function LiquidityCalculator() {
                         transition={{ duration: 0.2 }}
                         className="overflow-hidden"
                       >
-                        <p className={cn('text-xs mt-2 pt-2 border-t border-border/60 leading-relaxed', isCalculated ? color : 'text-muted-foreground')}>
-                          {interpText}
-                        </p>
+                        <div className="px-4 pb-4 pt-1 space-y-3 border-t border-border/50">
+                          {/* Category badge */}
+                          <span className="inline-flex text-xs font-medium px-2.5 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-200">
+                            {language === 'en' ? 'Liquidity' : 'Likuiditas'}
+                          </span>
+
+                          {/* Description */}
+                          <p className="text-sm text-foreground leading-relaxed">{desc}</p>
+
+                          {/* Benchmark box */}
+                          <div className="flex items-start gap-2 bg-sky-50 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-800 rounded-xl px-3.5 py-2.5">
+                            <Target className="w-3.5 h-3.5 text-sky-500 mt-0.5 shrink-0" />
+                            <p className="text-xs text-sky-700 dark:text-sky-400 font-medium leading-relaxed">
+                              {language === 'en' ? 'Benchmark: ' : 'Tolok ukur: '}{benchmark}
+                            </p>
+                          </div>
+
+                          {/* Direction */}
+                          <div className="flex items-center gap-1.5">
+                            {dir.icon}
+                            <span className="text-xs text-muted-foreground">
+                              {language === 'id' ? dir.labelId : dir.labelEn}
+                            </span>
+                          </div>
+
+                          {/* Current interpretation (if calculated) */}
+                          {isCalculated && (
+                            <p className={cn('text-xs font-medium leading-relaxed', color)}>
+                              {language === 'en' ? result.interpretationText : result.interpretationTextId}
+                            </p>
+                          )}
+                        </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -224,10 +343,9 @@ export function LiquidityCalculator() {
               );
             })}
           </div>
-
         </div>
 
-        {/* ── INPUTS column ── */}
+        {/* ── INPUTS column — bottom on mobile, left on desktop ── */}
         <div className="order-2 lg:order-1 flex flex-col gap-4">
           <div className="flex items-center justify-between">
             <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
