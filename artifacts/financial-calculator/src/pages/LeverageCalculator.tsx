@@ -83,6 +83,7 @@ export function LeverageCalculator() {
           benchmarkEn: 'Low: < 1×. Moderate: 1×–2×. High: > 2×',
           benchmarkId: 'Rendah: < 1×. Sedang: 1×–2×. Tinggi: > 2×',
           direction: 'lower',
+          formula: 'Total Debt ÷ Total Equity',
         },
       };
     })(),
@@ -107,6 +108,7 @@ export function LeverageCalculator() {
           benchmarkEn: 'Low: < 0.3×. Moderate: 0.3×–0.6×. High: > 0.6×',
           benchmarkId: 'Rendah: < 0,3×. Sedang: 0,3×–0,6×. Tinggi: > 0,6×',
           direction: 'lower',
+          formula: 'Total Liabilities ÷ Total Assets',
         },
       };
     })(),
@@ -131,6 +133,7 @@ export function LeverageCalculator() {
           benchmarkEn: 'Low: < 2×. Moderate: 2×–4×. High: > 4×',
           benchmarkId: 'Rendah: < 2×. Sedang: 2×–4×. Tinggi: > 4×',
           direction: 'lower',
+          formula: 'Total Debt ÷ EBITDA',
         },
       };
     })(),

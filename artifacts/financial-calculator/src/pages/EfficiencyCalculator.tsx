@@ -87,6 +87,7 @@ export function EfficiencyCalculator() {
           benchmarkEn: 'Fast: > 8×. Moderate: 4–8×. Slow: < 4×',
           benchmarkId: 'Cepat: > 8×. Sedang: 4–8×. Lambat: < 4×',
           direction: 'higher',
+          formula: 'Revenue ÷ Accounts Receivable',
         },
       };
     })(),
@@ -111,6 +112,7 @@ export function EfficiencyCalculator() {
           benchmarkEn: 'Fast: < 30 days. Acceptable: 30–60 days. Slow: > 60 days',
           benchmarkId: 'Cepat: < 30 hari. Dapat diterima: 30–60 hari. Lambat: > 60 hari',
           direction: 'lower',
+          formula: '(Accounts Receivable ÷ Revenue) × 365',
         },
       };
     })(),
@@ -137,6 +139,7 @@ export function EfficiencyCalculator() {
           benchmarkEn: 'High: > 6×. Adequate: 2–6×. Low: < 2×',
           benchmarkId: 'Tinggi: > 6×. Memadai: 2–6×. Rendah: < 2×',
           direction: 'higher',
+          formula: 'Revenue ÷ (Current Assets − Current Liabilities)',
         },
       };
     })(),
@@ -161,6 +164,7 @@ export function EfficiencyCalculator() {
           benchmarkEn: 'High: > 5×. Moderate: 2–5×. Low: < 2×',
           benchmarkId: 'Tinggi: > 5×. Sedang: 2–5×. Rendah: < 2×',
           direction: 'higher',
+          formula: 'Revenue ÷ Net Fixed Assets',
         },
       };
     })(),

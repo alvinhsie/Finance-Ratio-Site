@@ -102,6 +102,7 @@ export function ValuationCalculator() {
           benchmarkEn: 'Low: < 10×. Reasonable: 10–20×. Above avg: 20–30×. Expensive: > 30×',
           benchmarkId: 'Rendah: < 10×. Wajar: 10–20×. Di atas rata-rata: 20–30×. Mahal: > 30×',
           direction: 'range',
+          formula: 'Market Price ÷ EPS',
         },
       };
     })(),
@@ -126,6 +127,7 @@ export function ValuationCalculator() {
           benchmarkEn: 'Below book: < 1×. Fair value: 1–3×. Premium: > 3×',
           benchmarkId: 'Di bawah buku: < 1×. Nilai wajar: 1–3×. Premium: > 3×',
           direction: 'range',
+          formula: 'Market Price ÷ BVPS',
         },
       };
     })(),
@@ -149,6 +151,7 @@ export function ValuationCalculator() {
           benchmarkEn: 'EV = Market Cap + Total Debt − Cash & Equivalents',
           benchmarkId: 'EV = Kapitalisasi Pasar + Total Utang − Kas & Setara Kas',
           direction: 'lower',
+          formula: 'Market Cap + Total Debt − Cash & Equivalents',
         },
       };
     })(),
@@ -173,6 +176,7 @@ export function ValuationCalculator() {
           benchmarkEn: 'Cheap: < 8×. Fair: 8–15×. Expensive: > 15×',
           benchmarkId: 'Murah: < 8×. Wajar: 8–15×. Mahal: > 15×',
           direction: 'lower',
+          formula: 'Enterprise Value ÷ EBITDA',
         },
       };
     })(),
@@ -198,6 +202,7 @@ export function ValuationCalculator() {
           benchmarkEn: 'High: ≥ 4%. Moderate: 2–4%. Low: < 2%',
           benchmarkId: 'Tinggi: ≥ 4%. Sedang: 2–4%. Rendah: < 2%',
           direction: 'higher',
+          formula: '(Dividend Per Share ÷ Market Price) × 100',
         },
       };
     })(),
