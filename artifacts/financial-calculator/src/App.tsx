@@ -6,6 +6,7 @@ import { AppLayout } from "@/components/layout/AppLayout";
 import { CategoryPage } from "@/pages/CategoryPage";
 import { LiquidityCalculator } from "@/pages/LiquidityCalculator";
 import { ProfitabilityCalculator } from "@/pages/ProfitabilityCalculator";
+import { LeverageCalculator } from "@/pages/LeverageCalculator";
 import { GlossaryPage } from "@/pages/GlossaryPage";
 import { HomePage } from "@/pages/HomePage";
 import { LoginPage } from "@/pages/LoginPage";
@@ -20,6 +21,7 @@ function Router() {
         <Route path="/" component={HomePage} />
         <Route path="/category/liquidity" component={LiquidityCalculator} />
         <Route path="/category/profitability" component={ProfitabilityCalculator} />
+        <Route path="/category/leverage" component={LeverageCalculator} />
         <Route path="/category/:id" component={CategoryPage} />
         <Route path="/glossary" component={GlossaryPage} />
         <Route component={NotFound} />
