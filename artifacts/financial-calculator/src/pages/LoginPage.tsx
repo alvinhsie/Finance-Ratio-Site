@@ -47,7 +47,10 @@ export function LoginPage({ onLogin }: LoginPageProps) {
           <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/20 mb-4">
             <Calculator className="w-7 h-7" />
           </div>
-          <h1 className="text-xl font-bold tracking-tight text-foreground">FinRatio <span className="text-sm font-normal italic text-muted-foreground">by Slitherstocks</span></h1>
+          <div className="flex flex-col items-center leading-none">
+            <h1 className="text-xl font-bold tracking-tight text-foreground">FinRatio</h1>
+            <span className="text-xs font-normal italic text-muted-foreground">by Slitherstocks</span>
+          </div>
           <p className="text-xs text-muted-foreground mt-1">{t.login.tagline}</p>
         </div>
 

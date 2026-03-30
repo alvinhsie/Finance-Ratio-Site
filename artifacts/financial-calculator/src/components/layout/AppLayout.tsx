@@ -24,9 +24,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
             <Calculator className="w-5 h-5" />
           </div>
-          <span className="font-bold font-display text-lg tracking-tight">
-            FinRatio <span className="text-xs font-normal italic text-muted-foreground">by Slitherstocks</span>
-          </span>
+          <div className="flex flex-col leading-none">
+            <span className="font-bold font-display text-lg tracking-tight">FinRatio</span>
+            <span className="text-xs font-normal italic text-muted-foreground">by Slitherstocks</span>
+          </div>
         </Link>
         <div className="flex items-center gap-2">
           <LanguageSwitcher />
@@ -59,9 +60,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/20">
                   <Calculator className="w-5 h-5" />
                 </div>
-                <span className="font-bold font-display text-xl tracking-tight">
-                  FinRatio <span className="text-xs font-normal italic text-muted-foreground">by Slitherstocks</span>
-                </span>
+                <div className="flex flex-col leading-none">
+                  <span className="font-bold font-display text-xl tracking-tight">FinRatio</span>
+                  <span className="text-xs font-normal italic text-muted-foreground">by Slitherstocks</span>
+                </div>
               </div>
               <LanguageSwitcher />
             </div>
