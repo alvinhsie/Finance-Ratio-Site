@@ -24,7 +24,8 @@ interface OutputResult {
   interpretation: InterpretationType;
   interpretationText: string;
   interpretationTextId: string;
-  formula: string;
+  commentEn: string;
+  commentId: string;
   info: RatioInfo;
 }
 
@@ -71,17 +72,19 @@ export function LiquidityCalculator() {
       const hasInputs = has('currentAssets') && has('currentLiabilities') && n('currentLiabilities') !== 0;
       const val = hasInputs ? n('currentAssets') / n('currentLiabilities') : null;
       let interp: InterpretationType = 'average';
-      let en = 'Adequate liquidity.'; let id = 'Likuiditas yang memadai.';
+      let en = 'Strong liquidity — ratio between 1.5× and 3× is healthy.'; let id = 'Likuiditas kuat — rasio 1,5× hingga 3× dianggap sehat.';
+      let cEn = ''; let cId = '';
       if (val !== null) {
-        if (val >= 1.5 && val <= 3) { interp = 'good'; en = 'Strong liquidity — ratio between 1.5× and 3× is healthy.'; id = 'Likuiditas kuat — rasio 1,5× hingga 3× dianggap sehat.'; }
-        else if (val > 3) { interp = 'neutral'; en = 'Very high — may indicate inefficient use of assets.'; id = 'Sangat tinggi — mungkin menunjukkan penggunaan aset yang tidak efisien.'; }
-        else if (val < 1) { interp = 'poor'; en = 'Poor liquidity — may struggle with short-term obligations.'; id = 'Likuiditas buruk — mungkin kesulitan memenuhi kewajiban jangka pendek.'; }
+        if (val >= 1.5 && val <= 3) { interp = 'good'; en = 'Strong liquidity — ratio between 1.5× and 3× is healthy.'; id = 'Likuiditas kuat — rasio 1,5× hingga 3× dianggap sehat.'; cEn = 'Healthy — can comfortably pay short-term debts.'; cId = 'Sehat — mampu membayar utang jangka pendek.'; }
+        else if (val > 3) { interp = 'neutral'; en = 'Very high — may indicate inefficient use of assets.'; id = 'Sangat tinggi — mungkin menunjukkan penggunaan aset yang tidak efisien.'; cEn = 'Too high — may be holding excess idle assets.'; cId = 'Terlalu tinggi — mungkin menyimpan aset berlebih.'; }
+        else if (val >= 1 && val < 1.5) { interp = 'average'; en = 'Adequate liquidity.'; id = 'Likuiditas yang memadai.'; cEn = 'Adequate, but limited buffer for unexpected costs.'; cId = 'Memadai, namun penyangga biaya tak terduga terbatas.'; }
+        else { interp = 'poor'; en = 'Poor liquidity — may struggle with short-term obligations.'; id = 'Likuiditas buruk — mungkin kesulitan memenuhi kewajiban jangka pendek.'; cEn = 'At risk — may struggle to pay short-term debts.'; cId = 'Berisiko — mungkin kesulitan membayar utang jangka pendek.'; }
       }
       return {
         label: 'Current Ratio', labelId: 'Rasio Lancar', value: val,
         formatted: val !== null ? fmt(val) : '—', interpretation: interp,
         interpretationText: en, interpretationTextId: id,
-        formula: 'Current Assets ÷ Current Liabilities',
+        commentEn: cEn, commentId: cId,
         info: {
           descEn: "Measures a company's ability to pay short-term obligations with short-term assets.",
           descId: 'Mengukur kemampuan perusahaan membayar kewajiban jangka pendek menggunakan aset lancar.',
@@ -96,15 +99,17 @@ export function LiquidityCalculator() {
       const val = hasInputs ? (n('currentAssets') - n('inventory')) / n('currentLiabilities') : null;
       let interp: InterpretationType = 'average';
       let en = 'Acceptable quick liquidity.'; let id = 'Likuiditas cepat yang memadai.';
+      let cEn = ''; let cId = '';
       if (val !== null) {
-        if (val > 1) { interp = 'good'; en = 'Strong — can cover obligations without selling inventory.'; id = 'Kuat — dapat memenuhi kewajiban tanpa menjual persediaan.'; }
-        else if (val < 1) { interp = 'poor'; en = 'Relies heavily on inventory to meet short-term obligations.'; id = 'Sangat bergantung pada persediaan untuk memenuhi kewajiban.'; }
+        if (val > 1) { interp = 'good'; en = 'Strong — can cover obligations without selling inventory.'; id = 'Kuat — dapat memenuhi kewajiban tanpa menjual persediaan.'; cEn = 'Can pay debts without relying on inventory.'; cId = 'Dapat membayar utang tanpa bergantung pada persediaan.'; }
+        else if (val === 1) { interp = 'average'; cEn = 'Just meets obligations — no extra buffer.'; cId = 'Tepat memenuhi kewajiban — tanpa penyangga ekstra.'; }
+        else { interp = 'poor'; en = 'Relies heavily on inventory to meet short-term obligations.'; id = 'Sangat bergantung pada persediaan untuk memenuhi kewajiban.'; cEn = 'Relies on inventory to cover short-term debts.'; cId = 'Bergantung pada persediaan untuk menutup utang jangka pendek.'; }
       }
       return {
         label: 'Quick Ratio (Acid-Test)', labelId: 'Rasio Cepat (Uji Asam)', value: val,
         formatted: val !== null ? fmt(val) : '—', interpretation: interp,
         interpretationText: en, interpretationTextId: id,
-        formula: '(Current Assets − Inventory) ÷ Current Liabilities',
+        commentEn: cEn, commentId: cId,
         info: {
           descEn: 'A more conservative liquidity measure excluding less-liquid assets like inventory.',
           descId: 'Ukuran likuiditas lebih konservatif, mengecualikan aset kurang likuid seperti persediaan.',
@@ -119,15 +124,17 @@ export function LiquidityCalculator() {
       const val = hasInputs ? n('cash') / n('currentLiabilities') : null;
       let interp: InterpretationType = 'neutral';
       let en = 'Below 1 is normal — companies rarely hold cash to cover all liabilities.'; let id = 'Di bawah 1 adalah normal — perusahaan jarang menyimpan kas untuk semua liabilitas.';
+      let cEn = ''; let cId = '';
       if (val !== null) {
-        if (val >= 0.5) { interp = 'good'; en = 'Very strong cash position.'; id = 'Posisi kas sangat kuat.'; }
-        else if (val < 0.1) { interp = 'poor'; en = 'Very low cash — high reliance on receivables/inventory.'; id = 'Kas sangat rendah — ketergantungan tinggi pada piutang/persediaan.'; }
+        if (val >= 0.5) { interp = 'good'; en = 'Very strong cash position.'; id = 'Posisi kas sangat kuat.'; cEn = 'Very strong — cash alone can cover liabilities.'; cId = 'Sangat kuat — kas saja cukup untuk menutup liabilitas.'; }
+        else if (val >= 0.1) { interp = 'neutral'; cEn = 'Normal range — typical for most companies.'; cId = 'Rentang normal — umum bagi kebanyakan perusahaan.'; }
+        else { interp = 'poor'; en = 'Very low cash — high reliance on receivables/inventory.'; id = 'Kas sangat rendah — ketergantungan tinggi pada piutang/persediaan.'; cEn = 'Very low cash on hand.'; cId = 'Kas di tangan sangat rendah.'; }
       }
       return {
         label: 'Cash Ratio', labelId: 'Rasio Kas', value: val,
         formatted: val !== null ? fmt(val) : '—', interpretation: interp,
         interpretationText: en, interpretationTextId: id,
-        formula: 'Cash & Equivalents ÷ Current Liabilities',
+        commentEn: cEn, commentId: cId,
         info: {
           descEn: 'The most conservative liquidity measure — only cash and equivalents, no receivables or inventory.',
           descId: 'Ukuran likuiditas paling konservatif — hanya kas dan setara kas, tanpa piutang atau persediaan.',
@@ -142,16 +149,17 @@ export function LiquidityCalculator() {
       const val = hasInputs ? n('currentAssets') - n('currentLiabilities') : null;
       let interp: InterpretationType = 'neutral';
       let en = 'Positive working capital means short-term assets exceed obligations.'; let id = 'Modal kerja positif berarti aset jangka pendek melebihi kewajiban.';
+      let cEn = ''; let cId = '';
       if (val !== null) {
-        if (val > 0) { interp = 'good'; en = `Positive working capital of ${fmtCurrency(val)} — good buffer.`; id = `Modal kerja positif sebesar ${fmtCurrency(val)} — penyangga yang baik.`; }
-        else if (val < 0) { interp = 'poor'; en = `Negative working capital of ${fmtCurrency(val)} — liabilities exceed assets.`; id = `Modal kerja negatif sebesar ${fmtCurrency(val)} — liabilitas melebihi aset.`; }
-        else { interp = 'average'; en = 'Zero working capital — breakeven position.'; id = 'Modal kerja nol — posisi impas.'; }
+        if (val > 0) { interp = 'good'; en = `Positive working capital of ${fmtCurrency(val)} — good buffer.`; id = `Modal kerja positif sebesar ${fmtCurrency(val)} — penyangga yang baik.`; cEn = 'Positive — can fund daily operations comfortably.'; cId = 'Positif — mampu mendanai operasi harian.'; }
+        else if (val < 0) { interp = 'poor'; en = `Negative working capital of ${fmtCurrency(val)} — liabilities exceed assets.`; id = `Modal kerja negatif sebesar ${fmtCurrency(val)} — liabilitas melebihi aset.`; cEn = 'Negative — liabilities exceed current assets.'; cId = 'Negatif — liabilitas melebihi aset lancar.'; }
+        else { interp = 'average'; en = 'Zero working capital — breakeven position.'; id = 'Modal kerja nol — posisi impas.'; cEn = 'Breakeven — no surplus to absorb shocks.'; cId = 'Impas — tidak ada surplus untuk penyangga.'; }
       }
       return {
         label: 'Working Capital', labelId: 'Modal Kerja', value: val,
         formatted: val !== null ? fmtCurrency(val) : '—', interpretation: interp,
         interpretationText: en, interpretationTextId: id,
-        formula: 'Current Assets − Current Liabilities',
+        commentEn: cEn, commentId: cId,
         info: {
           descEn: 'Net liquid assets available for day-to-day operations. Positive means the company can fund short-term needs.',
           descId: 'Aset likuid bersih untuk operasional harian. Positif berarti perusahaan dapat mendanai kebutuhan jangka pendek.',
@@ -166,16 +174,17 @@ export function LiquidityCalculator() {
       const val = hasInputs ? n('cfFromOps') / n('currentLiabilities') : null;
       let interp: InterpretationType = 'average';
       let en = 'Measures ability to cover current liabilities with operating cash flow.'; let id = 'Mengukur kemampuan menutup liabilitas lancar dengan arus kas operasi.';
+      let cEn = ''; let cId = '';
       if (val !== null) {
-        if (val >= 1) { interp = 'good'; en = 'Strong — operating cash flow fully covers current liabilities.'; id = 'Kuat — arus kas operasi sepenuhnya menutup liabilitas lancar.'; }
-        else if (val >= 0.5) { interp = 'average'; en = 'Moderate — covers a portion of current liabilities.'; id = 'Sedang — menutup sebagian liabilitas lancar.'; }
-        else { interp = 'poor'; en = 'Weak — operating cash flow insufficient.'; id = 'Lemah — arus kas operasi tidak mencukupi.'; }
+        if (val >= 1) { interp = 'good'; en = 'Strong — operating cash flow fully covers current liabilities.'; id = 'Kuat — arus kas operasi sepenuhnya menutup liabilitas lancar.'; cEn = 'Cash flow fully covers short-term obligations.'; cId = 'Arus kas sepenuhnya menutup kewajiban jangka pendek.'; }
+        else if (val >= 0.5) { interp = 'average'; en = 'Moderate — covers a portion of current liabilities.'; id = 'Sedang — menutup sebagian liabilitas lancar.'; cEn = 'Partially covers obligations — monitor cash flow.'; cId = 'Menutup sebagian kewajiban — pantau arus kas.'; }
+        else { interp = 'poor'; en = 'Weak — operating cash flow insufficient.'; id = 'Lemah — arus kas operasi tidak mencukupi.'; cEn = 'Insufficient cash flow to cover current debts.'; cId = 'Arus kas tidak cukup untuk menutup utang lancar.'; }
       }
       return {
         label: 'Operating Cash Flow Ratio', labelId: 'Rasio Arus Kas Operasi', value: val,
         formatted: val !== null ? fmt(val) : '—', interpretation: interp,
         interpretationText: en, interpretationTextId: id,
-        formula: 'Cash Flow from Operations ÷ Current Liabilities',
+        commentEn: cEn, commentId: cId,
         info: {
           descEn: 'Shows how well operating cash flow covers current liabilities. Preferred over Current Ratio by analysts.',
           descId: 'Menunjukkan seberapa baik arus kas operasi menutup liabilitas lancar. Lebih disukai analis daripada Rasio Lancar.',
@@ -190,16 +199,17 @@ export function LiquidityCalculator() {
       const val = hasInputs ? n('ebit') / n('interestExpense') : null;
       let interp: InterpretationType = 'average';
       let en = 'Measures how easily a company can pay interest on its debt.'; let id = 'Mengukur seberapa mudah perusahaan membayar bunga utangnya.';
+      let cEn = ''; let cId = '';
       if (val !== null) {
-        if (val > 3) { interp = 'good'; en = 'Strong — earnings easily cover interest expense.'; id = 'Kuat — laba dengan mudah menutup beban bunga.'; }
-        else if (val >= 1.5) { interp = 'average'; en = 'Adequate — covers interest with limited buffer.'; id = 'Memadai — menutup bunga dengan penyangga terbatas.'; }
-        else { interp = 'poor'; en = 'Risky — earnings barely cover interest. Risk of default.'; id = 'Berisiko — laba hampir tidak menutup bunga. Risiko gagal bayar.'; }
+        if (val > 3) { interp = 'good'; en = 'Strong — earnings easily cover interest expense.'; id = 'Kuat — laba dengan mudah menutup beban bunga.'; cEn = 'Earnings easily cover interest payments.'; cId = 'Laba dengan mudah menutup pembayaran bunga.'; }
+        else if (val >= 1.5) { interp = 'average'; en = 'Adequate — covers interest with limited buffer.'; id = 'Memadai — menutup bunga dengan penyangga terbatas.'; cEn = 'Covers interest, but with limited margin.'; cId = 'Menutup bunga, namun dengan margin terbatas.'; }
+        else { interp = 'poor'; en = 'Risky — earnings barely cover interest. Risk of default.'; id = 'Berisiko — laba hampir tidak menutup bunga. Risiko gagal bayar.'; cEn = 'Risk of default — earnings barely cover interest.'; cId = 'Berisiko gagal bayar — laba hampir tidak menutup bunga.'; }
       }
       return {
         label: 'Interest Coverage Ratio', labelId: 'Rasio Perlindungan Bunga', value: val,
         formatted: val !== null ? fmt(val) : '—', interpretation: interp,
         interpretationText: en, interpretationTextId: id,
-        formula: 'EBIT ÷ Interest Expense',
+        commentEn: cEn, commentId: cId,
         info: {
           descEn: 'Indicates how easily a company can pay interest on outstanding debt from operating earnings.',
           descId: 'Menunjukkan seberapa mudah perusahaan membayar bunga utang dari laba operasi.',
@@ -290,7 +300,11 @@ export function LiquidityCalculator() {
                         </button>
                       </div>
                     </div>
-                    <p className="text-xs text-muted-foreground mt-0.5">{result.formula}</p>
+                    {isCalculated && (
+                      <p className={cn('text-xs mt-0.5', valueColor[result.interpretation])}>
+                        {language === 'id' ? result.commentId : result.commentEn}
+                      </p>
+                    )}
                   </div>
 
                   {/* Glossary-style dropdown */}
