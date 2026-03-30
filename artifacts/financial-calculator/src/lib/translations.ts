@@ -25,7 +25,7 @@ export const translations = {
     home: {
       badge: (total: number, cats: number) => `${total} Ratios across ${cats} categories`,
       title: "Financial Ratio\nCalculator",
-      subtitle: "Instantly calculate and interpret key financial ratios for liquidity, profitability, leverage, efficiency, and valuation analysis.",
+      subtitle: "Accurate ratio analysis for investment decisions.",
       ratios: (n: number) => `${n} ratio${n !== 1 ? "s" : ""}`,
       cta: "Select a category above to start calculating",
     },
@@ -328,7 +328,7 @@ export const translations = {
     home: {
       badge: (total: number, cats: number) => `${total} Rasio dalam ${cats} kategori`,
       title: "Kalkulator\nRasio Keuangan",
-      subtitle: "Hitung dan interpretasikan rasio keuangan utama untuk analisis likuiditas, profitabilitas, leverage, efisiensi, dan valuasi secara instan.",
+      subtitle: "Analisis rasio yang akurat untuk keputusan investasi.",
       ratios: (n: number) => `${n} rasio`,
       cta: "Pilih kategori di atas untuk mulai menghitung",
     },
