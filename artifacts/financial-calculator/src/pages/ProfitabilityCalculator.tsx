@@ -14,6 +14,7 @@ interface RatioInfo {
   benchmarkEn: string;
   benchmarkId: string;
   direction: Direction;
+  formula: string;
 }
 
 interface OutputResult {
@@ -83,6 +84,7 @@ export function ProfitabilityCalculator() {
           benchmarkEn: 'Strong: > 20%. Moderate: 5–20%. Thin: < 5%',
           benchmarkId: 'Kuat: > 20%. Sedang: 5–20%. Tipis: < 5%',
           direction: 'higher',
+          formula: 'Net Income ÷ Revenue × 100',
         },
       };
     })(),
@@ -107,6 +109,7 @@ export function ProfitabilityCalculator() {
           benchmarkEn: 'Strong: > 40%. Adequate: 20–40%. Low: < 20%',
           benchmarkId: 'Kuat: > 40%. Memadai: 20–40%. Rendah: < 20%',
           direction: 'higher',
+          formula: 'Gross Profit ÷ Revenue × 100',
         },
       };
     })(),
@@ -132,6 +135,7 @@ export function ProfitabilityCalculator() {
           benchmarkEn: 'Strong: > 15%. Moderate: 5–15%. Weak: < 5%',
           benchmarkId: 'Kuat: > 15%. Sedang: 5–15%. Lemah: < 5%',
           direction: 'higher',
+          formula: 'Operating Income ÷ Revenue × 100',
         },
       };
     })(),
@@ -157,6 +161,7 @@ export function ProfitabilityCalculator() {
           benchmarkEn: 'Strong: > 5%. Moderate: 2–5%. Weak: < 2%',
           benchmarkId: 'Kuat: > 5%. Sedang: 2–5%. Lemah: < 2%',
           direction: 'higher',
+          formula: 'Net Income ÷ Total Assets × 100',
         },
       };
     })(),
@@ -182,6 +187,7 @@ export function ProfitabilityCalculator() {
           benchmarkEn: 'Excellent: > 15%. Acceptable: 8–15%. Low: < 8%',
           benchmarkId: 'Sangat baik: > 15%. Dapat diterima: 8–15%. Rendah: < 8%',
           direction: 'higher',
+          formula: 'Net Income ÷ Total Equity × 100',
         },
       };
     })(),
@@ -207,6 +213,7 @@ export function ProfitabilityCalculator() {
           benchmarkEn: 'Strong: > 30%. Healthy: 15–30%. Thin: < 15%',
           benchmarkId: 'Kuat: > 30%. Sehat: 15–30%. Tipis: < 15%',
           direction: 'higher',
+          formula: 'EBITDA ÷ Revenue × 100',
         },
       };
     })(),
@@ -310,8 +317,8 @@ export function ProfitabilityCalculator() {
                         className="overflow-hidden"
                       >
                         <div className="px-4 pb-4 pt-1 space-y-3 border-t border-border/50">
-                          <span className="inline-flex text-xs font-medium px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
-                            {language === 'en' ? 'Profitability' : 'Profitabilitas'}
+                          <span className="inline-flex text-xs font-mono px-2.5 py-1 rounded-lg bg-muted text-muted-foreground border border-border">
+                            {result.info.formula}
                           </span>
                           <p className="text-sm text-foreground leading-relaxed">{desc}</p>
                           <div className="flex items-start gap-2 bg-sky-50 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-800 rounded-xl px-3.5 py-2.5">

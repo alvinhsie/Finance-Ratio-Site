@@ -14,6 +14,7 @@ interface RatioInfo {
   benchmarkEn: string;
   benchmarkId: string;
   direction: Direction;
+  formula: string;
 }
 
 interface OutputResult {
@@ -91,6 +92,7 @@ export function LiquidityCalculator() {
           benchmarkEn: '1.5–3× is generally healthy',
           benchmarkId: '1,5–3× umumnya dianggap sehat',
           direction: 'range',
+          formula: 'Current Assets ÷ Current Liabilities',
         },
       };
     })(),
@@ -116,6 +118,7 @@ export function LiquidityCalculator() {
           benchmarkEn: '≥ 1.0× is generally considered healthy',
           benchmarkId: '≥ 1,0× umumnya dianggap sehat',
           direction: 'higher',
+          formula: '(Current Assets − Inventory) ÷ Current Liabilities',
         },
       };
     })(),
@@ -141,6 +144,7 @@ export function LiquidityCalculator() {
           benchmarkEn: 'Very strong: ≥ 0.5×. Most companies operate between 0.1× – 0.5×',
           benchmarkId: 'Sangat kuat: ≥ 0,5×. Kebanyakan perusahaan beroperasi antara 0,1× – 0,5×',
           direction: 'higher',
+          formula: 'Cash & Equivalents ÷ Current Liabilities',
         },
       };
     })(),
@@ -166,6 +170,7 @@ export function LiquidityCalculator() {
           benchmarkEn: 'Positive: healthy buffer. Negative: may struggle to meet current obligations',
           benchmarkId: 'Positif: penyangga sehat. Negatif: mungkin kesulitan memenuhi kewajiban saat ini',
           direction: 'higher',
+          formula: 'Current Assets − Current Liabilities',
         },
       };
     })(),
@@ -191,6 +196,7 @@ export function LiquidityCalculator() {
           benchmarkEn: 'Strong: ≥ 1×. Moderate: 0.5× – 1×. Weak: < 0.5×',
           benchmarkId: 'Kuat: ≥ 1×. Sedang: 0,5× – 1×. Lemah: < 0,5×',
           direction: 'higher',
+          formula: 'Operating Cash Flow ÷ Current Liabilities',
         },
       };
     })(),
@@ -216,6 +222,7 @@ export function LiquidityCalculator() {
           benchmarkEn: 'Safe: > 3×. Adequate: 1.5× – 3×. Risky: < 1.5×',
           benchmarkId: 'Aman: > 3×. Memadai: 1,5× – 3×. Berisiko: < 1,5×',
           direction: 'higher',
+          formula: 'EBIT ÷ Interest Expense',
         },
       };
     })(),
@@ -320,8 +327,8 @@ export function LiquidityCalculator() {
                       >
                         <div className="px-4 pb-4 pt-1 space-y-3 border-t border-border/50">
                           {/* Category badge */}
-                          <span className="inline-flex text-xs font-medium px-2.5 py-0.5 rounded-full bg-sky-50 text-sky-700 border border-sky-200">
-                            {language === 'en' ? 'Liquidity' : 'Likuiditas'}
+                          <span className="inline-flex text-xs font-mono px-2.5 py-1 rounded-lg bg-muted text-muted-foreground border border-border">
+                            {result.info.formula}
                           </span>
 
                           {/* Description */}

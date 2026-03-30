@@ -14,6 +14,7 @@ interface RatioInfo {
   benchmarkEn: string;
   benchmarkId: string;
   direction: Direction;
+  formula: string;
 }
 
 interface OutputResult {
@@ -259,8 +260,8 @@ export function EfficiencyCalculator() {
                         className="overflow-hidden"
                       >
                         <div className="px-4 pb-4 pt-1 space-y-3 border-t border-border/50">
-                          <span className="inline-flex text-xs font-medium px-2.5 py-0.5 rounded-full bg-violet-50 text-violet-700 border border-violet-200">
-                            {language === 'en' ? 'Efficiency' : 'Efisiensi'}
+                          <span className="inline-flex text-xs font-mono px-2.5 py-1 rounded-lg bg-muted text-muted-foreground border border-border">
+                            {result.info.formula}
                           </span>
                           <p className="text-sm text-foreground leading-relaxed">{desc}</p>
                           <div className="flex items-start gap-2 bg-sky-50 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-800 rounded-xl px-3.5 py-2.5">
