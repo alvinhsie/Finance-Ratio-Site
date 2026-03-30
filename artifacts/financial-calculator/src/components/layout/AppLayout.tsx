@@ -49,7 +49,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             exit={{ x: -300 }}
             transition={{ type: "spring", bounce: 0, duration: 0.4 }}
             className={cn(
-              "fixed inset-y-0 left-0 z-30 w-72 bg-card border-r border-border flex flex-col",
+              "fixed top-[65px] bottom-0 left-0 z-30 w-72 bg-card border-r border-border flex flex-col",
               "md:sticky md:top-0 md:h-screen",
               !mobileMenuOpen && "hidden md:flex"
             )}
