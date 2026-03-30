@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { CATEGORIES } from "@/lib/ratios";
-import { ArrowRight, BarChart2, Info } from "lucide-react";
+import { ArrowRight, Info } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/lib/LanguageContext";
 
@@ -15,7 +15,6 @@ const categoryColors: Record<string, { bg: string; text: string; border: string 
 
 export function HomePage() {
   const { t } = useLanguage();
-  const totalRatios = CATEGORIES.reduce((sum, c) => sum + c.ratios.length, 0);
   const titleLines = t.home.title.split("\n");
 
   return (
@@ -26,10 +25,7 @@ export function HomePage() {
         transition={{ duration: 0.4 }}
         className="mb-10"
       >
-        <div className="inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-semibold px-3 py-1.5 rounded-full mb-4">
-          <BarChart2 className="w-3.5 h-3.5" />
-          {t.home.badge(totalRatios, CATEGORIES.length)}
-        </div>
+
         <h1 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight leading-tight mb-3">
           {titleLines.map((line, i) => (
             <span key={i}>
