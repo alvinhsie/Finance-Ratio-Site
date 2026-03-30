@@ -16,6 +16,12 @@ function applyCommas(raw: string): string {
   return decimal !== undefined ? `${withCommas}.${decimal}` : withCommas;
 }
 
+function stripLeadingZeros(s: string): string {
+  // Keep: "", "-", "0", "0.", "-0", "-0.", "0.5", "-0.5"
+  // Strip: "0287" → "287", "-0287" → "-287"
+  return s.replace(/^(-?)0+([1-9])/, '$1$2');
+}
+
 export function NumericInput({ value, onChange, placeholder, id, className }: NumericInputProps) {
   const [display, setDisplay] = useState(() => applyCommas(value));
   const inputRef = useRef<HTMLInputElement>(null);
@@ -34,13 +40,21 @@ export function NumericInput({ value, onChange, placeholder, id, className }: Nu
     }
   });
 
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    // Select all on focus so typing immediately replaces the current value
+    e.target.select();
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const el = e.target;
     const typed = el.value;
     const cursorPos = el.selectionStart ?? typed.length;
 
-    const stripped = typed.replace(/,/g, '');
+    let stripped = typed.replace(/,/g, '');
     if (stripped !== '' && !/^-?\d*\.?\d*$/.test(stripped)) return;
+
+    // Remove invalid leading zeros (e.g. "0287" → "287")
+    stripped = stripLeadingZeros(stripped);
 
     const formatted = applyCommas(stripped);
 
@@ -67,6 +81,7 @@ export function NumericInput({ value, onChange, placeholder, id, className }: Nu
       placeholder={placeholder ?? '0'}
       value={display}
       onChange={handleChange}
+      onFocus={handleFocus}
       className={cn(
         "flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors",
         "placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
