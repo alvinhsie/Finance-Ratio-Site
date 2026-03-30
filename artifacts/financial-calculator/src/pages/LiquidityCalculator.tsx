@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Info, X, ArrowUp, ArrowDown, Target } from 'lucide-react';
+import { Info, ChevronUp, ArrowUp, ArrowDown, Target } from 'lucide-react';
 import { useLanguage } from '@/lib/LanguageContext';
 import { cn, formatNumber } from '@/lib/utils';
 import { NumericInput } from '@/components/ui/NumericInput';
@@ -286,7 +286,7 @@ export function LiquidityCalculator() {
                             isInfoOpen ? 'text-primary' : 'text-muted-foreground/50 hover:text-muted-foreground'
                           )}
                         >
-                          {isInfoOpen ? <X className="w-4 h-4" /> : <Info className="w-4 h-4" />}
+                          {isInfoOpen ? <ChevronUp className="w-4 h-4" /> : <Info className="w-4 h-4" />}
                         </button>
                       </div>
                     </div>
