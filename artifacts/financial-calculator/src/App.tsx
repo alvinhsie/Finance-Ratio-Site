@@ -1,23 +1,19 @@
 import { useState } from "react";
-import { Switch, Route, Router as WouterRouter, Redirect } from "wouter";
+import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { CATEGORIES } from "@/lib/ratios";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { CategoryPage } from "@/pages/CategoryPage";
+import { HomePage } from "@/pages/HomePage";
 import { LoginPage } from "@/pages/LoginPage";
 import NotFound from "@/pages/not-found";
 
 const queryClient = new QueryClient();
 
-function Home() {
-  return <Redirect to={`/category/${CATEGORIES[0].id}`} />;
-}
-
 function Router() {
   return (
     <AppLayout>
       <Switch>
-        <Route path="/" component={Home} />
+        <Route path="/" component={HomePage} />
         <Route path="/category/:id" component={CategoryPage} />
         <Route component={NotFound} />
       </Switch>

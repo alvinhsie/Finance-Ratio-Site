@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { CATEGORIES } from '@/lib/ratios';
 import { Link, useLocation } from 'wouter';
 import { cn } from '@/lib/utils';
-import { Calculator, Menu, X, ChevronRight } from 'lucide-react';
+import { Calculator, Menu, X, ChevronRight, Home } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
@@ -60,6 +60,27 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
 
             <nav className="flex-1 overflow-y-auto px-4 pb-6 space-y-1">
+              <Link
+                href="/"
+                className={cn(
+                  "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group",
+                  location === "/"
+                    ? "bg-primary/10 text-primary"
+                    : "text-foreground hover:bg-muted"
+                )}
+              >
+                <Home className={cn(
+                  "w-5 h-5 transition-colors",
+                  location === "/" ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                )} />
+                <span className="flex-1">Home</span>
+                {location === "/" && (
+                  <motion.div layoutId="activeNav">
+                    <ChevronRight className="w-4 h-4" />
+                  </motion.div>
+                )}
+              </Link>
+
               {CATEGORIES.map((category) => {
                 const Icon = category.icon;
                 const isActive = location.includes(`/category/${category.id}`);
