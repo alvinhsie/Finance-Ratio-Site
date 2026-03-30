@@ -2,6 +2,7 @@ import { Link } from "wouter";
 import { CATEGORIES } from "@/lib/ratios";
 import { ArrowRight, BarChart2 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useLanguage } from "@/lib/LanguageContext";
 
 const categoryColors: Record<string, { bg: string; text: string; border: string }> = {
   liquidity:    { bg: "bg-blue-50",   text: "text-blue-600",   border: "border-blue-100" },
@@ -12,11 +13,12 @@ const categoryColors: Record<string, { bg: string; text: string; border: string 
 };
 
 export function HomePage() {
+  const { t } = useLanguage();
   const totalRatios = CATEGORIES.reduce((sum, c) => sum + c.ratios.length, 0);
+  const titleLines = t.home.title.split("\n");
 
   return (
     <div className="flex-1 p-6 md:p-10 max-w-4xl mx-auto w-full">
-      {/* Hero */}
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
@@ -25,21 +27,26 @@ export function HomePage() {
       >
         <div className="inline-flex items-center gap-2 bg-primary/10 text-primary text-xs font-semibold px-3 py-1.5 rounded-full mb-4">
           <BarChart2 className="w-3.5 h-3.5" />
-          {totalRatios} Ratios across {CATEGORIES.length} categories
+          {t.home.badge(totalRatios, CATEGORIES.length)}
         </div>
         <h1 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight leading-tight mb-3">
-          Financial Ratio<br />Calculator
+          {titleLines.map((line, i) => (
+            <span key={i}>
+              {line}
+              {i < titleLines.length - 1 && <br />}
+            </span>
+          ))}
         </h1>
         <p className="text-muted-foreground text-base md:text-lg max-w-xl leading-relaxed">
-          Instantly calculate and interpret key financial ratios for liquidity, profitability, leverage, efficiency, and valuation analysis.
+          {t.home.subtitle}
         </p>
       </motion.div>
 
-      {/* Category Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {CATEGORIES.map((category, i) => {
           const Icon = category.icon;
           const colors = categoryColors[category.id] ?? { bg: "bg-gray-50", text: "text-gray-600", border: "border-gray-100" };
+          const catT = t.categories[category.id as keyof typeof t.categories];
 
           return (
             <motion.div
@@ -56,10 +63,10 @@ export function HomePage() {
                     </div>
                     <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all" />
                   </div>
-                  <h2 className="font-semibold text-foreground text-base mb-1">{category.name}</h2>
-                  <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2">{category.description}</p>
+                  <h2 className="font-semibold text-foreground text-base mb-1">{catT.name}</h2>
+                  <p className="text-muted-foreground text-sm leading-relaxed line-clamp-2">{catT.description}</p>
                   <div className="mt-3 pt-3 border-t border-border">
-                    <span className="text-xs text-muted-foreground">{category.ratios.length} ratio{category.ratios.length !== 1 ? "s" : ""}</span>
+                    <span className="text-xs text-muted-foreground">{t.home.ratios(category.ratios.length)}</span>
                   </div>
                 </div>
               </Link>
@@ -68,14 +75,13 @@ export function HomePage() {
         })}
       </div>
 
-      {/* Footer note */}
       <motion.p
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.5 }}
         className="text-xs text-muted-foreground text-center mt-10"
       >
-        Select a category above to start calculating
+        {t.home.cta}
       </motion.p>
     </div>
   );

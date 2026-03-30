@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { LanguageProvider } from "@/lib/LanguageContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { CategoryPage } from "@/pages/CategoryPage";
 import { HomePage } from "@/pages/HomePage";
@@ -27,15 +28,21 @@ function App() {
   );
 
   if (!isAuthenticated) {
-    return <LoginPage onLogin={() => setIsAuthenticated(true)} />;
+    return (
+      <LanguageProvider>
+        <LoginPage onLogin={() => setIsAuthenticated(true)} />
+      </LanguageProvider>
+    );
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-        <Router />
-      </WouterRouter>
-    </QueryClientProvider>
+    <LanguageProvider>
+      <QueryClientProvider client={queryClient}>
+        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+          <Router />
+        </WouterRouter>
+      </QueryClientProvider>
+    </LanguageProvider>
   );
 }
 

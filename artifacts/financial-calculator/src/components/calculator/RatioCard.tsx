@@ -5,36 +5,34 @@ import { Input } from '@/components/ui/input';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calculator, RefreshCcw, AlertCircle, CheckCircle2, MinusCircle, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useLanguage } from '@/lib/LanguageContext';
 
 interface RatioCardProps {
   ratio: RatioDef;
 }
 
 export function RatioCard({ ratio }: RatioCardProps) {
+  const { t } = useLanguage();
   const [values, setValues] = useState<Record<string, string>>({});
   const [result, setResult] = useState<RatioResult | null>(null);
 
+  const ratioT = t.ratios[ratio.id as keyof typeof t.ratios] as any;
+
   const handleInputChange = (id: string, val: string) => {
-    // Only allow numbers and decimals
     if (val === '' || /^-?\d*\.?\d*$/.test(val)) {
       setValues(prev => ({ ...prev, [id]: val }));
-      // Clear result when input changes to encourage recalculation
       if (result) setResult(null);
     }
   };
 
   const handleCalculate = () => {
-    // Convert string inputs to numbers
     const numValues: Record<string, number> = {};
     for (const input of ratio.inputs) {
       const val = parseFloat(values[input.id] || '0');
       numValues[input.id] = isNaN(val) ? 0 : val;
     }
-
     const calcResult = ratio.calculate(numValues);
-    if (calcResult) {
-      setResult(calcResult);
-    }
+    if (calcResult) setResult(calcResult);
   };
 
   const handleReset = () => {
@@ -53,7 +51,7 @@ export function RatioCard({ ratio }: RatioCardProps) {
     }
   };
 
-  const InterpretationIcon = ({ type, className }: { type: string, className?: string }) => {
+  const InterpretationIcon = ({ type, className }: { type: string; className?: string }) => {
     switch (type) {
       case 'good': return <CheckCircle2 className={cn("text-success", className)} />;
       case 'poor': return <AlertCircle className={cn("text-destructive", className)} />;
@@ -62,63 +60,71 @@ export function RatioCard({ ratio }: RatioCardProps) {
     }
   };
 
+  const getInterpretationLabel = (type: string) => {
+    switch (type) {
+      case 'good': return t.card.good;
+      case 'average': return t.card.average;
+      case 'poor': return t.card.poor;
+      default: return t.card.neutral;
+    }
+  };
+
+  const name = ratioT?.name ?? ratio.name;
+  const description = ratioT?.description ?? ratio.description;
+  const formulaDisplay = ratioT?.formulaDisplay ?? ratio.formulaDisplay;
+
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="bg-card rounded-2xl border border-border/50 shadow-sm overflow-hidden flex flex-col transition-all hover:shadow-md"
     >
-      {/* Header */}
       <div className="p-6 border-b border-border/40 bg-muted/20">
-        <h3 className="text-xl font-bold text-foreground font-display">{ratio.name}</h3>
-        <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{ratio.description}</p>
-        
+        <h3 className="text-xl font-bold text-foreground font-display">{name}</h3>
+        <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{description}</p>
         <div className="mt-4 inline-flex items-center gap-2 bg-background border border-border/50 px-3 py-1.5 rounded-lg text-xs font-mono text-muted-foreground">
           <Calculator className="w-3.5 h-3.5" />
-          <span>{ratio.formulaDisplay}</span>
+          <span>{formulaDisplay}</span>
         </div>
       </div>
 
-      {/* Calculator Body */}
       <div className="p-6 flex-grow flex flex-col">
         <div className="space-y-4 mb-6">
-          {ratio.inputs.map((input) => (
-            <div key={input.id}>
-              <label htmlFor={`${ratio.id}-${input.id}`} className="block text-sm font-semibold text-foreground mb-1.5">
-                {input.label}
-              </label>
-              <Input
-                id={`${ratio.id}-${input.id}`}
-                placeholder={input.placeholder}
-                value={values[input.id] || ''}
-                onChange={(e) => handleInputChange(input.id, e.target.value)}
-                autoComplete="off"
-              />
-            </div>
-          ))}
+          {ratio.inputs.map((input) => {
+            const inputLabel = ratioT?.inputs?.[input.id] ?? input.label;
+            return (
+              <div key={input.id}>
+                <label htmlFor={`${ratio.id}-${input.id}`} className="block text-sm font-semibold text-foreground mb-1.5">
+                  {inputLabel}
+                </label>
+                <Input
+                  id={`${ratio.id}-${input.id}`}
+                  placeholder={input.placeholder}
+                  value={values[input.id] || ''}
+                  onChange={(e) => handleInputChange(input.id, e.target.value)}
+                  autoComplete="off"
+                />
+              </div>
+            );
+          })}
         </div>
 
         <div className="mt-auto flex gap-3">
-          <Button 
-            onClick={handleCalculate} 
-            disabled={!allInputsFilled}
-            className="flex-1"
-          >
-            Calculate
+          <Button onClick={handleCalculate} disabled={!allInputsFilled} className="flex-1">
+            {t.card.calculate}
           </Button>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={handleReset}
             disabled={Object.keys(values).length === 0}
             className="px-4"
-            title="Reset values"
+            title={t.card.reset}
           >
             <RefreshCcw className="w-4 h-4" />
           </Button>
         </div>
       </div>
 
-      {/* Result Section */}
       <AnimatePresence>
         {result && (
           <motion.div
@@ -129,22 +135,23 @@ export function RatioCard({ ratio }: RatioCardProps) {
           >
             <div className="p-6">
               <div className="text-center mb-6">
-                <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-1">Result</p>
+                <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-1">
+                  {t.card.result}
+                </p>
                 <div className="text-4xl font-bold font-display text-foreground">
                   {result.formatted}
                 </div>
               </div>
-
               <div className={cn("rounded-xl border p-4 flex gap-3", getInterpretationColors(result.interpretation))}>
                 <div className="shrink-0 mt-0.5">
                   <InterpretationIcon type={result.interpretation} className="w-5 h-5" />
                 </div>
                 <div>
                   <p className="text-sm font-semibold mb-1 capitalize tracking-wide">
-                    {result.interpretation}
+                    {getInterpretationLabel(result.interpretation)}
                   </p>
                   <p className="text-sm leading-relaxed opacity-90">
-                    {result.interpretationText}
+                    {ratioT?.interpretations?.any ?? result.interpretationText}
                   </p>
                 </div>
               </div>

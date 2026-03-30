@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { Calculator, Eye, EyeOff, Lock, User } from "lucide-react";
 import { motion } from "framer-motion";
+import { useLanguage } from "@/lib/LanguageContext";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 interface LoginPageProps {
   onLogin: () => void;
 }
 
 export function LoginPage({ onLogin }: LoginPageProps) {
+  const { t } = useLanguage();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -23,7 +26,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
         localStorage.setItem("finratio_auth", "true");
         onLogin();
       } else {
-        setError("Incorrect username or password. Please try again.");
+        setError(t.login.error);
       }
       setIsLoading(false);
     }, 500);
@@ -31,6 +34,10 @@ export function LoginPage({ onLogin }: LoginPageProps) {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC] px-4">
+      <div className="absolute top-4 right-4">
+        <LanguageSwitcher />
+      </div>
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -42,14 +49,14 @@ export function LoginPage({ onLogin }: LoginPageProps) {
             <Calculator className="w-7 h-7" />
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground">FinRatio</h1>
-          <p className="text-sm text-muted-foreground mt-1">Sign in to access the calculator</p>
+          <p className="text-sm text-muted-foreground mt-1">{t.login.tagline}</p>
         </div>
 
         <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-foreground" htmlFor="username">
-                Username
+                {t.login.username}
               </label>
               <div className="relative">
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -58,9 +65,10 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Enter your username"
+                  placeholder={t.login.usernamePlaceholder}
                   autoCapitalize="none"
                   autoCorrect="off"
+                  autoComplete="username"
                   className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
                   required
                 />
@@ -69,7 +77,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
 
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-foreground" htmlFor="password">
-                Password
+                {t.login.password}
               </label>
               <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -78,7 +86,8 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Enter your password"
+                  placeholder={t.login.passwordPlaceholder}
+                  autoComplete="current-password"
                   className="w-full pl-9 pr-10 py-2.5 rounded-xl border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
                   required
                 />
@@ -107,13 +116,13 @@ export function LoginPage({ onLogin }: LoginPageProps) {
               disabled={isLoading}
               className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed mt-2"
             >
-              {isLoading ? "Signing in..." : "Sign In"}
+              {isLoading ? t.login.signingIn : t.login.signIn}
             </button>
           </form>
         </div>
 
         <p className="text-center text-xs text-muted-foreground mt-6">
-          Financial Ratio Calculator &copy; {new Date().getFullYear()}
+          {t.login.footer} &copy; {new Date().getFullYear()}
         </p>
       </motion.div>
     </div>
