@@ -387,7 +387,7 @@ export function LiquidityCalculator() {
                 >
                   <p className="font-bold text-sm text-foreground mb-0.5">{label}</p>
                   <p className="text-xs text-muted-foreground mb-2.5">{subtitle}</p>
-                  <div className="flex items-center rounded-xl overflow-hidden border border-border bg-muted/40">
+                  <div className="flex items-center rounded-xl overflow-hidden border border-border bg-muted/40 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all">
                     <button
                       onClick={() => toggleSign(inp.id)}
                       className="px-3 py-2.5 text-xs font-semibold text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors border-r border-border shrink-0 select-none"
