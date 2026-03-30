@@ -237,9 +237,6 @@ export function ValuationCalculator() {
         <h1 className="text-2xl sm:text-3xl font-extrabold font-display text-foreground tracking-tight mb-1">
           {catT?.name ?? 'Valuation'}
         </h1>
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          {catT?.description ?? "Assess how the market prices a company relative to its earnings, assets, and cash flows."}
-        </p>
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">

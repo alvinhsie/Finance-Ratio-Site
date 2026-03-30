@@ -256,9 +256,6 @@ export function LiquidityCalculator() {
         <h1 className="text-2xl sm:text-3xl font-extrabold font-display text-foreground tracking-tight mb-1">
           {catT?.name ?? 'Liquidity'}
         </h1>
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          {catT?.description ?? "Measure a company's ability to pay off its short-term debt obligations."}
-        </p>
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">

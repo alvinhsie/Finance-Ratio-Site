@@ -196,9 +196,6 @@ export function EfficiencyCalculator() {
         <h1 className="text-2xl sm:text-3xl font-extrabold font-display text-foreground tracking-tight mb-1">
           {catT?.name ?? 'Efficiency'}
         </h1>
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          {catT?.description ?? "Measure how well a company uses its assets and capital to generate revenue."}
-        </p>
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">

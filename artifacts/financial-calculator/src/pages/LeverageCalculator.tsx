@@ -165,9 +165,6 @@ export function LeverageCalculator() {
         <h1 className="text-2xl sm:text-3xl font-extrabold font-display text-foreground tracking-tight mb-1">
           {catT?.name ?? 'Leverage'}
         </h1>
-        <p className="text-sm text-muted-foreground leading-relaxed">
-          {catT?.description ?? "Measure how much debt a company uses to finance its assets and operations."}
-        </p>
       </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
