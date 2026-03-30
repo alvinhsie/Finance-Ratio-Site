@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { CATEGORIES } from '@/lib/ratios';
 import { Link, useLocation } from 'wouter';
 import { cn } from '@/lib/utils';
-import { Calculator, Menu, X, ChevronRight, Home } from 'lucide-react';
+import { Calculator, Menu, X, ChevronRight, Home, BookOpen } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/lib/LanguageContext';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
@@ -10,7 +10,7 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher';
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   React.useEffect(() => {
     setMobileMenuOpen(false);
@@ -125,6 +125,29 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   </Link>
                 );
               })}
+
+              <div className="my-2 border-t border-border/60" />
+
+              <Link
+                href="/glossary"
+                className={cn(
+                  "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group",
+                  location === "/glossary"
+                    ? "bg-primary/10 text-primary"
+                    : "text-foreground hover:bg-muted"
+                )}
+              >
+                <BookOpen className={cn(
+                  "w-5 h-5 transition-colors",
+                  location === "/glossary" ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
+                )} />
+                <span className="flex-1">{language === 'id' ? 'Glosarium' : 'Glossary'}</span>
+                {location === "/glossary" && (
+                  <motion.div layoutId="activeNav">
+                    <ChevronRight className="w-4 h-4" />
+                  </motion.div>
+                )}
+              </Link>
             </nav>
 
             <div className="p-6 border-t border-border bg-muted/20">
