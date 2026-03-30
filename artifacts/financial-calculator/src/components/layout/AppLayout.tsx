@@ -18,23 +18,22 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-[#F8FAFC]">
-      {/* Mobile Header */}
+      {/* Mobile Header — clean, no language switcher here */}
       <header className="md:hidden flex items-center justify-between p-4 bg-card border-b border-border sticky top-0 z-40 shadow-sm">
         <Link href="/" className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
             <Calculator className="w-5 h-5" />
           </div>
-          <span className="font-bold font-display text-lg tracking-tight">FinRatio <span className="text-xs font-normal italic text-muted-foreground">by Slitherstocks</span></span>
+          <span className="font-bold font-display text-lg tracking-tight">
+            FinRatio <span className="text-xs font-normal italic text-muted-foreground">by Slitherstocks</span>
+          </span>
         </Link>
-        <div className="flex items-center gap-2">
-          <LanguageSwitcher />
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 -mr-2 text-foreground"
-          >
-            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
-        </div>
+        <button
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="p-2 -mr-2 text-foreground"
+        >
+          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+        </button>
       </header>
 
       {/* Desktop Sidebar / Mobile Drawer */}
@@ -51,18 +50,33 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               !mobileMenuOpen && "hidden md:flex"
             )}
           >
-            {/* Desktop logo + language switcher */}
-            <div className="p-6 hidden md:flex items-center justify-between">
+            {/* Desktop: logo + name + language switcher below */}
+            <div className="p-6 hidden md:flex flex-col gap-3">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/20">
                   <Calculator className="w-5 h-5" />
                 </div>
-                <span className="font-bold font-display text-xl tracking-tight">FinRatio <span className="text-xs font-normal italic text-muted-foreground">by Slitherstocks</span></span>
+                <span className="font-bold font-display text-xl tracking-tight">
+                  FinRatio <span className="text-xs font-normal italic text-muted-foreground">by Slitherstocks</span>
+                </span>
               </div>
               <LanguageSwitcher />
             </div>
 
-            <div className="px-6 pb-2 pt-4 md:pt-0">
+            {/* Mobile drawer: logo + language switcher below */}
+            <div className="p-6 flex flex-col gap-3 md:hidden border-b border-border">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground flex items-center justify-center shadow-md shadow-primary/20">
+                  <Calculator className="w-4 h-4" />
+                </div>
+                <span className="font-bold font-display text-lg tracking-tight">
+                  FinRatio <span className="text-xs font-normal italic text-muted-foreground">by Slitherstocks</span>
+                </span>
+              </div>
+              <LanguageSwitcher />
+            </div>
+
+            <div className="px-6 pb-2 pt-4">
               <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
                 {t.layout.categories}
               </p>
