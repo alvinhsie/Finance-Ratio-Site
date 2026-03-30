@@ -201,56 +201,55 @@ export function LiquidityCalculator() {
         </div>
 
         {/* Results Panel */}
-        <div className="lg:col-span-3 space-y-4">
-          {results.map((result, i) => {
-            const colors = interpColors[result.interpretation];
-            const label = language === 'en' ? result.label : result.labelId;
-            const interpText = language === 'en' ? result.interpretationText : result.interpretationTextId;
-            const interpTag = interpLabel[language][result.interpretation];
-            const isCalculated = result.value !== null;
+        <motion.div
+          className="lg:col-span-3"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.15 }}
+        >
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+            {language === 'en' ? 'Output' : 'Output'}
+          </p>
+          <div className="bg-card border border-border rounded-2xl overflow-hidden">
+            {results.map((result, i) => {
+              const colors = interpColors[result.interpretation];
+              const label = language === 'en' ? result.label : result.labelId;
+              const interpText = language === 'en' ? result.interpretationText : result.interpretationTextId;
+              const interpTag = interpLabel[language][result.interpretation];
+              const isCalculated = result.value !== null;
 
-            return (
-              <motion.div
-                key={result.label}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 + i * 0.06 }}
-                className={cn(
-                  "bg-card border rounded-2xl p-5 transition-all",
-                  isCalculated ? "border-border" : "border-dashed border-border/60 opacity-60"
-                )}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-semibold text-foreground">{label}</span>
-                  {isCalculated && (
-                    <span className={cn("text-xs font-semibold px-2.5 py-1 rounded-full", colors.badge)}>
-                      {interpTag}
-                    </span>
+              return (
+                <div
+                  key={result.label}
+                  className={cn(
+                    "flex items-center gap-3 px-5 py-3.5 transition-colors",
+                    i < results.length - 1 && "border-b border-border/60",
+                    !isCalculated && "opacity-50"
                   )}
+                >
+                  <div className="flex-1 min-w-0">
+                    <span className="text-sm font-medium text-foreground">{label}</span>
+                    {isCalculated && (
+                      <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed line-clamp-1">{interpText}</p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    {isCalculated ? (
+                      <>
+                        <span className={cn("text-xs font-semibold px-2 py-0.5 rounded-full", colors.badge)}>
+                          {interpTag}
+                        </span>
+                        <span className="text-base font-bold text-foreground tabular-nums">{result.formatted}</span>
+                      </>
+                    ) : (
+                      <span className="text-sm text-muted-foreground/40">—</span>
+                    )}
+                  </div>
                 </div>
-                <div className={cn(
-                  "text-2xl font-bold tracking-tight mb-2",
-                  isCalculated ? "text-foreground" : "text-muted-foreground/40"
-                )}>
-                  {result.formatted}
-                </div>
-                {isCalculated && (
-                  <>
-                    <div className="w-full bg-muted rounded-full h-1 mb-2">
-                      <div className={cn("h-1 rounded-full transition-all", colors.bar)} style={{ width: '100%' }} />
-                    </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed">{interpText}</p>
-                  </>
-                )}
-                {!isCalculated && (
-                  <p className="text-xs text-muted-foreground/50">
-                    {language === 'en' ? 'Enter required fields to calculate' : 'Masukkan nilai yang diperlukan untuk menghitung'}
-                  </p>
-                )}
-              </motion.div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        </motion.div>
       </div>
     </div>
   );
