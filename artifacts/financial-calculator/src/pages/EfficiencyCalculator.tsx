@@ -246,11 +246,6 @@ export function EfficiencyCalculator() {
                         </button>
                       </div>
                     </div>
-                    {isCalculated && (
-                      <p className={cn('text-xs mt-0.5', valueColor[result.interpretation])}>
-                        {language === 'id' ? result.commentId : result.commentEn}
-                      </p>
-                    )}
                   </div>
 
                   <AnimatePresence initial={false}>
