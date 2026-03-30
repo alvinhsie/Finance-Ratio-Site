@@ -1,34 +1,9 @@
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Info, ChevronUp, Target, AlertCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { TrendingUp, TrendingDown, BookOpen, AlertCircle } from 'lucide-react';
 import { useLanguage } from '@/lib/LanguageContext';
-import { cn, formatNumber } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { NumericInput } from '@/components/ui/NumericInput';
-
-type InterpretationType = 'good' | 'average' | 'poor' | 'neutral';
-
-interface ResultCard {
-  label: string;
-  labelId: string;
-  value: number;
-  formatted: string;
-  interpretation: InterpretationType;
-  commentEn: string;
-  commentId: string;
-  formula: string;
-  descEn: string;
-  descId: string;
-  benchmarkEn: string;
-  benchmarkId: string;
-  optional?: boolean;
-}
-
-const valueColor: Record<InterpretationType, string> = {
-  good:    'text-emerald-600 dark:text-emerald-400',
-  average: 'text-amber-500 dark:text-amber-400',
-  poor:    'text-rose-500 dark:text-rose-400',
-  neutral: 'text-teal-600 dark:text-teal-400',
-};
 
 const INITIAL: Record<string, string> = {
   currentEps:        '',
@@ -39,10 +14,21 @@ const INITIAL: Record<string, string> = {
   currentPrice:      '',
 };
 
+function fmtNum(v: number, decimals = 2): string {
+  return v.toLocaleString('en-US', {
+    minimumFractionDigits: decimals,
+    maximumFractionDigits: decimals,
+  });
+}
+
+function fmtPct(v: number, decimals = 1): string {
+  const sign = v >= 0 ? '+' : '';
+  return `${sign}${v.toLocaleString('en-US', { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}%`;
+}
+
 export function FairValueCalculator() {
   const { language, t } = useLanguage();
   const [vals, setVals] = useState<Record<string, string>>({ ...INITIAL });
-  const [openInfo, setOpenInfo] = useState<Record<string, boolean>>({});
 
   const n = (k: string) => parseFloat(vals[k] || '0') || 0;
   const isFilled = (k: string) => vals[k].trim() !== '';
@@ -53,182 +39,42 @@ export function FairValueCalculator() {
     isFilled('sharesOutstanding') &&
     isFilled('growthRate') &&
     isFilled('inflationRate') &&
-    n('inflationRate') > 0;
+    n('inflationRate') > 0 &&
+    n('sharesOutstanding') > 0;
 
   const hasPriceInput = isFilled('currentPrice') && n('currentPrice') > 0;
 
-  // ── DCF Computation ─────────────────────────────────────────────
-  const computeResults = (): ResultCard[] => {
-    const eps = n('currentEps');
-    const equity = n('totalEquity');
-    const shares = n('sharesOutstanding');
-    const g = n('growthRate') / 100;
-    const r = n('inflationRate') / 100;
+  // ── DCF Computation ─────────────────────────────────────────────────
+  // Formula: Intrinsic Value = (Total EPS + BV@Yr10) ÷ (1+Inflation)¹⁰
+  // Total EPS = Σ EPS × (1+CAGR)ⁱ for i=1→10
+  // BV@Yr10   = current BVPS (simplified)
+  const compute = () => {
+    const eps   = n('currentEps');
+    const g     = n('growthRate') / 100;
+    const r     = n('inflationRate') / 100;
+    const bvps  = n('totalEquity') / n('sharesOutstanding');
     const price = n('currentPrice');
 
-    const bvps = shares > 0 ? equity / shares : 0;
+    // Cumulative projected EPS (undiscounted)
+    let totalEps = 0;
+    for (let i = 1; i <= 10; i++) totalEps += eps * Math.pow(1 + g, i);
 
-    // 10-year projected EPS, discounted back
-    let pvStream = 0;
-    let epsYear = eps;
-    for (let yr = 1; yr <= 10; yr++) {
-      epsYear = eps * Math.pow(1 + g, yr);
-      pvStream += epsYear / Math.pow(1 + r, yr);
-    }
-    const eps10 = epsYear;
+    const discountFactor  = Math.pow(1 + r, 10);
+    const discountedEps   = totalEps / discountFactor;
+    const intrinsic       = (totalEps + bvps) / discountFactor;
 
-    // Terminal value: perpetuity at 0% terminal growth discounted back
-    const terminalValue = r > 0 ? eps10 / r : 0;
-    const pvTerminal = terminalValue / Math.pow(1 + r, 10);
+    const upside = hasPriceInput && price > 0
+      ? ((intrinsic - price) / price) * 100
+      : null;
 
-    const intrinsic = pvStream + pvTerminal;
+    const mos = hasPriceInput && intrinsic !== 0
+      ? ((intrinsic - price) / intrinsic) * 100
+      : null;
 
-    const fmtCcy = (v: number) => {
-      const abs = Math.abs(v);
-      if (abs >= 1_000_000_000) return `${(v / 1_000_000_000).toFixed(2)}B`;
-      if (abs >= 1_000_000)     return `${(v / 1_000_000).toFixed(2)}M`;
-      return formatNumber(v, 2);
-    };
-
-    const fmtPct = (v: number) => `${v >= 0 ? '+' : ''}${formatNumber(v, 1)}%`;
-
-    const results: ResultCard[] = [];
-
-    // 1. Intrinsic Value Per Share
-    {
-      let interp: InterpretationType = 'neutral';
-      let cEn = ''; let cId = '';
-      if (intrinsic > 0) {
-        interp = 'neutral';
-        cEn = `DCF value over 10 yrs at ${formatNumber(n('inflationRate'), 1)}% discount rate.`;
-        cId = `Nilai DCF selama 10 tahun pada tingkat diskonto ${formatNumber(n('inflationRate'), 1)}%.`;
-      } else {
-        interp = 'poor';
-        cEn = 'Negative intrinsic value — check inputs.';
-        cId = 'Nilai intrinsik negatif — periksa input.';
-      }
-      results.push({
-        label:      'Intrinsic Value Per Share',
-        labelId:    'Nilai Intrinsik Per Saham',
-        value:      intrinsic,
-        formatted:  fmtCcy(intrinsic),
-        interpretation: interp,
-        commentEn: cEn,
-        commentId: cId,
-        formula:   'Σ [EPS × (1+g)ⁿ ÷ (1+r)ⁿ] + Terminal Value',
-        descEn:    'Estimated intrinsic value using EPS-based DCF. Projects EPS for 10 years using the growth rate, then discounts all future earnings back to the present using the inflation rate as the discount rate. A terminal value is added assuming zero growth after year 10.',
-        descId:    'Estimasi nilai intrinsik menggunakan DCF berbasis EPS. Memproyeksikan EPS selama 10 tahun menggunakan tingkat pertumbuhan, lalu mendiskontokan semua laba masa depan ke masa kini menggunakan tingkat inflasi sebagai tingkat diskonto. Nilai terminal ditambahkan dengan asumsi pertumbuhan nol setelah tahun ke-10.',
-        benchmarkEn: 'Compare against current stock price for a margin of safety.',
-        benchmarkId: 'Bandingkan dengan harga saham saat ini untuk mengetahui margin of safety.',
-      });
-    }
-
-    // 2. Book Value Per Share
-    {
-      let interp: InterpretationType = 'neutral';
-      let cEn = ''; let cId = '';
-      if (bvps > 0) {
-        cEn = 'Net assets attributable to each share.';
-        cId = 'Aset bersih yang dapat diatribusikan ke setiap saham.';
-        interp = 'neutral';
-      }
-      results.push({
-        label:      'Book Value Per Share (BVPS)',
-        labelId:    'Nilai Buku Per Saham (BVPS)',
-        value:      bvps,
-        formatted:  fmtCcy(bvps),
-        interpretation: interp,
-        commentEn: cEn,
-        commentId: cId,
-        formula:   'Total Equity ÷ Shares Outstanding',
-        descEn:    'The net asset value per share — total equity divided by outstanding shares. Represents the accounting value of the company on a per-share basis.',
-        descId:    'Nilai aset bersih per saham — total ekuitas dibagi jumlah saham beredar. Mencerminkan nilai akuntansi perusahaan per saham.',
-        benchmarkEn: 'A P/B ratio below 1× means the stock trades below book value.',
-        benchmarkId: 'Rasio P/B di bawah 1× berarti saham diperdagangkan di bawah nilai buku.',
-      });
-    }
-
-    // 3. Margin of Safety (optional – only if currentPrice given)
-    if (hasPriceInput && intrinsic !== 0) {
-      const mos = ((intrinsic - price) / intrinsic) * 100;
-      let interp: InterpretationType = 'neutral';
-      let cEn = ''; let cId = '';
-      if (mos >= 20) {
-        interp = 'good';
-        cEn = `~${formatNumber(mos, 1)}% discount to intrinsic value — strong margin of safety.`;
-        cId = `~${formatNumber(mos, 1)}% diskon terhadap nilai intrinsik — margin of safety kuat.`;
-      } else if (mos >= 5) {
-        interp = 'average';
-        cEn = `Modest discount of ~${formatNumber(mos, 1)}% — limited safety cushion.`;
-        cId = `Diskon moderat ~${formatNumber(mos, 1)}% — bantalan keamanan terbatas.`;
-      } else if (mos >= -5) {
-        interp = 'average';
-        cEn = 'Trading near intrinsic value — fairly valued.';
-        cId = 'Diperdagangkan mendekati nilai intrinsik — nilai wajar.';
-      } else {
-        interp = 'poor';
-        cEn = `Trading ~${formatNumber(Math.abs(mos), 1)}% above intrinsic value.`;
-        cId = `Diperdagangkan ~${formatNumber(Math.abs(mos), 1)}% di atas nilai intrinsik.`;
-      }
-      results.push({
-        label:     'Margin of Safety',
-        labelId:   'Margin of Safety',
-        value:     mos,
-        formatted: fmtPct(mos),
-        interpretation: interp,
-        commentEn: cEn,
-        commentId: cId,
-        formula:   '(Intrinsic Value − Current Price) ÷ Intrinsic Value × 100',
-        descEn:    'The percentage discount between the estimated intrinsic value and the current stock price. A positive margin of safety means the stock trades below its estimated intrinsic value, providing a buffer against estimation errors.',
-        descId:    'Persentase diskon antara nilai intrinsik yang diestimasi dan harga saham saat ini. Margin of safety yang positif berarti saham diperdagangkan di bawah nilai intrinsiknya, memberikan penyangga terhadap kesalahan estimasi.',
-        benchmarkEn: 'Excellent: ≥ 20%. Modest: 5–20%. Fairly valued: ±5%. Overvalued: < −5%.',
-        benchmarkId: 'Sangat baik: ≥ 20%. Moderat: 5–20%. Wajar: ±5%. Overvalued: < −5%.',
-        optional: true,
-      });
-    }
-
-    // 4. Verdict (optional – only if currentPrice given)
-    if (hasPriceInput && intrinsic !== 0) {
-      const ratio = price / intrinsic;
-      let interp: InterpretationType = 'neutral';
-      let label = ''; let labelId = ''; let cEn = ''; let cId = '';
-      if (ratio < 0.8) {
-        interp = 'good'; label = 'Undervalued'; labelId = 'Undervalued';
-        cEn = `Stock price is ${formatNumber((1 - ratio) * 100, 1)}% below intrinsic value.`;
-        cId = `Harga saham ${formatNumber((1 - ratio) * 100, 1)}% di bawah nilai intrinsik.`;
-      } else if (ratio <= 1.05) {
-        interp = 'average'; label = 'Fairly Valued'; labelId = 'Nilai Wajar';
-        cEn = 'Stock is trading close to its estimated intrinsic value.';
-        cId = 'Saham diperdagangkan mendekati nilai intrinsik yang diestimasi.';
-      } else {
-        interp = 'poor'; label = 'Overvalued'; labelId = 'Overvalued';
-        cEn = `Stock price is ${formatNumber((ratio - 1) * 100, 1)}% above intrinsic value.`;
-        cId = `Harga saham ${formatNumber((ratio - 1) * 100, 1)}% di atas nilai intrinsik.`;
-      }
-      results.push({
-        label:     label,
-        labelId:   labelId,
-        value:     ratio,
-        formatted: language === 'en' ? label : labelId,
-        interpretation: interp,
-        commentEn: cEn,
-        commentId: cId,
-        formula:   'Current Price ÷ Intrinsic Value',
-        descEn:    'A summary verdict comparing the current stock price against the DCF-derived intrinsic value. Undervalued means the market price is below estimated intrinsic value, Fairly Valued means it trades near intrinsic value, and Overvalued means the price exceeds intrinsic value.',
-        descId:    'Kesimpulan yang membandingkan harga saham saat ini dengan nilai intrinsik dari DCF. Undervalued berarti harga pasar di bawah nilai intrinsik, Nilai Wajar berarti diperdagangkan mendekati nilai intrinsik, dan Overvalued berarti harga melebihi nilai intrinsik.',
-        benchmarkEn: 'Based on price-to-intrinsic-value ratio: < 0.80× Undervalued, 0.80–1.05× Fair, > 1.05× Overvalued.',
-        benchmarkId: 'Berdasarkan rasio harga terhadap nilai intrinsik: < 0,80× Undervalued, 0,80–1,05× Wajar, > 1,05× Overvalued.',
-        optional: true,
-      });
-    }
-
-    return results;
+    return { bvps, totalEps, discountedEps, intrinsic, upside, mos };
   };
 
-  const results = requiredFilled ? computeResults() : [];
-
-  const toggleInfo = (key: string) =>
-    setOpenInfo(prev => ({ ...prev, [key]: !prev[key] }));
+  const calc = requiredFilled ? compute() : null;
 
   const toggleSign = (id: string) => {
     setVals(prev => {
@@ -243,13 +89,19 @@ export function FairValueCalculator() {
   const catT = t.categories['fair-value' as keyof typeof t.categories] as any;
 
   const inputs = [
-    { id: 'currentEps',        en: 'Current EPS (Annualized)',  id_: 'EPS Saat Ini (Tahunan)',  subtitleEn: 'Earnings per share for the trailing 12 months',   subtitleId: 'Laba per saham untuk 12 bulan terakhir', required: true  },
-    { id: 'totalEquity',       en: 'Total Equity',              id_: 'Total Ekuitas',           subtitleEn: "Total shareholders' equity from the balance sheet", subtitleId: 'Total ekuitas pemegang saham dari neraca',  required: true  },
-    { id: 'sharesOutstanding', en: 'Shares Outstanding',        id_: 'Jumlah Saham Beredar',    subtitleEn: 'Total issued shares currently held by investors',   subtitleId: 'Total saham yang beredar saat ini',        required: true  },
-    { id: 'growthRate',        en: 'EPS Growth Rate — CAGR (%)',id_: 'Pertumbuhan EPS — CAGR (%)', subtitleEn: 'Expected annual EPS growth rate over 10 years',  subtitleId: 'Proyeksi pertumbuhan EPS tahunan selama 10 tahun', required: true },
-    { id: 'inflationRate',     en: 'Discount Rate / Inflation (%)', id_: 'Tingkat Diskonto / Inflasi (%)', subtitleEn: 'Required return rate used to discount future earnings', subtitleId: 'Tingkat imbal hasil yang dibutuhkan untuk mendiskontokan laba masa depan', required: true },
-    { id: 'currentPrice',      en: 'Current Stock Price',       id_: 'Harga Saham Saat Ini',    subtitleEn: 'Optional — enables Margin of Safety and Verdict',  subtitleId: 'Opsional — mengaktifkan Margin of Safety dan Verdict', required: false },
+    { id: 'currentEps',        en: 'Current EPS (Annualized)',       id_: 'EPS Saat Ini (Tahunan)',           subtitleEn: 'Earnings per share for the trailing 12 months',              subtitleId: 'Laba per saham untuk 12 bulan terakhir' },
+    { id: 'totalEquity',       en: 'Total Equity',                   id_: 'Total Ekuitas',                   subtitleEn: "Total shareholders' equity from the balance sheet",           subtitleId: 'Total ekuitas pemegang saham dari neraca' },
+    { id: 'sharesOutstanding', en: 'Shares Outstanding',             id_: 'Jumlah Saham Beredar',             subtitleEn: 'Total issued shares currently held by investors',             subtitleId: 'Total saham yang beredar saat ini' },
+    { id: 'growthRate',        en: 'EPS Growth Rate — CAGR (%)',     id_: 'Pertumbuhan EPS — CAGR (%)',       subtitleEn: 'Expected annual EPS growth rate over 10 years',               subtitleId: 'Proyeksi pertumbuhan EPS tahunan selama 10 tahun' },
+    { id: 'inflationRate',     en: 'Discount Rate / Inflation (%)',  id_: 'Tingkat Diskonto / Inflasi (%)',   subtitleEn: 'Required return rate used to discount future earnings',       subtitleId: 'Tingkat imbal hasil yang dibutuhkan untuk mendiskontokan laba masa depan' },
+    { id: 'currentPrice',      en: 'Current Stock Price',            id_: 'Harga Saham Saat Ini',             subtitleEn: 'Optional — enables Upside/Downside and Margin of Safety',   subtitleId: 'Opsional — mengaktifkan Upside/Downside dan Margin of Safety' },
   ];
+
+  // Color helpers
+  const signColor = (v: number | null) => {
+    if (v === null) return '';
+    return v >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-500 dark:text-rose-400';
+  };
 
   return (
     <div className="flex-1 w-full max-w-5xl mx-auto p-4 sm:p-6">
@@ -258,7 +110,9 @@ export function FairValueCalculator() {
           {catT?.name ?? 'Fair Value'}
         </h1>
         <p className="text-sm text-muted-foreground leading-relaxed">
-          {catT?.description ?? 'Estimate the intrinsic value of a stock using fundamental valuation models.'}
+          {language === 'en'
+            ? 'EPS-based Discounted Cash Flow — estimates intrinsic value from projected earnings.'
+            : 'DCF Berbasis EPS — estimasi nilai intrinsik dari proyeksi laba.'}
         </p>
       </motion.div>
 
@@ -274,7 +128,7 @@ export function FairValueCalculator() {
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-card border border-border rounded-2xl p-6 flex flex-col items-center justify-center gap-3 text-center min-h-[180px]"
+              className="bg-card border border-border rounded-2xl p-6 flex flex-col items-center justify-center gap-3 text-center min-h-[200px]"
             >
               <AlertCircle className="w-8 h-8 text-muted-foreground/30" />
               <div>
@@ -283,87 +137,145 @@ export function FairValueCalculator() {
                 </p>
                 <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
                   {language === 'en'
-                    ? 'Results will appear once EPS, Equity, Shares, Growth Rate, and Discount Rate are entered.'
-                    : 'Hasil akan muncul setelah EPS, Ekuitas, Saham, Pertumbuhan, dan Tingkat Diskonto diisi.'}
+                    ? 'Results appear once EPS, Equity, Shares, Growth Rate, and Discount Rate are entered.'
+                    : 'Hasil muncul setelah EPS, Ekuitas, Saham, Pertumbuhan, dan Tingkat Diskonto diisi.'}
                 </p>
               </div>
             </motion.div>
-          ) : (
-            <div className="space-y-2">
-              {results.map((result, i) => {
-                const label = language === 'en' ? result.label : result.labelId;
-                const color = valueColor[result.interpretation];
-                const infoKey = result.label;
-                const isInfoOpen = !!openInfo[infoKey];
+          ) : calc && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex flex-col gap-3"
+            >
+              {/* ── Main results card ── */}
+              <div className="bg-card border border-border rounded-2xl overflow-hidden">
 
-                return (
-                  <motion.div
-                    key={result.label}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.05 }}
-                    className="bg-card border border-border rounded-2xl overflow-hidden"
-                  >
-                    <div className="px-4 py-3.5">
-                      <div className="flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-sm text-foreground leading-tight">{label}</span>
-                          {result.optional && (
-                            <span className="text-[10px] font-medium px-1.5 py-0.5 rounded-md bg-teal-50 dark:bg-teal-950/40 text-teal-600 dark:text-teal-400 border border-teal-200 dark:border-teal-800">
-                              {language === 'en' ? 'optional' : 'opsional'}
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-2 shrink-0">
-                          <span className={cn('text-base font-bold tabular-nums', color)}>
-                            {result.formatted}
-                          </span>
-                          <button
-                            onClick={() => toggleInfo(infoKey)}
-                            className={cn(
-                              'transition-colors rounded-full p-0.5',
-                              isInfoOpen ? 'text-primary' : 'text-muted-foreground/50 hover:text-muted-foreground'
-                            )}
-                          >
-                            {isInfoOpen ? <ChevronUp className="w-4 h-4" /> : <Info className="w-4 h-4" />}
-                          </button>
-                        </div>
-                      </div>
-                      <p className={cn('text-xs mt-0.5', color)}>
-                        {language === 'id' ? result.commentId : result.commentEn}
+                {/* Row: Book Value / Share */}
+                <div className="flex items-center justify-between px-4 py-3.5">
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">
+                      {language === 'en' ? 'Book Value / Share' : 'Nilai Buku / Saham'}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {language === 'en' ? 'Total Equity ÷ Shares Outstanding' : 'Total Ekuitas ÷ Saham Beredar'}
+                    </p>
+                  </div>
+                  <span className="text-sm font-bold tabular-nums text-foreground shrink-0 ml-4">
+                    {fmtNum(calc.bvps)}
+                  </span>
+                </div>
+
+                <div className="border-t border-border/60 mx-4" />
+
+                {/* Row: Total EPS (10 Years) */}
+                <div className="flex items-center justify-between px-4 py-3.5">
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">
+                      {language === 'en' ? 'Total EPS (10 Years)' : 'Total EPS (10 Tahun)'}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {language === 'en' ? 'Cumulative earnings per share over 10 years' : 'Akumulasi laba per saham selama 10 tahun'}
+                    </p>
+                  </div>
+                  <span className="text-sm font-bold tabular-nums text-foreground shrink-0 ml-4">
+                    {fmtNum(calc.totalEps)}
+                  </span>
+                </div>
+
+                <div className="border-t border-border/60 mx-4" />
+
+                {/* Row: Discounted Total EPS */}
+                <div className="flex items-center justify-between px-4 py-3.5">
+                  <div>
+                    <p className="text-sm font-semibold text-foreground">
+                      {language === 'en' ? 'Discounted Total EPS' : 'Total EPS Terdiskonto'}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {language === 'en'
+                        ? `Total EPS discounted by ${fmtNum(n('inflationRate'), 1)}% inflation`
+                        : `Total EPS didiskontokan oleh inflasi ${fmtNum(n('inflationRate'), 1)}%`}
+                    </p>
+                  </div>
+                  <span className="text-sm font-bold tabular-nums text-foreground shrink-0 ml-4">
+                    {fmtNum(calc.discountedEps)}
+                  </span>
+                </div>
+
+                <div className="border-t border-border/60 mx-4" />
+
+                {/* Row: Intrinsic Value — highlighted */}
+                <div className="flex items-center justify-between px-4 py-4 bg-primary/5 dark:bg-primary/10">
+                  <div>
+                    <p className="text-sm font-bold text-foreground">
+                      {language === 'en' ? 'Intrinsic Value' : 'Nilai Intrinsik'}
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {language === 'en' ? 'Inflation-adjusted fair value per share' : 'Nilai wajar per saham yang disesuaikan inflasi'}
+                    </p>
+                  </div>
+                  <span className="text-lg font-extrabold tabular-nums text-primary shrink-0 ml-4">
+                    {fmtNum(calc.intrinsic)}
+                  </span>
+                </div>
+
+                {/* Row: Upside / Downside — only if price given */}
+                {calc.upside !== null && (
+                  <>
+                    <div className="border-t border-border/60 mx-4" />
+                    <div className="flex items-center justify-between px-4 py-3.5">
+                      <p className="text-sm font-semibold text-foreground">
+                        {language === 'en' ? 'Upside / Downside' : 'Potensi Naik / Turun'}
                       </p>
+                      <div className={cn('flex items-center gap-1 shrink-0 ml-4', signColor(calc.upside))}>
+                        {calc.upside >= 0
+                          ? <TrendingUp className="w-4 h-4" />
+                          : <TrendingDown className="w-4 h-4" />}
+                        <span className="text-sm font-bold tabular-nums">
+                          {fmtPct(calc.upside)}
+                        </span>
+                      </div>
                     </div>
+                  </>
+                )}
 
-                    <AnimatePresence initial={false}>
-                      {isInfoOpen && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 'auto', opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.2 }}
-                          className="overflow-hidden"
-                        >
-                          <div className="px-4 pb-4 pt-1 space-y-3 border-t border-border/50">
-                            <span className="inline-flex text-xs font-mono px-2.5 py-1 rounded-lg bg-muted text-muted-foreground border border-border">
-                              {result.formula}
-                            </span>
-                            <p className="text-sm text-foreground leading-relaxed">
-                              {language === 'en' ? result.descEn : result.descId}
-                            </p>
-                            <div className="flex items-start gap-2 bg-sky-50 dark:bg-sky-950/30 border border-sky-200 dark:border-sky-800 rounded-xl px-3.5 py-2.5">
-                              <Target className="w-3.5 h-3.5 text-sky-500 mt-0.5 shrink-0" />
-                              <p className="text-xs text-sky-700 dark:text-sky-400 font-medium leading-relaxed">
-                                {language === 'en' ? result.benchmarkEn : result.benchmarkId}
-                              </p>
-                            </div>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </motion.div>
-                );
-              })}
-            </div>
+                {/* Row: Margin of Safety — only if price given */}
+                {calc.mos !== null && (
+                  <>
+                    <div className="border-t border-border/60 mx-4" />
+                    <div className="flex items-center justify-between px-4 py-3.5">
+                      <p className="text-sm font-semibold text-foreground">
+                        {language === 'en' ? 'Margin of Safety' : 'Margin of Safety'}
+                      </p>
+                      <span className={cn('text-sm font-bold tabular-nums shrink-0 ml-4', signColor(calc.mos))}>
+                        {fmtPct(calc.mos)}
+                      </span>
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* ── How it works card ── */}
+              <div className="bg-muted/50 border border-border rounded-2xl px-4 py-3.5">
+                <div className="flex items-center gap-2 mb-2.5">
+                  <BookOpen className="w-3.5 h-3.5 text-muted-foreground" />
+                  <p className="text-xs font-bold text-foreground">
+                    {language === 'en' ? 'How it works' : 'Cara kerjanya'}
+                  </p>
+                </div>
+                <div className="space-y-1">
+                  {[
+                    'Book Value/Share = Total Equity ÷ Shares',
+                    'Total EPS = Σ EPS × (1+CAGR)ⁱ  for i=1→10',
+                    'Intrinsic Value = (Total EPS + BV/Share) ÷ (1+Inflation)¹⁰',
+                    ...(calc.upside !== null ? ['Upside/Downside = (Intrinsic − Price) ÷ Price × 100'] : []),
+                    ...(calc.mos !== null    ? ['Margin of Safety = (Intrinsic − Price) ÷ Intrinsic × 100'] : []),
+                  ].map(line => (
+                    <p key={line} className="text-xs text-muted-foreground font-mono leading-relaxed">{line}</p>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
           )}
         </div>
 
@@ -383,7 +295,7 @@ export function FairValueCalculator() {
 
           <div className="space-y-3">
             {inputs.map((inp, i) => {
-              const label = language === 'en' ? inp.en : inp.id_;
+              const label    = language === 'en' ? inp.en   : inp.id_;
               const subtitle = language === 'en' ? inp.subtitleEn : inp.subtitleId;
               return (
                 <motion.div
