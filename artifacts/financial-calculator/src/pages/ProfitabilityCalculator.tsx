@@ -32,7 +32,7 @@ interface OutputResult {
 
 const valueColor: Record<InterpretationType, string> = {
   good:    'text-green-600',
-  average: 'text-yellow-600',
+  average: 'text-yellow-400',
   poor:    'text-red-500',
   neutral: 'text-blue-600',
 };
