@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Info } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Info, X } from 'lucide-react';
 import { useLanguage } from '@/lib/LanguageContext';
 import { cn, formatNumber } from '@/lib/utils';
 import { NumericInput } from '@/components/ui/NumericInput';
@@ -44,6 +44,8 @@ const EMPTY: Record<string, string> = {
 export function LiquidityCalculator() {
   const { language, t } = useLanguage();
   const [vals, setVals] = useState<Record<string, string>>({ ...EMPTY });
+  const [openInfo, setOpenInfo] = useState<Record<string, boolean>>({});
+  const toggleInfo = (key: string) => setOpenInfo(prev => ({ ...prev, [key]: !prev[key] }));
 
   const n = (k: string) => parseFloat(vals[k]) || 0;
   const has = (k: string) => vals[k] !== '' && !isNaN(parseFloat(vals[k]));
@@ -169,8 +171,11 @@ export function LiquidityCalculator() {
           <div className="space-y-2">
             {results.map((result, i) => {
               const label = language === 'en' ? result.label : result.labelId;
+              const interpText = language === 'en' ? result.interpretationText : result.interpretationTextId;
               const isCalculated = result.value !== null;
               const color = isCalculated ? valueColor[result.interpretation] : 'text-muted-foreground/40';
+              const infoKey = result.label;
+              const isInfoOpen = !!openInfo[infoKey];
               return (
                 <motion.div
                   key={result.label}
@@ -185,12 +190,36 @@ export function LiquidityCalculator() {
                       <span className={cn('text-base font-bold tabular-nums', color)}>
                         {result.formatted}
                       </span>
-                      <button className="text-muted-foreground/50 hover:text-muted-foreground transition-colors">
-                        <Info className="w-4 h-4" />
+                      <button
+                        onClick={() => toggleInfo(infoKey)}
+                        className={cn(
+                          'transition-colors rounded-full p-0.5',
+                          isInfoOpen
+                            ? 'text-primary'
+                            : 'text-muted-foreground/50 hover:text-muted-foreground'
+                        )}
+                      >
+                        {isInfoOpen ? <X className="w-4 h-4" /> : <Info className="w-4 h-4" />}
                       </button>
                     </div>
                   </div>
                   <p className="text-xs text-muted-foreground mt-0.5">{result.formula}</p>
+                  <AnimatePresence initial={false}>
+                    {isInfoOpen && (
+                      <motion.div
+                        key="info"
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="overflow-hidden"
+                      >
+                        <p className={cn('text-xs mt-2 pt-2 border-t border-border/60 leading-relaxed', isCalculated ? color : 'text-muted-foreground')}>
+                          {interpText}
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </motion.div>
               );
             })}
