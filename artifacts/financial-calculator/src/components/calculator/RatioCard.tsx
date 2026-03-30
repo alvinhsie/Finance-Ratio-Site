@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { RatioDef, RatioResult } from '@/lib/ratios';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { NumericInput } from '@/components/ui/NumericInput';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calculator, RefreshCcw, AlertCircle, CheckCircle2, MinusCircle, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -19,10 +19,8 @@ export function RatioCard({ ratio }: RatioCardProps) {
   const ratioT = t.ratios[ratio.id as keyof typeof t.ratios] as any;
 
   const handleInputChange = (id: string, val: string) => {
-    if (val === '' || /^-?\d*\.?\d*$/.test(val)) {
-      setValues(prev => ({ ...prev, [id]: val }));
-      if (result) setResult(null);
-    }
+    setValues(prev => ({ ...prev, [id]: val }));
+    if (result) setResult(null);
   };
 
   const handleCalculate = () => {
@@ -97,12 +95,11 @@ export function RatioCard({ ratio }: RatioCardProps) {
                 <label htmlFor={`${ratio.id}-${input.id}`} className="block text-sm font-semibold text-foreground mb-1.5">
                   {inputLabel}
                 </label>
-                <Input
+                <NumericInput
                   id={`${ratio.id}-${input.id}`}
                   placeholder={input.placeholder}
                   value={values[input.id] || ''}
-                  onChange={(e) => handleInputChange(input.id, e.target.value)}
-                  autoComplete="off"
+                  onChange={(raw) => handleInputChange(input.id, raw)}
                 />
               </div>
             );

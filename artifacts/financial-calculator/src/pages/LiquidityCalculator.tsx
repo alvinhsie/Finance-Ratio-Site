@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Droplets } from 'lucide-react';
 import { useLanguage } from '@/lib/LanguageContext';
-import { cn } from '@/lib/utils';
-import { formatNumber } from '@/lib/utils';
+import { cn, formatNumber } from '@/lib/utils';
+import { NumericInput } from '@/components/ui/NumericInput';
 
 type InterpretationType = 'good' | 'average' | 'poor' | 'neutral';
 
@@ -185,12 +185,9 @@ export function LiquidityCalculator() {
                 <label className="block text-xs font-medium text-muted-foreground mb-1">
                   {language === 'en' ? inp.en : inp.id_}
                 </label>
-                <input
-                  type="number"
-                  min="0"
+                <NumericInput
                   value={vals[inp.id]}
-                  onChange={e => setVals(prev => ({ ...prev, [inp.id]: e.target.value }))}
-                  placeholder="0"
+                  onChange={raw => setVals(prev => ({ ...prev, [inp.id]: raw }))}
                   className="w-full rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
                 />
               </div>
