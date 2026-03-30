@@ -80,8 +80,8 @@ export function RatioCard({ ratio }: RatioCardProps) {
       className="bg-card rounded-2xl border border-border/50 shadow-sm overflow-hidden flex flex-col transition-all hover:shadow-md"
     >
       <div className="p-6 border-b border-border/40 bg-muted/20">
-        <h3 className="text-xl font-bold text-foreground font-display">{name}</h3>
-        <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{description}</p>
+        <h3 className="text-base font-bold text-foreground font-display">{name}</h3>
+        <p className="text-xs text-muted-foreground mt-1.5 leading-relaxed">{description}</p>
         <div className="mt-4 inline-flex items-center gap-2 bg-background border border-border/50 px-3 py-1.5 rounded-lg text-xs font-mono text-muted-foreground">
           <Calculator className="w-3.5 h-3.5" />
           <span>{formulaDisplay}</span>
@@ -138,7 +138,7 @@ export function RatioCard({ ratio }: RatioCardProps) {
                 <p className="text-sm font-medium text-muted-foreground uppercase tracking-wider mb-1">
                   {t.card.result}
                 </p>
-                <div className="text-4xl font-bold font-display text-foreground">
+                <div className="text-3xl font-bold font-display text-foreground">
                   {result.formatted}
                 </div>
               </div>

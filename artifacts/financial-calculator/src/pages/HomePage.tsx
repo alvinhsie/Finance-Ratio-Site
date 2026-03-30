@@ -29,7 +29,7 @@ export function HomePage() {
           <BarChart2 className="w-3.5 h-3.5" />
           {t.home.badge(totalRatios, CATEGORIES.length)}
         </div>
-        <h1 className="text-3xl md:text-4xl font-bold text-foreground tracking-tight leading-tight mb-3">
+        <h1 className="text-2xl md:text-3xl font-bold text-foreground tracking-tight leading-tight mb-3">
           {titleLines.map((line, i) => (
             <span key={i}>
               {line}
@@ -37,7 +37,7 @@ export function HomePage() {
             </span>
           ))}
         </h1>
-        <p className="text-muted-foreground text-base md:text-lg max-w-xl leading-relaxed">
+        <p className="text-muted-foreground text-sm md:text-base max-w-xl leading-relaxed">
           {t.home.subtitle}
         </p>
       </motion.div>

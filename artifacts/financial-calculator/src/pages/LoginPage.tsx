@@ -48,8 +48,8 @@ export function LoginPage({ onLogin }: LoginPageProps) {
           <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-primary/80 text-primary-foreground flex items-center justify-center shadow-lg shadow-primary/20 mb-4">
             <Calculator className="w-7 h-7" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">FinRatio</h1>
-          <p className="text-sm text-muted-foreground mt-1">{t.login.tagline}</p>
+          <h1 className="text-xl font-bold tracking-tight text-foreground">FinRatio</h1>
+          <p className="text-xs text-muted-foreground mt-1">{t.login.tagline}</p>
         </div>
 
         <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
