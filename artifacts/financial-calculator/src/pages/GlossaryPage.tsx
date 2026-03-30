@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BookOpen, ChevronDown, ArrowUp, ArrowDown, Target, GitCompare, Search } from 'lucide-react';
+import { BookOpen, ChevronDown, ArrowUp, ArrowDown, Target, Search } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useLanguage } from '@/lib/LanguageContext';
 
-type Direction = 'higher' | 'lower' | 'range' | 'comparison' | 'context';
+type Direction = 'higher' | 'lower' | 'range' | 'context';
 
 interface GlossaryItem {
   name: string;
@@ -29,7 +29,6 @@ const directionConfig: Record<Direction, { labelEn: string; labelId: string; cla
   higher:     { labelEn: 'Higher is Better', labelId: 'Lebih Tinggi Lebih Baik', className: 'bg-green-100 text-green-700',  icon: <ArrowUp className="w-3 h-3" /> },
   lower:      { labelEn: 'Lower is Better',  labelId: 'Lebih Rendah Lebih Baik', className: 'bg-blue-100 text-blue-700',   icon: <ArrowDown className="w-3 h-3" /> },
   range:      { labelEn: 'In Range is Better', labelId: 'Dalam Rentang Terbaik', className: 'bg-yellow-100 text-yellow-700', icon: <Target className="w-3 h-3" /> },
-  comparison: { labelEn: 'Compare to Price', labelId: 'Bandingkan ke Harga',    className: 'bg-purple-100 text-purple-700', icon: <GitCompare className="w-3 h-3" /> },
   context:    { labelEn: 'Context Dependent', labelId: 'Tergantung Konteks',    className: 'bg-gray-100 text-gray-600',    icon: <Target className="w-3 h-3" /> },
 };
 
@@ -291,64 +290,6 @@ const GLOSSARY: GlossaryCategory[] = [
         benchmark: 'Attractive income: 2% – 6%. > 6% may signal a dividend cut risk. 0%: growth company.',
         benchmarkId: 'Pendapatan menarik: 2% – 6%. > 6% dapat menandakan risiko pemotongan dividen. 0%: perusahaan pertumbuhan.',
         direction: 'range',
-      },
-    ],
-  },
-  {
-    id: 'fair-value',
-    name: 'Fair Value',
-    nameId: 'Nilai Wajar',
-    color: 'text-teal-600 border-teal-200 bg-teal-50',
-    items: [
-      {
-        name: 'Graham Number',
-        nameId: 'Angka Graham',
-        formula: '√(22.5 × EPS × Book Value Per Share)',
-        description: "Benjamin Graham's upper-bound fair value. A stock trading below this level is considered conservatively valued.",
-        descriptionId: 'Nilai wajar batas atas versi Benjamin Graham. Saham yang diperdagangkan di bawah level ini dianggap bernilai konservatif.',
-        benchmark: 'Stock price < Graham Number: potentially undervalued. Stock price > Graham Number: potentially overvalued.',
-        benchmarkId: 'Harga saham < Angka Graham: kemungkinan undervalue. Harga saham > Angka Graham: kemungkinan overvalue.',
-        direction: 'comparison',
-      },
-      {
-        name: 'Graham Intrinsic Value',
-        nameId: 'Nilai Intrinsik Graham',
-        formula: 'EPS × (8.5 + 2g) × (4.4 ÷ AAA Bond Yield)',
-        description: "Graham's revised formula incorporating expected growth and current bond yields for a more dynamic valuation.",
-        descriptionId: 'Formula revisi Graham yang menggabungkan pertumbuhan yang diharapkan dan yield obligasi saat ini untuk valuasi yang lebih dinamis.',
-        benchmark: 'Margin of safety if stock trades ≥ 15% below intrinsic value. Premium if > 15% above.',
-        benchmarkId: 'Margin of safety jika saham diperdagangkan ≥ 15% di bawah nilai intrinsik. Premium jika > 15% di atas.',
-        direction: 'comparison',
-      },
-      {
-        name: 'Peter Lynch Fair Value',
-        nameId: 'Nilai Wajar Peter Lynch',
-        formula: 'EPS × Earnings Growth Rate (%)',
-        description: "Lynch's rule: a fairly valued stock has a P/E equal to its growth rate (PEG = 1). Simple and intuitive.",
-        descriptionId: 'Aturan Lynch: saham yang dinilai wajar memiliki P/E setara tingkat pertumbuhannya (PEG = 1). Sederhana dan intuitif.',
-        benchmark: 'PEG < 1 (price < fair value): attractive. PEG > 1 (price > fair value): you\'re paying a growth premium.',
-        benchmarkId: 'PEG < 1 (harga < nilai wajar): menarik. PEG > 1 (harga > nilai wajar): Anda membayar premi pertumbuhan.',
-        direction: 'comparison',
-      },
-      {
-        name: 'Dividend Discount Model (DDM)',
-        nameId: 'Model Diskon Dividen (DDM)',
-        formula: 'D₁ ÷ (Required Return − Dividend Growth Rate)',
-        description: "Values a stock as the present value of all future dividends. Best for stable, dividend-paying companies.",
-        descriptionId: 'Menilai saham sebagai nilai sekarang dari semua dividen masa depan. Terbaik untuk perusahaan stabil yang membayar dividen.',
-        benchmark: 'Stock price below DDM value: undervalued by the model. Above: overvalued. Highly sensitive to growth and rate assumptions.',
-        benchmarkId: 'Harga saham di bawah nilai DDM: undervalue menurut model. Di atas: overvalue. Sangat sensitif terhadap asumsi pertumbuhan dan tingkat.',
-        direction: 'comparison',
-      },
-      {
-        name: 'Simple DCF Fair Value',
-        nameId: 'Nilai Wajar DCF Sederhana',
-        formula: 'Σ [FCF/Share × (1+g)ᵗ ÷ (1+r)ᵗ] + Terminal Value',
-        description: "Discounted Cash Flow valuation — projects future free cash flows and discounts them to today's value.",
-        descriptionId: 'Valuasi Arus Kas Terdiskon — memproyeksikan arus kas bebas masa depan dan mendiskontokannya ke nilai saat ini.',
-        benchmark: 'Stock price ≥ 20% below DCF value: strong buy zone. Price above DCF: overvalued. Sensitive to rate and growth assumptions.',
-        benchmarkId: 'Harga saham ≥ 20% di bawah nilai DCF: zona beli kuat. Harga di atas DCF: overvalue. Sensitif terhadap asumsi tingkat dan pertumbuhan.',
-        direction: 'comparison',
       },
     ],
   },
