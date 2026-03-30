@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Droplets } from 'lucide-react';
 import { useLanguage } from '@/lib/LanguageContext';
 import { cn, formatNumber } from '@/lib/utils';
+import { categoryColors } from '@/lib/categoryColors';
 import { NumericInput } from '@/components/ui/NumericInput';
 
 type InterpretationType = 'good' | 'average' | 'poor' | 'neutral';
@@ -152,7 +153,7 @@ export function LiquidityCalculator() {
         animate={{ opacity: 1, y: 0 }}
         className="mb-8"
       >
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 text-primary mb-4">
+        <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl ${categoryColors.liquidity.bg} ${categoryColors.liquidity.text} mb-4`}>
           <Droplets className="w-6 h-6" />
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold font-display text-foreground tracking-tight mb-2">

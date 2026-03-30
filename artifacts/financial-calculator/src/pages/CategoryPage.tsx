@@ -4,6 +4,7 @@ import { CATEGORIES } from '@/lib/ratios';
 import { RatioCard } from '@/components/calculator/RatioCard';
 import { motion } from 'framer-motion';
 import { useLanguage } from '@/lib/LanguageContext';
+import { categoryColors } from '@/lib/categoryColors';
 
 export function CategoryPage() {
   const { t } = useLanguage();
@@ -18,6 +19,7 @@ export function CategoryPage() {
 
   const Icon = category.icon;
   const catT = t.categories[category.id as keyof typeof t.categories] ?? { name: category.name, description: category.description };
+  const colors = categoryColors[category.id] ?? { bg: "bg-primary/10", text: "text-primary", border: "" };
 
   return (
     <div className="flex-1 w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">
@@ -26,7 +28,7 @@ export function CategoryPage() {
         animate={{ opacity: 1, y: 0 }}
         className="mb-8 lg:mb-12"
       >
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary/10 text-primary mb-4">
+        <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl ${colors.bg} ${colors.text} mb-4`}>
           <Icon className="w-6 h-6" />
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold font-display text-foreground tracking-tight mb-3">
