@@ -99,7 +99,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               {CATEGORIES.map((category) => {
                 const Icon = category.icon;
                 const isActive = location.includes(`/category/${category.id}`);
-                const catT = t.categories[category.id as keyof typeof t.categories];
+                const catT = t.categories[category.id as keyof typeof t.categories] ?? { name: category.name, description: "" };
 
                 return (
                   <Link

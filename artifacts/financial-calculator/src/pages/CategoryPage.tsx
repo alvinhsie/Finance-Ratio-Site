@@ -17,7 +17,7 @@ export function CategoryPage() {
   }
 
   const Icon = category.icon;
-  const catT = t.categories[category.id as keyof typeof t.categories];
+  const catT = t.categories[category.id as keyof typeof t.categories] ?? { name: category.name, description: category.description };
 
   return (
     <div className="flex-1 w-full max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">

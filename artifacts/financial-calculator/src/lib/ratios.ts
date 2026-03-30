@@ -4,7 +4,8 @@ import {
   TrendingUp, 
   Scale, 
   Activity, 
-  LineChart 
+  LineChart,
+  Target
 } from "lucide-react";
 
 export type InterpretationType = 'good' | 'average' | 'poor' | 'neutral';
@@ -455,6 +456,153 @@ export const CATEGORIES: CategoryDef[] = [
             interpretation: val > 6 ? 'neutral' : val > 2 ? 'good' : 'average', 
             interpretationText: "2-6% is typical for mature companies. Yields > 6% might signal risk that the dividend will be cut." 
           };
+        }
+      }
+    ]
+  },
+  {
+    id: "fair-value",
+    name: "Fair Value",
+    description: "Estimate the intrinsic value of a stock using fundamental valuation models.",
+    icon: Target,
+    ratios: [
+      {
+        id: "graham-number",
+        name: "Graham Number",
+        description: "A figure that measures a stock's fundamental value by taking into account earnings per share and book value per share.",
+        formulaDisplay: "√(22.5 × EPS × Book Value Per Share)",
+        inputs: [
+          { id: "eps", label: "Earnings Per Share – EPS ($)", placeholder: "e.g. 5.50" },
+          { id: "bvps", label: "Book Value Per Share ($)", placeholder: "e.g. 30.00" },
+          { id: "price", label: "Current Stock Price ($)", placeholder: "e.g. 120.00" }
+        ],
+        calculate: (vals) => {
+          if (!vals.eps || !vals.bvps || vals.eps <= 0 || vals.bvps <= 0) return null;
+          const val = Math.sqrt(22.5 * vals.eps * vals.bvps);
+          const margin = vals.price ? ((vals.price - val) / val) * 100 : null;
+          let interp: InterpretationType = 'neutral';
+          let text = `Graham Number fair value: $${formatNumber(val, 2)}.`;
+          if (vals.price) {
+            if (vals.price < val * 0.9) { interp = 'good'; text += ` Stock appears undervalued by ~${formatNumber(Math.abs(margin!), 1)}% vs. Graham Number.`; }
+            else if (vals.price > val * 1.1) { interp = 'poor'; text += ` Stock appears overvalued by ~${formatNumber(Math.abs(margin!), 1)}% vs. Graham Number.`; }
+            else { interp = 'average'; text += " Stock is trading near its Graham Number fair value."; }
+          }
+          return { value: val, formatted: `$${formatNumber(val, 2)}`, interpretation: interp, interpretationText: text };
+        }
+      },
+      {
+        id: "graham-intrinsic",
+        name: "Graham Intrinsic Value",
+        description: "Benjamin Graham's revised formula estimating intrinsic value based on earnings and expected growth.",
+        formulaDisplay: "EPS × (8.5 + 2g) × (4.4 ÷ AAA Bond Yield)",
+        inputs: [
+          { id: "eps", label: "Earnings Per Share – EPS ($)", placeholder: "e.g. 5.50" },
+          { id: "growth", label: "Expected Annual Growth Rate (%)", placeholder: "e.g. 10" },
+          { id: "bondYield", label: "Current AAA Bond Yield (%)", placeholder: "e.g. 4.5" },
+          { id: "price", label: "Current Stock Price ($)", placeholder: "e.g. 120.00" }
+        ],
+        calculate: (vals) => {
+          if (!vals.eps || !vals.bondYield || vals.bondYield <= 0) return null;
+          const val = (vals.eps * (8.5 + 2 * vals.growth) * 4.4) / vals.bondYield;
+          let interp: InterpretationType = 'neutral';
+          let text = `Intrinsic value estimate: $${formatNumber(val, 2)}.`;
+          if (vals.price) {
+            const pct = ((vals.price - val) / val) * 100;
+            if (vals.price < val * 0.85) { interp = 'good'; text += ` Trading at a ${formatNumber(Math.abs(pct), 1)}% discount — potential margin of safety.`; }
+            else if (vals.price > val * 1.15) { interp = 'poor'; text += ` Trading at a ${formatNumber(Math.abs(pct), 1)}% premium — may be overvalued.`; }
+            else { interp = 'average'; text += " Trading near intrinsic value."; }
+          }
+          return { value: val, formatted: `$${formatNumber(val, 2)}`, interpretation: interp, interpretationText: text };
+        }
+      },
+      {
+        id: "peter-lynch-fv",
+        name: "Peter Lynch Fair Value",
+        description: "Estimates fair value where a company's P/E ratio should equal its earnings growth rate (PEG = 1).",
+        formulaDisplay: "EPS × Earnings Growth Rate (%)",
+        inputs: [
+          { id: "eps", label: "Earnings Per Share – EPS ($)", placeholder: "e.g. 5.50" },
+          { id: "growth", label: "Annual EPS Growth Rate (%)", placeholder: "e.g. 15" },
+          { id: "price", label: "Current Stock Price ($)", placeholder: "e.g. 120.00" }
+        ],
+        calculate: (vals) => {
+          if (!vals.eps || !vals.growth || vals.growth <= 0) return null;
+          const val = vals.eps * vals.growth;
+          let interp: InterpretationType = 'neutral';
+          let text = `Peter Lynch fair value: $${formatNumber(val, 2)} (PEG = 1).`;
+          if (vals.price) {
+            const pct = ((vals.price - val) / val) * 100;
+            if (vals.price < val * 0.9) { interp = 'good'; text += ` Undervalued by ~${formatNumber(Math.abs(pct), 1)}%. PEG below 1 is considered attractive.`; }
+            else if (vals.price > val * 1.1) { interp = 'poor'; text += ` Overvalued by ~${formatNumber(Math.abs(pct), 1)}%. PEG above 1 means paying a premium for growth.`; }
+            else { interp = 'average'; text += " Fairly valued at PEG ≈ 1."; }
+          }
+          return { value: val, formatted: `$${formatNumber(val, 2)}`, interpretation: interp, interpretationText: text };
+        }
+      },
+      {
+        id: "ddm",
+        name: "Dividend Discount Model (DDM)",
+        description: "Values a stock based on the theory that it is worth the sum of all its future dividend payments, discounted back to present value.",
+        formulaDisplay: "D₁ ÷ (Required Return − Dividend Growth Rate)",
+        inputs: [
+          { id: "dividend", label: "Annual Dividend Per Share ($)", placeholder: "e.g. 3.00" },
+          { id: "growth", label: "Dividend Growth Rate (%)", placeholder: "e.g. 5" },
+          { id: "rate", label: "Required Rate of Return (%)", placeholder: "e.g. 10" },
+          { id: "price", label: "Current Stock Price ($)", placeholder: "e.g. 120.00" }
+        ],
+        calculate: (vals) => {
+          const r = vals.rate / 100;
+          const g = vals.growth / 100;
+          if (!vals.dividend || !vals.rate || r <= g) return null;
+          const d1 = vals.dividend * (1 + g);
+          const val = d1 / (r - g);
+          let interp: InterpretationType = 'neutral';
+          let text = `DDM fair value: $${formatNumber(val, 2)}.`;
+          if (vals.price) {
+            const pct = ((vals.price - val) / val) * 100;
+            if (vals.price < val * 0.9) { interp = 'good'; text += ` Stock appears undervalued by ~${formatNumber(Math.abs(pct), 1)}%.`; }
+            else if (vals.price > val * 1.1) { interp = 'poor'; text += ` Stock appears overvalued by ~${formatNumber(Math.abs(pct), 1)}%.`; }
+            else { interp = 'average'; text += " Stock is trading near DDM fair value."; }
+          }
+          return { value: val, formatted: `$${formatNumber(val, 2)}`, interpretation: interp, interpretationText: text };
+        }
+      },
+      {
+        id: "dcf-simple",
+        name: "Simple DCF Fair Value",
+        description: "Estimates intrinsic value by discounting projected free cash flow per share over a period, then adding a terminal value.",
+        formulaDisplay: "Σ [FCF/Share × (1+g)ᵗ ÷ (1+r)ᵗ] + Terminal Value",
+        inputs: [
+          { id: "fcfPerShare", label: "Free Cash Flow Per Share ($)", placeholder: "e.g. 8.00" },
+          { id: "growth", label: "FCF Growth Rate – 10 yr (%)", placeholder: "e.g. 12" },
+          { id: "terminalGrowth", label: "Terminal Growth Rate (%)", placeholder: "e.g. 3" },
+          { id: "discountRate", label: "Discount Rate / WACC (%)", placeholder: "e.g. 10" },
+          { id: "price", label: "Current Stock Price ($)", placeholder: "e.g. 120.00" }
+        ],
+        calculate: (vals) => {
+          const g = vals.growth / 100;
+          const tg = vals.terminalGrowth / 100;
+          const r = vals.discountRate / 100;
+          if (!vals.fcfPerShare || !vals.discountRate || r <= tg) return null;
+          let pv = 0;
+          let fcf = vals.fcfPerShare;
+          for (let t = 1; t <= 10; t++) {
+            fcf *= (1 + g);
+            pv += fcf / Math.pow(1 + r, t);
+          }
+          const terminalValue = (fcf * (1 + tg)) / (r - tg);
+          const pvTerminal = terminalValue / Math.pow(1 + r, 10);
+          const val = pv + pvTerminal;
+          let interp: InterpretationType = 'neutral';
+          let text = `DCF fair value: $${formatNumber(val, 2)}.`;
+          if (vals.price) {
+            const pct = ((vals.price - val) / val) * 100;
+            if (vals.price < val * 0.8) { interp = 'good'; text += ` Over 20% margin of safety — appears significantly undervalued.`; }
+            else if (vals.price < val * 0.95) { interp = 'average'; text += ` Modest discount of ~${formatNumber(Math.abs(pct), 1)}% to intrinsic value.`; }
+            else if (vals.price > val * 1.1) { interp = 'poor'; text += ` Trading above intrinsic value by ~${formatNumber(Math.abs(pct), 1)}%.`; }
+            else { interp = 'average'; text += " Trading near DCF intrinsic value."; }
+          }
+          return { value: val, formatted: `$${formatNumber(val, 2)}`, interpretation: interp, interpretationText: text };
         }
       }
     ]

@@ -10,6 +10,7 @@ const categoryColors: Record<string, { bg: string; text: string; border: string 
   leverage:     { bg: "bg-orange-50", text: "text-orange-600", border: "border-orange-100" },
   efficiency:   { bg: "bg-purple-50", text: "text-purple-600", border: "border-purple-100" },
   valuation:    { bg: "bg-rose-50",   text: "text-rose-600",   border: "border-rose-100" },
+  "fair-value": { bg: "bg-teal-50",   text: "text-teal-600",   border: "border-teal-100" },
 };
 
 export function HomePage() {
@@ -46,7 +47,7 @@ export function HomePage() {
         {CATEGORIES.map((category, i) => {
           const Icon = category.icon;
           const colors = categoryColors[category.id] ?? { bg: "bg-gray-50", text: "text-gray-600", border: "border-gray-100" };
-          const catT = t.categories[category.id as keyof typeof t.categories];
+          const catT = t.categories[category.id as keyof typeof t.categories] ?? { name: category.name, description: category.description };
 
           return (
             <motion.div

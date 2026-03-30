@@ -65,6 +65,10 @@ export const translations = {
         name: "Valuation",
         description: "Assess the attractiveness of a stock or investment.",
       },
+      "fair-value": {
+        name: "Fair Value",
+        description: "Estimate the intrinsic value of a stock using fundamental valuation models.",
+      },
     },
     // Ratio definitions
     ratios: {
@@ -304,6 +308,90 @@ export const translations = {
           any: "2-6% is typical for mature companies. Yields > 6% might signal risk that the dividend will be cut.",
         },
       },
+      "graham-number": {
+        name: "Graham Number",
+        description: "A figure that measures a stock's fundamental value by taking into account earnings per share and book value per share.",
+        formulaDisplay: "√(22.5 × EPS × Book Value Per Share)",
+        inputs: {
+          eps: "Earnings Per Share – EPS ($)",
+          bvps: "Book Value Per Share ($)",
+          price: "Current Stock Price ($)",
+        },
+        interpretations: {
+          good: "Stock appears undervalued vs. Graham Number — potential margin of safety.",
+          poor: "Stock appears overvalued vs. Graham Number.",
+          average: "Stock is trading near its Graham Number fair value.",
+          neutral: "Enter a current stock price to compare against the Graham Number.",
+        },
+      },
+      "graham-intrinsic": {
+        name: "Graham Intrinsic Value",
+        description: "Benjamin Graham's revised formula estimating intrinsic value based on earnings and expected growth.",
+        formulaDisplay: "EPS × (8.5 + 2g) × (4.4 ÷ AAA Bond Yield)",
+        inputs: {
+          eps: "Earnings Per Share – EPS ($)",
+          growth: "Expected Annual Growth Rate (%)",
+          bondYield: "Current AAA Bond Yield (%)",
+          price: "Current Stock Price ($)",
+        },
+        interpretations: {
+          good: "Trading at a meaningful discount — potential margin of safety.",
+          poor: "Trading at a premium — may be overvalued.",
+          average: "Trading near intrinsic value.",
+          neutral: "Enter a current stock price to compare.",
+        },
+      },
+      "peter-lynch-fv": {
+        name: "Peter Lynch Fair Value",
+        description: "Estimates fair value where a company's P/E ratio should equal its earnings growth rate (PEG = 1).",
+        formulaDisplay: "EPS × Earnings Growth Rate (%)",
+        inputs: {
+          eps: "Earnings Per Share – EPS ($)",
+          growth: "Annual EPS Growth Rate (%)",
+          price: "Current Stock Price ($)",
+        },
+        interpretations: {
+          good: "Undervalued — PEG below 1 is considered attractive.",
+          poor: "Overvalued — PEG above 1 means paying a premium for growth.",
+          average: "Fairly valued at PEG ≈ 1.",
+          neutral: "Enter a current stock price to compare.",
+        },
+      },
+      ddm: {
+        name: "Dividend Discount Model (DDM)",
+        description: "Values a stock based on the theory that it is worth the sum of all its future dividend payments, discounted back to present value.",
+        formulaDisplay: "D₁ ÷ (Required Return − Dividend Growth Rate)",
+        inputs: {
+          dividend: "Annual Dividend Per Share ($)",
+          growth: "Dividend Growth Rate (%)",
+          rate: "Required Rate of Return (%)",
+          price: "Current Stock Price ($)",
+        },
+        interpretations: {
+          good: "Stock appears undervalued relative to DDM fair value.",
+          poor: "Stock appears overvalued relative to DDM fair value.",
+          average: "Stock is trading near DDM fair value.",
+          neutral: "Enter a current stock price to compare.",
+        },
+      },
+      "dcf-simple": {
+        name: "Simple DCF Fair Value",
+        description: "Estimates intrinsic value by discounting projected free cash flow per share over a period, then adding a terminal value.",
+        formulaDisplay: "Σ [FCF/Share × (1+g)ᵗ ÷ (1+r)ᵗ] + Terminal Value",
+        inputs: {
+          fcfPerShare: "Free Cash Flow Per Share ($)",
+          growth: "FCF Growth Rate – 10 yr (%)",
+          terminalGrowth: "Terminal Growth Rate (%)",
+          discountRate: "Discount Rate / WACC (%)",
+          price: "Current Stock Price ($)",
+        },
+        interpretations: {
+          good: "Over 20% margin of safety — appears significantly undervalued.",
+          poor: "Trading above intrinsic value.",
+          average: "Trading near or at a modest discount to DCF intrinsic value.",
+          neutral: "Enter a current stock price to compare.",
+        },
+      },
     },
   },
 
@@ -364,6 +452,10 @@ export const translations = {
       valuation: {
         name: "Valuasi",
         description: "Menilai daya tarik suatu saham atau investasi.",
+      },
+      "fair-value": {
+        name: "Nilai Wajar",
+        description: "Estimasi nilai intrinsik saham menggunakan model penilaian fundamental.",
       },
     },
     ratios: {
@@ -601,6 +693,90 @@ export const translations = {
         },
         interpretations: {
           any: "2-6% adalah tipikal untuk perusahaan matang. Imbal hasil > 6% mungkin menandakan risiko pemotongan dividen.",
+        },
+      },
+      "graham-number": {
+        name: "Angka Graham",
+        description: "Angka yang mengukur nilai fundamental saham berdasarkan EPS dan nilai buku per saham.",
+        formulaDisplay: "√(22,5 × EPS × Nilai Buku Per Saham)",
+        inputs: {
+          eps: "Laba Per Saham – EPS (Rp)",
+          bvps: "Nilai Buku Per Saham (Rp)",
+          price: "Harga Saham Saat Ini (Rp)",
+        },
+        interpretations: {
+          good: "Saham tampak undervalued vs. Angka Graham — potensi margin of safety.",
+          poor: "Saham tampak overvalued vs. Angka Graham.",
+          average: "Saham diperdagangkan mendekati nilai wajar Angka Graham.",
+          neutral: "Masukkan harga saham saat ini untuk dibandingkan.",
+        },
+      },
+      "graham-intrinsic": {
+        name: "Nilai Intrinsik Graham",
+        description: "Formula revisi Benjamin Graham untuk mengestimasi nilai intrinsik berdasarkan laba dan pertumbuhan yang diharapkan.",
+        formulaDisplay: "EPS × (8,5 + 2g) × (4,4 ÷ Imbal Hasil Obligasi AAA)",
+        inputs: {
+          eps: "Laba Per Saham – EPS (Rp)",
+          growth: "Tingkat Pertumbuhan Tahunan yang Diharapkan (%)",
+          bondYield: "Imbal Hasil Obligasi AAA Saat Ini (%)",
+          price: "Harga Saham Saat Ini (Rp)",
+        },
+        interpretations: {
+          good: "Diperdagangkan dengan diskon signifikan — potensi margin of safety.",
+          poor: "Diperdagangkan dengan premium — mungkin overvalued.",
+          average: "Diperdagangkan mendekati nilai intrinsik.",
+          neutral: "Masukkan harga saham untuk dibandingkan.",
+        },
+      },
+      "peter-lynch-fv": {
+        name: "Nilai Wajar Peter Lynch",
+        description: "Mengestimasi nilai wajar di mana rasio P/E perusahaan harus sama dengan tingkat pertumbuhan laba (PEG = 1).",
+        formulaDisplay: "EPS × Tingkat Pertumbuhan EPS (%)",
+        inputs: {
+          eps: "Laba Per Saham – EPS (Rp)",
+          growth: "Tingkat Pertumbuhan EPS Tahunan (%)",
+          price: "Harga Saham Saat Ini (Rp)",
+        },
+        interpretations: {
+          good: "Undervalued — PEG di bawah 1 dianggap menarik.",
+          poor: "Overvalued — PEG di atas 1 berarti membayar premium untuk pertumbuhan.",
+          average: "Harga wajar pada PEG ≈ 1.",
+          neutral: "Masukkan harga saham untuk dibandingkan.",
+        },
+      },
+      ddm: {
+        name: "Model Diskon Dividen (DDM)",
+        description: "Menilai saham berdasarkan teori bahwa saham bernilai sejumlah pembayaran dividen masa depannya yang didiskon ke nilai sekarang.",
+        formulaDisplay: "D₁ ÷ (Tingkat Return yang Diharapkan − Tingkat Pertumbuhan Dividen)",
+        inputs: {
+          dividend: "Dividen Per Saham Tahunan (Rp)",
+          growth: "Tingkat Pertumbuhan Dividen (%)",
+          rate: "Tingkat Return yang Diharapkan (%)",
+          price: "Harga Saham Saat Ini (Rp)",
+        },
+        interpretations: {
+          good: "Saham tampak undervalued relatif terhadap nilai wajar DDM.",
+          poor: "Saham tampak overvalued relatif terhadap nilai wajar DDM.",
+          average: "Saham diperdagangkan mendekati nilai wajar DDM.",
+          neutral: "Masukkan harga saham untuk dibandingkan.",
+        },
+      },
+      "dcf-simple": {
+        name: "Nilai Wajar DCF Sederhana",
+        description: "Mengestimasi nilai intrinsik dengan mendiskon proyeksi arus kas bebas per saham selama periode tertentu, ditambah nilai terminal.",
+        formulaDisplay: "Σ [FCF/Saham × (1+g)ᵗ ÷ (1+r)ᵗ] + Nilai Terminal",
+        inputs: {
+          fcfPerShare: "Arus Kas Bebas Per Saham (Rp)",
+          growth: "Tingkat Pertumbuhan FCF – 10 Thn (%)",
+          terminalGrowth: "Tingkat Pertumbuhan Terminal (%)",
+          discountRate: "Tingkat Diskon / WACC (%)",
+          price: "Harga Saham Saat Ini (Rp)",
+        },
+        interpretations: {
+          good: "Margin of safety lebih dari 20% — tampak undervalued secara signifikan.",
+          poor: "Diperdagangkan di atas nilai intrinsik.",
+          average: "Diperdagangkan mendekati atau dengan diskon moderat terhadap nilai intrinsik DCF.",
+          neutral: "Masukkan harga saham untuk dibandingkan.",
         },
       },
     },
