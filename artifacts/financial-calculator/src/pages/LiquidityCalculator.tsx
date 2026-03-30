@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Bookmark, Info } from 'lucide-react';
+import { Info } from 'lucide-react';
 import { useLanguage } from '@/lib/LanguageContext';
 import { cn, formatNumber } from '@/lib/utils';
 import { NumericInput } from '@/components/ui/NumericInput';
@@ -44,7 +44,6 @@ const EMPTY: Record<string, string> = {
 export function LiquidityCalculator() {
   const { language, t } = useLanguage();
   const [vals, setVals] = useState<Record<string, string>>({ ...EMPTY });
-  const [savedToast, setSavedToast] = useState(false);
 
   const n = (k: string) => parseFloat(vals[k]) || 0;
   const has = (k: string) => vals[k] !== '' && !isNaN(parseFloat(vals[k]));
@@ -132,11 +131,6 @@ export function LiquidityCalculator() {
     { id: 'interestExpense',    en: 'Interest Expense',           id_: 'Beban Bunga',             subtitleEn: 'Total interest charges on outstanding debt',       subtitleId: 'Total beban bunga atas utang yang beredar' },
   ];
 
-  const handleSave = () => {
-    setSavedToast(true);
-    setTimeout(() => setSavedToast(false), 2000);
-  };
-
   const toggleSign = (id: string) => {
     setVals(prev => {
       const cur = prev[id];
@@ -202,18 +196,6 @@ export function LiquidityCalculator() {
             })}
           </div>
 
-          <button
-            onClick={handleSave}
-            className={cn(
-              'w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl font-semibold text-sm transition-all',
-              savedToast ? 'bg-green-500 text-white' : 'bg-primary text-primary-foreground hover:bg-primary/90'
-            )}
-          >
-            <Bookmark className="w-4 h-4" />
-            {savedToast
-              ? (language === 'en' ? 'Saved!' : 'Tersimpan!')
-              : (language === 'en' ? 'Save to History' : 'Simpan ke Riwayat')}
-          </button>
         </div>
 
         {/* ── INPUTS column ── */}
