@@ -34,6 +34,9 @@ export function LoginPage({ onLogin }: LoginPageProps) {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#F8FAFC] px-4">
+      <div className="absolute top-4 right-4">
+        <LanguageSwitcher />
+      </div>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -45,8 +48,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
             <Calculator className="w-7 h-7" />
           </div>
           <h1 className="text-xl font-bold tracking-tight text-foreground">FinRatio <span className="text-sm font-normal italic text-muted-foreground">by Slitherstocks</span></h1>
-          <p className="text-xs text-muted-foreground mt-1 mb-3">{t.login.tagline}</p>
-          <LanguageSwitcher />
+          <p className="text-xs text-muted-foreground mt-1">{t.login.tagline}</p>
         </div>
 
         <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
