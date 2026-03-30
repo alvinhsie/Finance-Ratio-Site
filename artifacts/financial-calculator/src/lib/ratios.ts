@@ -218,7 +218,7 @@ export const CATEGORIES: CategoryDef[] = [
   },
   {
     id: "leverage",
-    name: "Leverage & Solvency",
+    name: "Leverage",
     description: "Determine the extent to which a company uses debt to finance its assets and its ability to meet long-term obligations.",
     icon: Scale,
     ratios: [

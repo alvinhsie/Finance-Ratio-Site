@@ -54,7 +54,7 @@ export const translations = {
         description: "Evaluate a company's ability to generate earnings relative to revenue, assets, or equity.",
       },
       leverage: {
-        name: "Leverage & Solvency",
+        name: "Leverage",
         description: "Determine the extent to which a company uses debt to finance its assets and its ability to meet long-term obligations.",
       },
       efficiency: {
@@ -442,7 +442,7 @@ export const translations = {
         description: "Mengevaluasi kemampuan perusahaan menghasilkan laba relatif terhadap pendapatan, aset, atau ekuitas.",
       },
       leverage: {
-        name: "Leverage & Solvabilitas",
+        name: "Leverage",
         description: "Menentukan sejauh mana perusahaan menggunakan utang untuk membiayai aset dan kemampuannya memenuhi kewajiban jangka panjang.",
       },
       efficiency: {
