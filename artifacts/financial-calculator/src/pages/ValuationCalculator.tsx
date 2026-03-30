@@ -267,13 +267,8 @@ export function ValuationCalculator() {
                   className="bg-card border border-border rounded-2xl overflow-hidden"
                 >
                   <div className="px-4 py-3.5">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="flex flex-col gap-1.5">
-                        <span className="font-bold text-sm text-foreground leading-tight">{label}</span>
-                        <span className="inline-flex text-[10px] font-mono px-2 py-0.5 rounded-md bg-muted text-muted-foreground border border-border w-fit">
-                          {result.info.formula}
-                        </span>
-                      </div>
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="font-bold text-sm text-foreground leading-tight">{label}</span>
                       <div className="flex items-center gap-2 shrink-0">
                         <span className={cn('text-base font-bold tabular-nums', color)}>
                           {result.formatted}
@@ -302,7 +297,7 @@ export function ValuationCalculator() {
                         className="overflow-hidden"
                       >
                         <div className="px-4 pb-4 pt-1 space-y-3 border-t border-border/50">
-                          <span className="inline-flex text-xs font-mono px-2.5 py-1 rounded-lg bg-muted text-muted-foreground border border-border">
+                          <span className="text-xs font-mono text-muted-foreground">
                             {result.info.formula}
                           </span>
                           <p className="text-sm text-foreground leading-relaxed">{desc}</p>
