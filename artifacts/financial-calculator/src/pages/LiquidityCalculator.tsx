@@ -132,7 +132,6 @@ export function LiquidityCalculator() {
   ];
 
   const filledCount = Object.values(vals).filter(v => v !== '').length;
-  const calculatedCount = results.filter(r => r.value !== null).length;
 
   const inputs = [
     { id: 'currentAssets',     en: 'Current Assets',              id_: 'Aset Lancar' },
@@ -166,20 +165,16 @@ export function LiquidityCalculator() {
 
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Input Panel */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.1 }}
-          className="lg:col-span-2 bg-card border border-border rounded-2xl p-6 h-fit"
-        >
-          <h2 className="font-semibold text-foreground text-base mb-1">
-            {language === 'en' ? 'Input Values' : 'Masukkan Nilai'}
-          </h2>
-          <p className="text-xs text-muted-foreground mb-5">
-            {language === 'en'
-              ? `${calculatedCount} of ${results.length} ratios calculated`
-              : `${calculatedCount} dari ${results.length} rasio dihitung`}
+        <div className="lg:col-span-2">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+            {language === 'en' ? 'Input' : 'Input'}
           </p>
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 }}
+            className="bg-card border border-border rounded-2xl p-6 h-fit"
+          >
           <div className="space-y-4">
             {inputs.map(inp => (
               <div key={inp.id}>
@@ -203,6 +198,7 @@ export function LiquidityCalculator() {
             </button>
           )}
         </motion.div>
+        </div>
 
         {/* Results Panel */}
         <div className="lg:col-span-3 space-y-4">
