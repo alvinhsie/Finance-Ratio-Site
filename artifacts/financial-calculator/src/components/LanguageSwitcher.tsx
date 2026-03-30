@@ -1,33 +1,26 @@
 import { useLanguage } from "@/lib/LanguageContext";
 import { cn } from "@/lib/utils";
+import { Globe } from "lucide-react";
 
 export function LanguageSwitcher({ className }: { className?: string }) {
   const { language, setLanguage } = useLanguage();
 
+  const toggle = () => setLanguage(language === "en" ? "id" : "en");
+
   return (
-    <div className={cn("inline-flex items-center gap-1 bg-muted rounded-lg p-0.5 text-xs font-semibold", className)}>
-      <button
-        onClick={() => setLanguage("en")}
-        className={cn(
-          "px-2.5 py-1 rounded-md transition-all",
-          language === "en"
-            ? "bg-card text-foreground shadow-sm"
-            : "text-muted-foreground hover:text-foreground"
-        )}
-      >
-        🇬🇧 EN
-      </button>
-      <button
-        onClick={() => setLanguage("id")}
-        className={cn(
-          "px-2.5 py-1 rounded-md transition-all",
-          language === "id"
-            ? "bg-card text-foreground shadow-sm"
-            : "text-muted-foreground hover:text-foreground"
-        )}
-      >
-        🇮🇩 ID
-      </button>
-    </div>
+    <button
+      onClick={toggle}
+      className={cn(
+        "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-border bg-background",
+        "text-xs font-medium text-muted-foreground hover:text-foreground hover:border-primary/40",
+        "transition-all shadow-sm",
+        className
+      )}
+    >
+      <Globe className="w-3.5 h-3.5" />
+      <span>{language === "en" ? "EN" : "ID"}</span>
+      <span className="text-muted-foreground/50">·</span>
+      <span className="text-muted-foreground/60">{language === "en" ? "ID" : "EN"}</span>
+    </button>
   );
 }
