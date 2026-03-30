@@ -165,9 +165,9 @@ export function FairValueCalculator() {
           {catT?.name ?? 'Fair Value'}
         </h1>
         <p className="text-sm text-muted-foreground leading-relaxed">
-          {language === 'en'
-            ? 'EPS-based Discounted Cash Flow — estimates intrinsic value from projected earnings.'
-            : 'DCF Berbasis EPS — estimasi nilai intrinsik dari proyeksi laba.'}
+          {mode === 'standard'
+            ? (language === 'en' ? 'EPS-Based Discounted Cash Flow' : 'DCF Berbasis EPS')
+            : (language === 'en' ? 'Cyclical · Normalized EPS DCF'  : 'Siklus · DCF EPS Dinormalisasi')}
         </p>
       </motion.div>
 
