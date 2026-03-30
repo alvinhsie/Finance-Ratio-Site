@@ -43,7 +43,7 @@ export function HomePage() {
         </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:[grid-auto-rows:1fr]">
         {CATEGORIES.map((category, i) => {
           const Icon = category.icon;
           const colors = categoryColors[category.id] ?? { bg: "bg-gray-50", text: "text-gray-600", border: "border-gray-100" };
