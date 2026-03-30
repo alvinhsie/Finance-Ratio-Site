@@ -3,7 +3,7 @@ import {
   Droplets, 
   TrendingUp, 
   Files, 
-  Activity, 
+  Zap, 
   LineChart,
   Target
 } from "lucide-react";
@@ -308,7 +308,7 @@ export const CATEGORIES: CategoryDef[] = [
     id: "efficiency",
     name: "Efficiency",
     description: "Measure how well a company uses its assets and liabilities internally.",
-    icon: Activity,
+    icon: Zap,
     ratios: [
       {
         id: "asset-turnover",
