@@ -16,6 +16,15 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     setMobileMenuOpen(false);
   }, [location]);
 
+  React.useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [mobileMenuOpen]);
+
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-[#F8FAFC]">
       {/* Mobile Header */}
