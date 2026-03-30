@@ -157,7 +157,7 @@ export function LiquidityCalculator() {
           <Droplets className="w-6 h-6" />
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold font-display text-foreground tracking-tight mb-2">
-          {catT?.name ?? 'Liquidity'} {t.category.calculators}
+          {catT?.name ?? 'Liquidity'}
         </h1>
         <p className="text-sm text-muted-foreground max-w-2xl leading-relaxed">
           {catT?.description ?? 'Measure a company\'s ability to pay off its short-term debt obligations.'}

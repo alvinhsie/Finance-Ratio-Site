@@ -32,7 +32,7 @@ export function CategoryPage() {
           <Icon className="w-6 h-6" />
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold font-display text-foreground tracking-tight mb-3">
-          {catT.name} {t.category.calculators}
+          {catT.name}
         </h1>
         <p className="text-sm text-muted-foreground max-w-3xl leading-relaxed">
           {catT.description}
