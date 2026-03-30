@@ -55,11 +55,12 @@ export function HomePage() {
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: i * 0.07 }}
+              className="h-full"
             >
-              <Link href={`/category/${category.id}`}>
-                <div className={`group cursor-pointer bg-card border ${colors.border} rounded-2xl p-5 hover:shadow-md transition-all hover:-translate-y-0.5`}>
+              <Link href={`/category/${category.id}`} className="h-full block">
+                <div className={`group cursor-pointer h-full bg-card border ${colors.border} rounded-2xl p-5 hover:shadow-md transition-all hover:-translate-y-0.5 flex flex-col min-h-[120px]`}>
                   <div className="flex items-start justify-between mb-4">
-                    <div className={`w-10 h-10 rounded-xl ${colors.bg} ${colors.text} flex items-center justify-center`}>
+                    <div className={`w-10 h-10 rounded-xl ${colors.bg} ${colors.text} flex items-center justify-center shrink-0`}>
                       <Icon className="w-5 h-5" />
                     </div>
                     <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all" />
