@@ -53,8 +53,8 @@ export const CATEGORIES: CategoryDef[] = [
         description: "Measures a company's ability to pay short-term obligations or those due within one year.",
         formulaDisplay: "Current Assets ÷ Current Liabilities",
         inputs: [
-          { id: "currentAssets", label: "Current Assets ($)", placeholder: "e.g. 500000" },
-          { id: "currentLiabilities", label: "Current Liabilities ($)", placeholder: "e.g. 250000" }
+          { id: "currentAssets", label: "Current Assets", placeholder: "e.g. 500000" },
+          { id: "currentLiabilities", label: "Current Liabilities", placeholder: "e.g. 250000" }
         ],
         calculate: (vals) => {
           if (!vals.currentLiabilities) return null;
@@ -73,9 +73,9 @@ export const CATEGORIES: CategoryDef[] = [
         description: "Measures a company's capacity to pay its current liabilities without needing to sell its inventory.",
         formulaDisplay: "(Current Assets - Inventory) ÷ Current Liabilities",
         inputs: [
-          { id: "currentAssets", label: "Current Assets ($)", placeholder: "e.g. 500000" },
-          { id: "inventory", label: "Inventory ($)", placeholder: "e.g. 150000" },
-          { id: "currentLiabilities", label: "Current Liabilities ($)", placeholder: "e.g. 250000" }
+          { id: "currentAssets", label: "Current Assets", placeholder: "e.g. 500000" },
+          { id: "inventory", label: "Inventory", placeholder: "e.g. 150000" },
+          { id: "currentLiabilities", label: "Current Liabilities", placeholder: "e.g. 250000" }
         ],
         calculate: (vals) => {
           if (!vals.currentLiabilities) return null;
@@ -93,8 +93,8 @@ export const CATEGORIES: CategoryDef[] = [
         description: "The most conservative liquidity ratio. It measures a firm's ability to pay off current liabilities with only cash and cash equivalents.",
         formulaDisplay: "Cash & Equivalents ÷ Current Liabilities",
         inputs: [
-          { id: "cash", label: "Cash & Equivalents ($)", placeholder: "e.g. 100000" },
-          { id: "currentLiabilities", label: "Current Liabilities ($)", placeholder: "e.g. 250000" }
+          { id: "cash", label: "Cash & Equivalents", placeholder: "e.g. 100000" },
+          { id: "currentLiabilities", label: "Current Liabilities", placeholder: "e.g. 250000" }
         ],
         calculate: (vals) => {
           if (!vals.currentLiabilities) return null;
@@ -120,8 +120,8 @@ export const CATEGORIES: CategoryDef[] = [
         description: "The proportion of money left over from revenues after accounting for the cost of goods sold (COGS).",
         formulaDisplay: "(Gross Profit ÷ Revenue) × 100",
         inputs: [
-          { id: "grossProfit", label: "Gross Profit ($)", placeholder: "e.g. 400000" },
-          { id: "revenue", label: "Revenue ($)", placeholder: "e.g. 1000000" }
+          { id: "grossProfit", label: "Gross Profit", placeholder: "e.g. 400000" },
+          { id: "revenue", label: "Revenue", placeholder: "e.g. 1000000" }
         ],
         calculate: (vals) => {
           if (!vals.revenue) return null;
@@ -140,8 +140,8 @@ export const CATEGORIES: CategoryDef[] = [
         description: "Shows how much of each dollar collected by a company as revenue translates into profit.",
         formulaDisplay: "(Net Income ÷ Revenue) × 100",
         inputs: [
-          { id: "netIncome", label: "Net Income ($)", placeholder: "e.g. 150000" },
-          { id: "revenue", label: "Revenue ($)", placeholder: "e.g. 1000000" }
+          { id: "netIncome", label: "Net Income", placeholder: "e.g. 150000" },
+          { id: "revenue", label: "Revenue", placeholder: "e.g. 1000000" }
         ],
         calculate: (vals) => {
           if (!vals.revenue) return null;
@@ -160,8 +160,8 @@ export const CATEGORIES: CategoryDef[] = [
         description: "Indicates how profitable a company is relative to its total assets.",
         formulaDisplay: "(Net Income ÷ Total Assets) × 100",
         inputs: [
-          { id: "netIncome", label: "Net Income ($)", placeholder: "e.g. 150000" },
-          { id: "totalAssets", label: "Total Assets ($)", placeholder: "e.g. 2000000" }
+          { id: "netIncome", label: "Net Income", placeholder: "e.g. 150000" },
+          { id: "totalAssets", label: "Total Assets", placeholder: "e.g. 2000000" }
         ],
         calculate: (vals) => {
           if (!vals.totalAssets) return null;
@@ -180,8 +180,8 @@ export const CATEGORIES: CategoryDef[] = [
         description: "Measure of financial performance calculated by dividing net income by shareholders' equity.",
         formulaDisplay: "(Net Income ÷ Shareholder's Equity) × 100",
         inputs: [
-          { id: "netIncome", label: "Net Income ($)", placeholder: "e.g. 150000" },
-          { id: "equity", label: "Shareholder's Equity ($)", placeholder: "e.g. 1000000" }
+          { id: "netIncome", label: "Net Income", placeholder: "e.g. 150000" },
+          { id: "equity", label: "Shareholder's Equity", placeholder: "e.g. 1000000" }
         ],
         calculate: (vals) => {
           if (!vals.equity) return null;
@@ -200,8 +200,8 @@ export const CATEGORIES: CategoryDef[] = [
         description: "Measures a company's operating profitability as a percentage of its revenue.",
         formulaDisplay: "(EBITDA ÷ Revenue) × 100",
         inputs: [
-          { id: "ebitda", label: "EBITDA ($)", placeholder: "e.g. 250000" },
-          { id: "revenue", label: "Revenue ($)", placeholder: "e.g. 1000000" }
+          { id: "ebitda", label: "EBITDA", placeholder: "e.g. 250000" },
+          { id: "revenue", label: "Revenue", placeholder: "e.g. 1000000" }
         ],
         calculate: (vals) => {
           if (!vals.revenue) return null;
@@ -228,8 +228,8 @@ export const CATEGORIES: CategoryDef[] = [
         description: "Evaluates a company's financial leverage by comparing its total liabilities to shareholder equity.",
         formulaDisplay: "Total Debt ÷ Shareholder's Equity",
         inputs: [
-          { id: "totalDebt", label: "Total Debt ($)", placeholder: "e.g. 1200000" },
-          { id: "equity", label: "Shareholder's Equity ($)", placeholder: "e.g. 1000000" }
+          { id: "totalDebt", label: "Total Debt", placeholder: "e.g. 1200000" },
+          { id: "equity", label: "Shareholder's Equity", placeholder: "e.g. 1000000" }
         ],
         calculate: (vals) => {
           if (!vals.equity) return null;
@@ -248,8 +248,8 @@ export const CATEGORIES: CategoryDef[] = [
         description: "Measures the proportion of a company's assets that are financed by debt.",
         formulaDisplay: "Total Debt ÷ Total Assets",
         inputs: [
-          { id: "totalDebt", label: "Total Debt ($)", placeholder: "e.g. 1200000" },
-          { id: "totalAssets", label: "Total Assets ($)", placeholder: "e.g. 2500000" }
+          { id: "totalDebt", label: "Total Debt", placeholder: "e.g. 1200000" },
+          { id: "totalAssets", label: "Total Assets", placeholder: "e.g. 2500000" }
         ],
         calculate: (vals) => {
           if (!vals.totalAssets) return null;
@@ -268,8 +268,8 @@ export const CATEGORIES: CategoryDef[] = [
         description: "Determines how easily a company can pay interest on its outstanding debt.",
         formulaDisplay: "EBIT ÷ Interest Expense",
         inputs: [
-          { id: "ebit", label: "EBIT ($)", placeholder: "e.g. 200000" },
-          { id: "interestExpense", label: "Interest Expense ($)", placeholder: "e.g. 40000" }
+          { id: "ebit", label: "EBIT", placeholder: "e.g. 200000" },
+          { id: "interestExpense", label: "Interest Expense", placeholder: "e.g. 40000" }
         ],
         calculate: (vals) => {
           if (!vals.interestExpense) return null;
@@ -288,8 +288,8 @@ export const CATEGORIES: CategoryDef[] = [
         description: "Measures cash flow available to pay current debt obligations.",
         formulaDisplay: "Net Operating Income ÷ Total Debt Service",
         inputs: [
-          { id: "noi", label: "Net Operating Income ($)", placeholder: "e.g. 150000" },
-          { id: "debtService", label: "Total Debt Service ($)", placeholder: "e.g. 100000" }
+          { id: "noi", label: "Net Operating Income", placeholder: "e.g. 150000" },
+          { id: "debtService", label: "Total Debt Service", placeholder: "e.g. 100000" }
         ],
         calculate: (vals) => {
           if (!vals.debtService) return null;
@@ -316,8 +316,8 @@ export const CATEGORIES: CategoryDef[] = [
         description: "Measures the efficiency of a company's use of its assets in generating sales revenue.",
         formulaDisplay: "Revenue ÷ Total Assets",
         inputs: [
-          { id: "revenue", label: "Revenue ($)", placeholder: "e.g. 1000000" },
-          { id: "totalAssets", label: "Total Assets ($)", placeholder: "e.g. 500000" }
+          { id: "revenue", label: "Revenue", placeholder: "e.g. 1000000" },
+          { id: "totalAssets", label: "Total Assets", placeholder: "e.g. 500000" }
         ],
         calculate: (vals) => {
           if (!vals.totalAssets) return null;
@@ -336,8 +336,8 @@ export const CATEGORIES: CategoryDef[] = [
         description: "Shows how many times a company has sold and replaced inventory during a given period.",
         formulaDisplay: "Cost of Goods Sold ÷ Average Inventory",
         inputs: [
-          { id: "cogs", label: "Cost of Goods Sold (COGS) ($)", placeholder: "e.g. 600000" },
-          { id: "avgInventory", label: "Average Inventory ($)", placeholder: "e.g. 100000" }
+          { id: "cogs", label: "Cost of Goods Sold (COGS)", placeholder: "e.g. 600000" },
+          { id: "avgInventory", label: "Average Inventory", placeholder: "e.g. 100000" }
         ],
         calculate: (vals) => {
           if (!vals.avgInventory) return null;
@@ -356,8 +356,8 @@ export const CATEGORIES: CategoryDef[] = [
         description: "The average number of days that it takes a company to collect payment after a sale has been made.",
         formulaDisplay: "(Accounts Receivable ÷ Net Credit Sales) × 365",
         inputs: [
-          { id: "ar", label: "Accounts Receivable ($)", placeholder: "e.g. 80000" },
-          { id: "sales", label: "Net Credit Sales ($)", placeholder: "e.g. 1000000" }
+          { id: "ar", label: "Accounts Receivable", placeholder: "e.g. 80000" },
+          { id: "sales", label: "Net Credit Sales", placeholder: "e.g. 1000000" }
         ],
         calculate: (vals) => {
           if (!vals.sales) return null;
@@ -384,8 +384,8 @@ export const CATEGORIES: CategoryDef[] = [
         description: "Relates a company's share price to its earnings per share.",
         formulaDisplay: "Stock Price ÷ Earnings Per Share",
         inputs: [
-          { id: "price", label: "Stock Price ($)", placeholder: "e.g. 150.00" },
-          { id: "eps", label: "Earnings Per Share ($)", placeholder: "e.g. 5.50" }
+          { id: "price", label: "Stock Price", placeholder: "e.g. 150.00" },
+          { id: "eps", label: "Earnings Per Share", placeholder: "e.g. 5.50" }
         ],
         calculate: (vals) => {
           if (!vals.eps) return null;
@@ -404,8 +404,8 @@ export const CATEGORIES: CategoryDef[] = [
         description: "Compares a firm's market capitalization to its book value.",
         formulaDisplay: "Stock Price ÷ Book Value Per Share",
         inputs: [
-          { id: "price", label: "Stock Price ($)", placeholder: "e.g. 150.00" },
-          { id: "bvps", label: "Book Value Per Share ($)", placeholder: "e.g. 50.00" }
+          { id: "price", label: "Stock Price", placeholder: "e.g. 150.00" },
+          { id: "bvps", label: "Book Value Per Share", placeholder: "e.g. 50.00" }
         ],
         calculate: (vals) => {
           if (!vals.bvps) return null;
@@ -424,8 +424,8 @@ export const CATEGORIES: CategoryDef[] = [
         description: "A valuation multiple that is often used in addition to, or as an alternative to, the P/E ratio.",
         formulaDisplay: "Enterprise Value ÷ EBITDA",
         inputs: [
-          { id: "ev", label: "Enterprise Value ($)", placeholder: "e.g. 5000000" },
-          { id: "ebitda", label: "EBITDA ($)", placeholder: "e.g. 500000" }
+          { id: "ev", label: "Enterprise Value", placeholder: "e.g. 5000000" },
+          { id: "ebitda", label: "EBITDA", placeholder: "e.g. 500000" }
         ],
         calculate: (vals) => {
           if (!vals.ebitda) return null;
@@ -444,8 +444,8 @@ export const CATEGORIES: CategoryDef[] = [
         description: "The amount of money a company pays shareholders for owning a share of its stock divided by its current stock price.",
         formulaDisplay: "(Annual Dividend Per Share ÷ Stock Price) × 100",
         inputs: [
-          { id: "dividend", label: "Annual Dividend Per Share ($)", placeholder: "e.g. 3.00" },
-          { id: "price", label: "Stock Price ($)", placeholder: "e.g. 150.00" }
+          { id: "dividend", label: "Annual Dividend Per Share", placeholder: "e.g. 3.00" },
+          { id: "price", label: "Stock Price", placeholder: "e.g. 150.00" }
         ],
         calculate: (vals) => {
           if (!vals.price) return null;
@@ -472,9 +472,9 @@ export const CATEGORIES: CategoryDef[] = [
         description: "A figure that measures a stock's fundamental value by taking into account earnings per share and book value per share.",
         formulaDisplay: "√(22.5 × EPS × Book Value Per Share)",
         inputs: [
-          { id: "eps", label: "Earnings Per Share – EPS ($)", placeholder: "e.g. 5.50" },
-          { id: "bvps", label: "Book Value Per Share ($)", placeholder: "e.g. 30.00" },
-          { id: "price", label: "Current Stock Price ($)", placeholder: "e.g. 120.00" }
+          { id: "eps", label: "Earnings Per Share – EPS", placeholder: "e.g. 5.50" },
+          { id: "bvps", label: "Book Value Per Share", placeholder: "e.g. 30.00" },
+          { id: "price", label: "Current Stock Price", placeholder: "e.g. 120.00" }
         ],
         calculate: (vals) => {
           if (!vals.eps || !vals.bvps || vals.eps <= 0 || vals.bvps <= 0) return null;
@@ -496,10 +496,10 @@ export const CATEGORIES: CategoryDef[] = [
         description: "Benjamin Graham's revised formula estimating intrinsic value based on earnings and expected growth.",
         formulaDisplay: "EPS × (8.5 + 2g) × (4.4 ÷ AAA Bond Yield)",
         inputs: [
-          { id: "eps", label: "Earnings Per Share – EPS ($)", placeholder: "e.g. 5.50" },
+          { id: "eps", label: "Earnings Per Share – EPS", placeholder: "e.g. 5.50" },
           { id: "growth", label: "Expected Annual Growth Rate (%)", placeholder: "e.g. 10" },
           { id: "bondYield", label: "Current AAA Bond Yield (%)", placeholder: "e.g. 4.5" },
-          { id: "price", label: "Current Stock Price ($)", placeholder: "e.g. 120.00" }
+          { id: "price", label: "Current Stock Price", placeholder: "e.g. 120.00" }
         ],
         calculate: (vals) => {
           if (!vals.eps || !vals.bondYield || vals.bondYield <= 0) return null;
@@ -521,9 +521,9 @@ export const CATEGORIES: CategoryDef[] = [
         description: "Estimates fair value where a company's P/E ratio should equal its earnings growth rate (PEG = 1).",
         formulaDisplay: "EPS × Earnings Growth Rate (%)",
         inputs: [
-          { id: "eps", label: "Earnings Per Share – EPS ($)", placeholder: "e.g. 5.50" },
+          { id: "eps", label: "Earnings Per Share – EPS", placeholder: "e.g. 5.50" },
           { id: "growth", label: "Annual EPS Growth Rate (%)", placeholder: "e.g. 15" },
-          { id: "price", label: "Current Stock Price ($)", placeholder: "e.g. 120.00" }
+          { id: "price", label: "Current Stock Price", placeholder: "e.g. 120.00" }
         ],
         calculate: (vals) => {
           if (!vals.eps || !vals.growth || vals.growth <= 0) return null;
@@ -545,10 +545,10 @@ export const CATEGORIES: CategoryDef[] = [
         description: "Values a stock based on the theory that it is worth the sum of all its future dividend payments, discounted back to present value.",
         formulaDisplay: "D₁ ÷ (Required Return − Dividend Growth Rate)",
         inputs: [
-          { id: "dividend", label: "Annual Dividend Per Share ($)", placeholder: "e.g. 3.00" },
+          { id: "dividend", label: "Annual Dividend Per Share", placeholder: "e.g. 3.00" },
           { id: "growth", label: "Dividend Growth Rate (%)", placeholder: "e.g. 5" },
           { id: "rate", label: "Required Rate of Return (%)", placeholder: "e.g. 10" },
-          { id: "price", label: "Current Stock Price ($)", placeholder: "e.g. 120.00" }
+          { id: "price", label: "Current Stock Price", placeholder: "e.g. 120.00" }
         ],
         calculate: (vals) => {
           const r = vals.rate / 100;
@@ -573,11 +573,11 @@ export const CATEGORIES: CategoryDef[] = [
         description: "Estimates intrinsic value by discounting projected free cash flow per share over a period, then adding a terminal value.",
         formulaDisplay: "Σ [FCF/Share × (1+g)ᵗ ÷ (1+r)ᵗ] + Terminal Value",
         inputs: [
-          { id: "fcfPerShare", label: "Free Cash Flow Per Share ($)", placeholder: "e.g. 8.00" },
+          { id: "fcfPerShare", label: "Free Cash Flow Per Share", placeholder: "e.g. 8.00" },
           { id: "growth", label: "FCF Growth Rate – 10 yr (%)", placeholder: "e.g. 12" },
           { id: "terminalGrowth", label: "Terminal Growth Rate (%)", placeholder: "e.g. 3" },
           { id: "discountRate", label: "Discount Rate / WACC (%)", placeholder: "e.g. 10" },
-          { id: "price", label: "Current Stock Price ($)", placeholder: "e.g. 120.00" }
+          { id: "price", label: "Current Stock Price", placeholder: "e.g. 120.00" }
         ],
         calculate: (vals) => {
           const g = vals.growth / 100;

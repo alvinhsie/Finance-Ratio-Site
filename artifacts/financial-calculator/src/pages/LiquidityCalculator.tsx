@@ -34,10 +34,10 @@ function fmt(val: number): string {
 }
 
 function fmtCurrency(val: number): string {
-  if (Math.abs(val) >= 1_000_000_000) return `$${formatNumber(val / 1_000_000_000, 2)}B`;
-  if (Math.abs(val) >= 1_000_000) return `$${formatNumber(val / 1_000_000, 2)}M`;
-  if (Math.abs(val) >= 1_000) return `$${formatNumber(val / 1_000, 2)}K`;
-  return `$${formatNumber(val, 2)}`;
+  if (Math.abs(val) >= 1_000_000_000) return `${formatNumber(val / 1_000_000_000, 2)}B`;
+  if (Math.abs(val) >= 1_000_000) return `${formatNumber(val / 1_000_000, 2)}M`;
+  if (Math.abs(val) >= 1_000) return `${formatNumber(val / 1_000, 2)}K`;
+  return `${formatNumber(val, 2)}`;
 }
 
 export function LiquidityCalculator() {
@@ -134,13 +134,13 @@ export function LiquidityCalculator() {
   const calculatedCount = results.filter(r => r.value !== null).length;
 
   const inputs = [
-    { id: 'currentAssets',     en: 'Current Assets ($)',              id_: 'Aset Lancar (Rp)' },
-    { id: 'currentLiabilities',en: 'Current Liabilities ($)',         id_: 'Liabilitas Lancar (Rp)' },
-    { id: 'inventory',         en: 'Inventory ($)',                   id_: 'Persediaan (Rp)' },
-    { id: 'cash',              en: 'Cash & Cash Equivalents ($)',     id_: 'Kas & Setara Kas (Rp)' },
-    { id: 'cfFromOps',         en: 'Cash Flow from Operations ($)',   id_: 'Arus Kas dari Operasi (Rp)' },
-    { id: 'ebit',              en: 'Operating Income – EBIT ($)',     id_: 'Laba Operasi – EBIT (Rp)' },
-    { id: 'interestExpense',   en: 'Interest Expense ($)',            id_: 'Beban Bunga (Rp)' },
+    { id: 'currentAssets',     en: 'Current Assets',              id_: 'Aset Lancar' },
+    { id: 'currentLiabilities',en: 'Current Liabilities',         id_: 'Liabilitas Lancar' },
+    { id: 'inventory',         en: 'Inventory',                   id_: 'Persediaan' },
+    { id: 'cash',              en: 'Cash & Cash Equivalents',     id_: 'Kas & Setara Kas' },
+    { id: 'cfFromOps',         en: 'Cash Flow from Operations',   id_: 'Arus Kas dari Operasi' },
+    { id: 'ebit',              en: 'Operating Income – EBIT',     id_: 'Laba Operasi – EBIT' },
+    { id: 'interestExpense',   en: 'Interest Expense',            id_: 'Beban Bunga' },
   ];
 
   const catT = t.categories['liquidity' as keyof typeof t.categories] as any;
