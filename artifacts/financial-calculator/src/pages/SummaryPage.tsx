@@ -397,7 +397,7 @@ function SectionCard({ title, titleId, icon, accentColor, headerBg, leftBorder, 
   const filledCount = visibleMetrics.length;
 
   return (
-    <div className={cn('rounded-2xl border border-border/50 bg-card shadow-sm overflow-hidden border-l-4 flex flex-col h-full', leftBorder)}>
+    <div className={cn('rounded-2xl border border-border/50 bg-card shadow-sm overflow-hidden border-l-4 flex flex-col lg:h-full', leftBorder)}>
       <div className={cn('flex items-center gap-2 px-4 py-2 shrink-0', headerBg)}>
         <span className={cn('shrink-0', accentColor)}>{icon}</span>
         <span className="font-semibold text-sm text-foreground">
@@ -407,8 +407,8 @@ function SectionCard({ title, titleId, icon, accentColor, headerBg, leftBorder, 
           {filledCount}/{totalMetrics}
         </span>
       </div>
-      <div className="px-4 py-3 flex flex-col flex-1">
-        <div className="grid grid-cols-1 gap-y-1 flex-1 content-start">
+      <div className="px-4 py-3 flex flex-col lg:flex-1">
+        <div className="grid grid-cols-1 gap-y-1 lg:flex-1 content-start">
           {metrics.map((m) => (
             <div key={m.label} className="flex items-center justify-between gap-2 py-1 border-b border-border/30 last:border-0">
               <span className="text-xs text-muted-foreground leading-tight">
@@ -620,7 +620,7 @@ export function SummaryPage() {
 
             {/* Fair Value — conditional */}
             {fvResult !== null ? (
-              <div className="rounded-2xl border border-border/50 border-l-4 border-l-teal-400 dark:border-l-teal-500 bg-card shadow-sm overflow-hidden flex flex-col h-full">
+              <div className="rounded-2xl border border-border/50 border-l-4 border-l-teal-400 dark:border-l-teal-500 bg-card shadow-sm overflow-hidden flex flex-col lg:h-full">
                 <div className="flex items-center gap-2 px-4 py-2 bg-teal-50 dark:bg-teal-950/30 shrink-0">
                   <Target className="w-4 h-4 text-teal-500 dark:text-teal-400 shrink-0" />
                   <span className="font-semibold text-sm text-foreground">
@@ -632,7 +632,7 @@ export function SummaryPage() {
                       : (isEn ? 'Cyclical' : 'Siklus')}
                   </span>
                 </div>
-                <div className="px-4 py-3 flex-1">
+                <div className="px-4 py-3 lg:flex-1">
                   <div className="grid grid-cols-1 gap-y-1">
                     <div className="flex items-center justify-between gap-2 py-1 border-b border-border/30">
                       <span className="text-xs text-muted-foreground">
@@ -682,7 +682,7 @@ export function SummaryPage() {
                 </div>
               </div>
             ) : (
-              <div className="rounded-2xl border border-border/40 bg-muted/30 p-5 flex gap-4 items-start h-full">
+              <div className="rounded-2xl border border-border/40 bg-muted/30 p-5 flex gap-4 items-start lg:h-full">
                 <Target className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
                 <div>
                   <p className="font-semibold text-muted-foreground text-sm">
