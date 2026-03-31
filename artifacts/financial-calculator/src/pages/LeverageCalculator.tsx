@@ -63,13 +63,13 @@ export function LeverageCalculator() {
 
   const results: OutputResult[] = [
     (() => {
-      const hasInputs = has('totalDebt') && has('totalEquity') && n('totalEquity') !== 0;
-      const val = hasInputs ? n('totalDebt') / n('totalEquity') : null;
+      const hasInputs = has('totalLiabilities') && has('totalEquity') && n('totalEquity') !== 0;
+      const val = hasInputs ? n('totalLiabilities') / n('totalEquity') : null;
       let interp: InterpretationType = 'average';
       let en = ''; let id = ''; let cEn = ''; let cId = '';
       if (val !== null) {
-        if (val < 1)       { interp = 'good';    en = 'Low leverage — company relies more on equity than debt.'; id = 'Leverage rendah — perusahaan lebih mengandalkan ekuitas dari pada utang.'; cEn = 'Low leverage — funded more by equity than debt.'; cId = 'Leverage rendah — lebih banyak didanai ekuitas dari utang.'; }
-        else if (val <= 2) { interp = 'average'; en = 'Moderate leverage — manageable debt level.'; id = 'Leverage moderat — tingkat utang yang dapat dikelola.'; cEn = 'Moderate leverage — debt is manageable.'; cId = 'Leverage moderat — utang masih dapat dikelola.'; }
+        if (val < 1)       { interp = 'good';    en = 'Low leverage — company relies more on equity than liabilities.'; id = 'Leverage rendah — perusahaan lebih mengandalkan ekuitas daripada liabilitas.'; cEn = 'Low leverage — funded more by equity than liabilities.'; cId = 'Leverage rendah — lebih banyak didanai ekuitas daripada liabilitas.'; }
+        else if (val <= 2) { interp = 'average'; en = 'Moderate leverage — manageable liabilities level.'; id = 'Leverage moderat — tingkat liabilitas yang dapat dikelola.'; cEn = 'Moderate leverage — liabilities are manageable.'; cId = 'Leverage moderat — liabilitas masih dapat dikelola.'; }
         else               { interp = 'poor';    en = 'High leverage — company is heavily reliant on debt financing.'; id = 'Leverage tinggi — perusahaan sangat bergantung pada pembiayaan utang.'; cEn = 'High leverage — heavily reliant on debt.'; cId = 'Leverage tinggi — sangat bergantung pada utang.'; }
       }
       return {
@@ -78,12 +78,12 @@ export function LeverageCalculator() {
         interpretation: interp, interpretationText: en, interpretationTextId: id,
         commentEn: cEn, commentId: cId,
         info: {
-          descEn: 'Compares total debt to shareholder equity. Shows how much of the company is financed by debt versus owners\' money.',
-          descId: 'Membandingkan total utang dengan ekuitas pemegang saham. Menunjukkan seberapa besar perusahaan dibiayai utang versus modal pemilik.',
+          descEn: 'Compares total liabilities to shareholder equity. Shows how much of the company is financed by liabilities versus owners\' money.',
+          descId: 'Membandingkan total liabilitas dengan ekuitas pemegang saham. Menunjukkan seberapa besar perusahaan dibiayai liabilitas versus modal pemilik.',
           benchmarkEn: 'Low: < 1×. Moderate: 1×–2×. High: > 2×',
           benchmarkId: 'Rendah: < 1×. Sedang: 1×–2×. Tinggi: > 2×',
           direction: 'lower',
-          formula: 'Total Debt ÷ Total Equity',
+          formula: 'Total Liabilities ÷ Total Equity',
         },
       };
     })(),

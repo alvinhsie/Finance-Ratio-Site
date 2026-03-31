@@ -190,15 +190,15 @@ function computeLeverage(v: Record<string, string>): Metric[] {
   const h = (k: string) => has(v, k);
   return [
     (() => {
-      const val = (h('totalDebt') && h('totalEquity') && n(v.totalEquity) !== 0)
-        ? n(v.totalDebt) / n(v.totalEquity) : null;
+      const val = (h('totalLiabilities') && h('totalEquity') && n(v.totalEquity) !== 0)
+        ? n(v.totalLiabilities) / n(v.totalEquity) : null;
       let interp: Interp = 'average';
       if (val !== null) {
         if (val < 1)      interp = 'good';
         else if (val <= 2) interp = 'average';
         else              interp = 'poor';
       }
-      return { label: 'Debt / Equity', labelId: 'Utang / Ekuitas', value: val, formatted: val !== null ? fmtX(val) : '—', interp };
+      return { label: 'Liabilities / Equity', labelId: 'Liabilitas / Ekuitas', value: val, formatted: val !== null ? fmtX(val) : '—', interp };
     })(),
     (() => {
       const val = (h('totalLiabilities') && h('totalAssets') && n(v.totalAssets) !== 0)
