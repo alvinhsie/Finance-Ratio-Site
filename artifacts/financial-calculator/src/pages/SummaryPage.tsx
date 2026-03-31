@@ -397,24 +397,24 @@ function SectionCard({ title, titleId, icon, accentColor, headerBg, leftBorder, 
   const filledCount = visibleMetrics.length;
 
   return (
-    <div className={cn('rounded-2xl border border-border/50 bg-card shadow-sm overflow-hidden border-l-4 flex flex-col lg:h-full', leftBorder)}>
-      <div className={cn('flex items-center gap-2 px-4 py-2 shrink-0', headerBg)}>
+    <div className={cn('rounded-xl border border-border/50 bg-card shadow-sm overflow-hidden border-l-4 flex flex-col', leftBorder)}>
+      <div className={cn('flex items-center gap-1.5 px-3 py-1.5 shrink-0', headerBg)}>
         <span className={cn('shrink-0', accentColor)}>{icon}</span>
-        <span className="font-semibold text-sm text-foreground">
+        <span className="font-semibold text-xs text-foreground">
           {language === 'id' ? titleId : title}
         </span>
-        <span className="ml-auto text-xs text-muted-foreground">
+        <span className="ml-auto text-[10px] text-muted-foreground">
           {filledCount}/{totalMetrics}
         </span>
       </div>
-      <div className="px-4 py-3 flex flex-col lg:flex-1">
-        <div className="grid grid-cols-1 gap-y-1 lg:flex-1 content-start">
+      <div className="px-3 py-2 flex flex-col">
+        <div className="grid grid-cols-1 gap-y-0">
           {metrics.map((m) => (
-            <div key={m.label} className="flex items-center justify-between gap-2 py-1 border-b border-border/30 last:border-0">
-              <span className="text-xs text-muted-foreground leading-tight">
+            <div key={m.label} className="flex items-center justify-between gap-2 py-0.5 border-b border-border/20 last:border-0">
+              <span className="text-[11px] text-muted-foreground leading-tight">
                 {language === 'id' ? m.labelId : m.label}
               </span>
-              <span className={cn('text-sm font-semibold tabular-nums shrink-0', m.value !== null ? VALUE_COLOR[m.interp] : 'text-muted-foreground/40')}>
+              <span className={cn('text-xs font-semibold tabular-nums shrink-0', m.value !== null ? VALUE_COLOR[m.interp] : 'text-muted-foreground/40')}>
                 {m.formatted}
               </span>
             </div>
@@ -492,33 +492,26 @@ export function SummaryPage() {
     .map(([k]) => isEn ? TAB_LABELS[k].en : TAB_LABELS[k].id);
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 lg:p-5 lg:flex lg:flex-col lg:overflow-hidden">
-      <div className="max-w-full mx-auto flex flex-col gap-3 lg:flex-1 lg:min-h-0">
+    <div className="flex-1 overflow-y-auto p-3 lg:p-4">
+      <div className="max-w-full mx-auto flex flex-col gap-2">
 
         {/* Header */}
-        <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-xl bg-primary/10 shrink-0">
-            <LayoutDashboard className="w-5 h-5 text-primary" />
+        <div className="flex items-center gap-2">
+          <div className="p-1.5 rounded-lg bg-primary/10 shrink-0">
+            <LayoutDashboard className="w-4 h-4 text-primary" />
           </div>
-          <div className="min-w-0">
-            <h1 className="text-xl font-bold text-foreground leading-tight">
-              {isEn ? 'Company Summary' : 'Ringkasan Perusahaan'}
-            </h1>
-            <p className="text-xs text-muted-foreground mt-0.5 lg:hidden">
-              {isEn
-                ? 'All ratios at a glance — fill every calculator tab to unlock this view.'
-                : 'Semua rasio sekaligus — isi setiap tab kalkulator untuk membuka tampilan ini.'}
-            </p>
-          </div>
+          <h1 className="text-base font-bold text-foreground leading-tight">
+            {isEn ? 'Company Summary' : 'Ringkasan Perusahaan'}
+          </h1>
         </div>
 
         {/* Readiness chips */}
-        <div className="flex flex-wrap gap-1.5">
+        <div className="flex flex-wrap gap-1">
           {(Object.entries(checks) as [keyof typeof checks, boolean][]).map(([key, ready]) => (
             <div
               key={key}
               className={cn(
-                'flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium border',
+                'flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium border',
                 ready
                   ? 'bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800'
                   : 'bg-muted text-muted-foreground border-border/50'
@@ -534,7 +527,7 @@ export function SummaryPage() {
 
         {/* Not ready alert */}
         {!allRequired && (
-          <div className="rounded-2xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 p-4 flex gap-3 items-start">
+          <div className="rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 p-3 flex gap-2.5 items-start">
             <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
             <div>
               <p className="font-semibold text-amber-800 dark:text-amber-200 text-sm">
@@ -551,7 +544,7 @@ export function SummaryPage() {
 
         {/* Main sections — always rendered once all required tabs are filled */}
         {allRequired && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:flex-1 lg:min-h-0 lg:auto-rows-[minmax(min-content,1fr)]">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
 
             {/* Liquidity */}
             <SectionCard
@@ -564,11 +557,11 @@ export function SummaryPage() {
               language={language}
               extra={health !== null ? (
                 <div className={cn(
-                  'flex items-center gap-2 mt-4 px-3 py-2 rounded-xl border text-sm font-semibold',
+                  'flex items-center gap-1.5 mt-1.5 px-2 py-1 rounded-lg border text-[11px] font-semibold',
                   HEALTH_CONFIG[health].bg, HEALTH_CONFIG[health].text, HEALTH_CONFIG[health].border
                 )}>
                   {HEALTH_CONFIG[health].icon}
-                  <span>{isEn ? 'Liquidity Health:' : 'Kesehatan Likuiditas:'}</span>
+                  <span>{isEn ? 'Health:' : 'Kesehatan:'}</span>
                   <span>{isEn ? HEALTH_CONFIG[health].labelEn : HEALTH_CONFIG[health].labelId}</span>
                 </div>
               ) : undefined}
@@ -620,43 +613,43 @@ export function SummaryPage() {
 
             {/* Fair Value — conditional */}
             {fvResult !== null ? (
-              <div className="rounded-2xl border border-border/50 border-l-4 border-l-teal-400 dark:border-l-teal-500 bg-card shadow-sm overflow-hidden flex flex-col lg:h-full">
-                <div className="flex items-center gap-2 px-4 py-2 bg-teal-50 dark:bg-teal-950/30 shrink-0">
-                  <Target className="w-4 h-4 text-teal-500 dark:text-teal-400 shrink-0" />
-                  <span className="font-semibold text-sm text-foreground">
+              <div className="rounded-xl border border-border/50 border-l-4 border-l-teal-400 dark:border-l-teal-500 bg-card shadow-sm overflow-hidden flex flex-col">
+                <div className="flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 dark:bg-teal-950/30 shrink-0">
+                  <Target className="w-3.5 h-3.5 text-teal-500 dark:text-teal-400 shrink-0" />
+                  <span className="font-semibold text-xs text-foreground">
                     {isEn ? 'Fair Value' : 'Nilai Wajar'}
                   </span>
-                  <span className="ml-1 text-xs bg-teal-100 dark:bg-teal-900/50 text-teal-600 dark:text-teal-400 px-2 py-0.5 rounded-full font-medium border border-teal-200 dark:border-teal-800">
+                  <span className="ml-1 text-[10px] bg-teal-100 dark:bg-teal-900/50 text-teal-600 dark:text-teal-400 px-1.5 py-0.5 rounded-full font-medium border border-teal-200 dark:border-teal-800">
                     {fairValueMode === 'standard'
                       ? (isEn ? 'Standard' : 'Standar')
                       : (isEn ? 'Cyclical' : 'Siklus')}
                   </span>
                 </div>
-                <div className="px-4 py-3 lg:flex-1">
-                  <div className="grid grid-cols-1 gap-y-1">
-                    <div className="flex items-center justify-between gap-2 py-1 border-b border-border/30">
-                      <span className="text-xs text-muted-foreground">
+                <div className="px-3 py-2">
+                  <div className="grid grid-cols-1 gap-y-0">
+                    <div className="flex items-center justify-between gap-2 py-0.5 border-b border-border/20">
+                      <span className="text-[11px] text-muted-foreground">
                         {isEn ? 'Book Value / Share' : 'Nilai Buku / Saham'}
                       </span>
-                      <span className="text-sm font-semibold tabular-nums text-blue-600 dark:text-blue-400">
+                      <span className="text-xs font-semibold tabular-nums text-blue-600 dark:text-blue-400">
                         {fvResult.bvps.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </span>
                     </div>
-                    <div className="flex items-center justify-between gap-2 py-1 border-b border-border/30">
-                      <span className="text-xs text-muted-foreground">
+                    <div className="flex items-center justify-between gap-2 py-0.5 border-b border-border/20">
+                      <span className="text-[11px] text-muted-foreground">
                         {isEn ? 'Intrinsic Value' : 'Nilai Intrinsik'}
                       </span>
-                      <span className="text-sm font-semibold tabular-nums text-teal-600 dark:text-teal-400">
+                      <span className="text-xs font-semibold tabular-nums text-teal-600 dark:text-teal-400">
                         {fvResult.intrinsic.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </span>
                     </div>
                     {fvResult.upside !== null && (
-                      <div className="flex items-center justify-between gap-2 py-1 border-b border-border/30">
-                        <span className="text-xs text-muted-foreground">
+                      <div className="flex items-center justify-between gap-2 py-0.5 border-b border-border/20">
+                        <span className="text-[11px] text-muted-foreground">
                           {isEn ? 'Upside / Downside' : 'Potensi Naik / Turun'}
                         </span>
                         <span className={cn(
-                          'text-sm font-semibold tabular-nums',
+                          'text-xs font-semibold tabular-nums',
                           fvResult.upside >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-500 dark:text-red-400'
                         )}>
                           {fmtSign(fvResult.upside)}
@@ -664,12 +657,12 @@ export function SummaryPage() {
                       </div>
                     )}
                     {fvResult.mos !== null && (
-                      <div className="flex items-center justify-between gap-2 py-1 border-b border-border/30">
-                        <span className="text-xs text-muted-foreground">
+                      <div className="flex items-center justify-between gap-2 py-0.5 border-b border-border/20 last:border-0">
+                        <span className="text-[11px] text-muted-foreground">
                           {isEn ? 'Margin of Safety' : 'Margin Keamanan'}
                         </span>
                         <span className={cn(
-                          'text-sm font-semibold tabular-nums',
+                          'text-xs font-semibold tabular-nums',
                           fvResult.mos >= 20 ? 'text-green-600 dark:text-green-400'
                           : fvResult.mos >= 0 ? 'text-yellow-400'
                           : 'text-red-500 dark:text-red-400'
@@ -682,13 +675,13 @@ export function SummaryPage() {
                 </div>
               </div>
             ) : (
-              <div className="rounded-2xl border border-border/40 bg-muted/30 p-5 flex gap-4 items-start lg:h-full">
-                <Target className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
+              <div className="rounded-xl border border-border/40 bg-muted/30 p-3 flex gap-2 items-start">
+                <Target className="w-3.5 h-3.5 text-muted-foreground shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-semibold text-muted-foreground text-sm">
+                  <p className="font-semibold text-muted-foreground text-xs">
                     {isEn ? 'Fair Value not filled' : 'Nilai Wajar belum diisi'}
                   </p>
-                  <p className="text-xs text-muted-foreground/70 mt-1">
+                  <p className="text-[11px] text-muted-foreground/70 mt-0.5">
                     {isEn
                       ? 'Fill in the Fair Value tab to see the intrinsic value, upside/downside, and margin of safety.'
                       : 'Isi tab Nilai Wajar untuk melihat nilai intrinsik, potensi naik/turun, dan margin keamanan.'}
