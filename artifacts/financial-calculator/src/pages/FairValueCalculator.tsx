@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useCalculatorState, FAIRVALUE_STD_EMPTY, FAIRVALUE_CYC_EMPTY } from '@/lib/CalculatorStateContext';
 import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, BookOpen, AlertCircle } from 'lucide-react';
 import { useLanguage } from '@/lib/LanguageContext';
@@ -7,24 +8,6 @@ import { NumericInput } from '@/components/ui/NumericInput';
 
 type Mode = 'standard' | 'cyclical';
 
-const INITIAL_STD: Record<string, string> = {
-  currentEps:        '',
-  totalEquity:       '',
-  sharesOutstanding: '',
-  growthRate:        '',
-  inflationRate:     '',
-  currentPrice:      '',
-};
-
-const INITIAL_CYC: Record<string, string> = {
-  normalizedEps:     '',
-  totalEquity:       '',
-  sharesOutstanding: '',
-  shortTermCagr:     '',
-  longTermCagr:      '',
-  inflationRate:     '',
-  currentPrice:      '',
-};
 
 function fmtNum(v: number, decimals = 2): string {
   return v.toLocaleString('en-US', {
@@ -41,8 +24,13 @@ function fmtPct(v: number, decimals = 1): string {
 export function FairValueCalculator() {
   const { language, t } = useLanguage();
   const [mode, setMode] = useState<Mode>('standard');
-  const [stdVals, setStdVals] = useState<Record<string, string>>({ ...INITIAL_STD });
-  const [cycVals, setCycVals] = useState<Record<string, string>>({ ...INITIAL_CYC });
+  const { state, setCalc, clearAll } = useCalculatorState();
+  const stdVals = state.fairValueStd;
+  const cycVals = state.fairValueCyc;
+  const setStdVals = (v: Record<string, string> | ((p: Record<string, string>) => Record<string, string>)) =>
+    setCalc('fairValueStd', typeof v === 'function' ? v(state.fairValueStd) : v);
+  const setCycVals = (v: Record<string, string> | ((p: Record<string, string>) => Record<string, string>)) =>
+    setCalc('fairValueCyc', typeof v === 'function' ? v(state.fairValueCyc) : v);
 
   const vals    = mode === 'standard' ? stdVals : cycVals;
   const setVals = mode === 'standard' ? setStdVals : setCycVals;
@@ -346,12 +334,20 @@ export function FairValueCalculator() {
             <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
               {language === 'en' ? 'Inputs' : 'Input'}
             </p>
-            <button
-              onClick={() => setVals(mode === 'standard' ? { ...INITIAL_STD } : { ...INITIAL_CYC })}
-              className="text-xs font-semibold text-red-500 hover:text-red-600 transition-colors"
-            >
-              {language === 'en' ? 'Clear' : 'Hapus'}
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setVals(mode === 'standard' ? { ...FAIRVALUE_STD_EMPTY } : { ...FAIRVALUE_CYC_EMPTY })}
+                className="text-xs font-semibold text-red-500 hover:text-red-600 transition-colors"
+              >
+                {language === 'en' ? 'Clear' : 'Hapus'}
+              </button>
+              <button
+                onClick={clearAll}
+                className="text-xs font-semibold text-orange-500 hover:text-orange-600 transition-colors"
+              >
+                {language === 'en' ? 'Clear All' : 'Hapus Semua'}
+              </button>
+            </div>
           </div>
 
           {/* ── Mode toggle ── */}

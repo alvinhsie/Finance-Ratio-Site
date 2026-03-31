@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { LanguageProvider } from "@/lib/LanguageContext";
+import { CalculatorStateProvider } from "@/lib/CalculatorStateContext";
 import { AppLayout } from "@/components/layout/AppLayout";
 import { CategoryPage } from "@/pages/CategoryPage";
 import { LiquidityCalculator } from "@/pages/LiquidityCalculator";
@@ -51,11 +52,13 @@ function App() {
 
   return (
     <LanguageProvider>
-      <QueryClientProvider client={queryClient}>
-        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-          <Router />
-        </WouterRouter>
-      </QueryClientProvider>
+      <CalculatorStateProvider>
+        <QueryClientProvider client={queryClient}>
+          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+            <Router />
+          </WouterRouter>
+        </QueryClientProvider>
+      </CalculatorStateProvider>
     </LanguageProvider>
   );
 }

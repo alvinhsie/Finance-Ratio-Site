@@ -4,6 +4,7 @@ import { Info, ChevronUp, ArrowUp, ArrowDown, Target, ShieldCheck, Flame, Trendi
 import { useLanguage } from '@/lib/LanguageContext';
 import { cn, formatNumber } from '@/lib/utils';
 import { NumericInput } from '@/components/ui/NumericInput';
+import { useCalculatorState, LIQUIDITY_EMPTY } from '@/lib/CalculatorStateContext';
 
 type InterpretationType = 'good' | 'average' | 'poor' | 'neutral';
 type Direction = 'higher' | 'lower' | 'range';
@@ -54,14 +55,12 @@ function fmtCurrency(val: number): string {
   return formatNumber(val, 2);
 }
 
-const EMPTY: Record<string, string> = {
-  currentAssets: '', currentLiabilities: '', inventory: '',
-  cash: '', cfFromOps: '', ebit: '', interestExpense: '',
-};
-
 export function LiquidityCalculator() {
   const { language, t } = useLanguage();
-  const [vals, setVals] = useState<Record<string, string>>({ ...EMPTY });
+  const { state, setCalc, clearAll } = useCalculatorState();
+  const vals = state.liquidity;
+  const setVals = (v: Record<string, string> | ((p: Record<string, string>) => Record<string, string>)) =>
+    setCalc('liquidity', typeof v === 'function' ? v(state.liquidity) : v);
   const [openInfo, setOpenInfo] = useState<Record<string, boolean>>({});
   const toggleInfo = (key: string) => setOpenInfo(prev => ({ ...prev, [key]: !prev[key] }));
 
@@ -422,12 +421,20 @@ export function LiquidityCalculator() {
             <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
               {language === 'en' ? 'Inputs' : 'Input'}
             </p>
-            <button
-              onClick={() => setVals({ ...EMPTY })}
-              className="text-xs font-semibold text-red-500 hover:text-red-600 transition-colors"
-            >
-              {language === 'en' ? 'Clear' : 'Hapus'}
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setCalc('liquidity', { ...LIQUIDITY_EMPTY })}
+                className="text-xs font-semibold text-red-500 hover:text-red-600 transition-colors"
+              >
+                {language === 'en' ? 'Clear' : 'Hapus'}
+              </button>
+              <button
+                onClick={clearAll}
+                className="text-xs font-semibold text-orange-500 hover:text-orange-600 transition-colors"
+              >
+                {language === 'en' ? 'Clear All' : 'Hapus Semua'}
+              </button>
+            </div>
           </div>
 
           <div className="space-y-3">

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useCalculatorState, LEVERAGE_EMPTY } from '@/lib/CalculatorStateContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Info, ChevronUp, ArrowUp, ArrowDown, Target } from 'lucide-react';
 import { useLanguage } from '@/lib/LanguageContext';
@@ -47,14 +48,12 @@ function fmt(val: number): string {
   return `${formatNumber(val, 2)}x`;
 }
 
-const EMPTY: Record<string, string> = {
-  totalLiabilities: '', totalEquity: '', totalAssets: '',
-  totalDebt: '', ebitda: '',
-};
-
 export function LeverageCalculator() {
   const { language, t } = useLanguage();
-  const [vals, setVals] = useState<Record<string, string>>({ ...EMPTY });
+  const { state, setCalc, clearAll } = useCalculatorState();
+  const vals = state.leverage;
+  const setVals = (v: Record<string, string> | ((p: Record<string, string>) => Record<string, string>)) =>
+    setCalc('leverage', typeof v === 'function' ? v(state.leverage) : v);
   const [openInfo, setOpenInfo] = useState<Record<string, boolean>>({});
   const toggleInfo = (key: string) => setOpenInfo(prev => ({ ...prev, [key]: !prev[key] }));
 
@@ -262,12 +261,20 @@ export function LeverageCalculator() {
             <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
               {language === 'en' ? 'Inputs' : 'Input'}
             </p>
-            <button
-              onClick={() => setVals({ ...EMPTY })}
-              className="text-xs font-semibold text-red-500 hover:text-red-600 transition-colors"
-            >
-              {language === 'en' ? 'Clear' : 'Hapus'}
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setCalc('leverage', { ...LEVERAGE_EMPTY })}
+                className="text-xs font-semibold text-red-500 hover:text-red-600 transition-colors"
+              >
+                {language === 'en' ? 'Clear' : 'Hapus'}
+              </button>
+              <button
+                onClick={clearAll}
+                className="text-xs font-semibold text-orange-500 hover:text-orange-600 transition-colors"
+              >
+                {language === 'en' ? 'Clear All' : 'Hapus Semua'}
+              </button>
+            </div>
           </div>
 
           <div className="space-y-3">

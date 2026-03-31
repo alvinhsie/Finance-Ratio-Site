@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useCalculatorState, VALUATION_EMPTY } from '@/lib/CalculatorStateContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Info, ChevronUp, ArrowUp, ArrowDown, Target } from 'lucide-react';
 import { useLanguage } from '@/lib/LanguageContext';
@@ -61,14 +62,12 @@ function fmtLargeNumber(val: number): string {
   return `${sign}${formatNumber(abs, 2)}`;
 }
 
-const EMPTY: Record<string, string> = {
-  marketPrice: '', eps: '', bvps: '', sharesOutstanding: '',
-  totalDebt: '', cashEquivalents: '', ebitda: '', dividendPerShare: '',
-};
-
 export function ValuationCalculator() {
   const { language, t } = useLanguage();
-  const [vals, setVals] = useState<Record<string, string>>({ ...EMPTY });
+  const { state, setCalc, clearAll } = useCalculatorState();
+  const vals = state.valuation;
+  const setVals = (v: Record<string, string> | ((p: Record<string, string>) => Record<string, string>)) =>
+    setCalc('valuation', typeof v === 'function' ? v(state.valuation) : v);
   const [openInfo, setOpenInfo] = useState<Record<string, boolean>>({});
   const toggleInfo = (key: string) => setOpenInfo(prev => ({ ...prev, [key]: !prev[key] }));
 
@@ -334,12 +333,20 @@ export function ValuationCalculator() {
             <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">
               {language === 'en' ? 'Inputs' : 'Input'}
             </p>
-            <button
-              onClick={() => setVals({ ...EMPTY })}
-              className="text-xs font-semibold text-red-500 hover:text-red-600 transition-colors"
-            >
-              {language === 'en' ? 'Clear' : 'Hapus'}
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setCalc('valuation', { ...VALUATION_EMPTY })}
+                className="text-xs font-semibold text-red-500 hover:text-red-600 transition-colors"
+              >
+                {language === 'en' ? 'Clear' : 'Hapus'}
+              </button>
+              <button
+                onClick={clearAll}
+                className="text-xs font-semibold text-orange-500 hover:text-orange-600 transition-colors"
+              >
+                {language === 'en' ? 'Clear All' : 'Hapus Semua'}
+              </button>
+            </div>
           </div>
 
           <div className="space-y-3">
