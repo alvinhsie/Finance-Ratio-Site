@@ -64,7 +64,7 @@ export const CATEGORIES: CategoryDef[] = [
           if (val >= 1.5 && val <= 3) { interp = 'good'; text = "Strong liquidity position. Generally, a ratio between 1.5 and 3 is considered healthy."; }
           else if (val > 3) { interp = 'neutral'; text = "Very high liquidity. Might indicate inefficient use of assets."; }
           else if (val < 1) { interp = 'poor'; text = "Poor liquidity. Company may struggle to meet short-term obligations."; }
-          return { value: val, formatted: `${formatNumber(val)}x`, interpretation: interp, interpretationText: text };
+          return { value: val, formatted: `${formatNumber(val)}×`, interpretation: interp, interpretationText: text };
         }
       },
       {
@@ -84,7 +84,7 @@ export const CATEGORIES: CategoryDef[] = [
           let text = "Acceptable quick liquidity.";
           if (val > 1) { interp = 'good'; text = "Strong ability to meet short-term obligations without selling inventory."; }
           else if (val < 1) { interp = 'poor'; text = "May rely too heavily on inventory to meet short-term obligations."; }
-          return { value: val, formatted: `${formatNumber(val)}x`, interpretation: interp, interpretationText: text };
+          return { value: val, formatted: `${formatNumber(val)}×`, interpretation: interp, interpretationText: text };
         }
       },
       {
@@ -103,7 +103,7 @@ export const CATEGORIES: CategoryDef[] = [
           let text = "Ratio generally below 1 is common, as companies rarely keep enough cash to cover all current liabilities.";
           if (val >= 0.5) { interp = 'good'; text = "Very strong cash position."; }
           else if (val < 0.1) { interp = 'poor'; text = "Very low cash reserves, high reliance on receivables/inventory."; }
-          return { value: val, formatted: `${formatNumber(val)}x`, interpretation: interp, interpretationText: text };
+          return { value: val, formatted: `${formatNumber(val)}×`, interpretation: interp, interpretationText: text };
         }
       }
     ]
@@ -236,7 +236,7 @@ export const CATEGORIES: CategoryDef[] = [
           const val = vals.totalDebt / vals.equity;
           return { 
             value: val, 
-            formatted: `${formatNumber(val)}x`, 
+            formatted: `${formatNumber(val)}×`, 
             interpretation: val > 2 ? 'poor' : val > 1 ? 'average' : 'good', 
             interpretationText: "A ratio > 2 is generally considered risky (highly leveraged), though acceptable in capital-intensive industries." 
           };
@@ -276,7 +276,7 @@ export const CATEGORIES: CategoryDef[] = [
           const val = vals.ebit / vals.interestExpense;
           return { 
             value: val, 
-            formatted: `${formatNumber(val)}x`, 
+            formatted: `${formatNumber(val)}×`, 
             interpretation: val > 3 ? 'good' : val > 1.5 ? 'average' : 'poor', 
             interpretationText: "A ratio above 3 is generally considered safe. Below 1.5 warns of potential default risk." 
           };
@@ -296,9 +296,9 @@ export const CATEGORIES: CategoryDef[] = [
           const val = vals.noi / vals.debtService;
           return { 
             value: val, 
-            formatted: `${formatNumber(val)}x`, 
+            formatted: `${formatNumber(val)}×`, 
             interpretation: val >= 1.25 ? 'good' : val >= 1 ? 'average' : 'poor', 
-            interpretationText: "A DSCR less than 1 means negative cash flow. Lenders usually require a DSCR of at least 1.2x to 1.25x." 
+            interpretationText: "A DSCR less than 1 means negative cash flow. Lenders usually require a DSCR of at least 1.2× to 1.25×." 
           };
         }
       }
@@ -324,7 +324,7 @@ export const CATEGORIES: CategoryDef[] = [
           const val = vals.revenue / vals.totalAssets;
           return { 
             value: val, 
-            formatted: `${formatNumber(val)}x`, 
+            formatted: `${formatNumber(val)}×`, 
             interpretation: 'neutral', 
             interpretationText: "Highly industry dependent. Retailers have high turnover, utilities have low. Higher is better within peers." 
           };
@@ -344,7 +344,7 @@ export const CATEGORIES: CategoryDef[] = [
           const val = vals.cogs / vals.avgInventory;
           return { 
             value: val, 
-            formatted: `${formatNumber(val)}x`, 
+            formatted: `${formatNumber(val)}×`, 
             interpretation: 'neutral', 
             interpretationText: "A high ratio implies strong sales or insufficient inventory. A low ratio implies weak sales or excess inventory." 
           };
@@ -392,7 +392,7 @@ export const CATEGORIES: CategoryDef[] = [
           const val = vals.price / vals.eps;
           return { 
             value: val, 
-            formatted: `${formatNumber(val)}x`, 
+            formatted: `${formatNumber(val)}×`, 
             interpretation: 'neutral', 
             interpretationText: "A high P/E could mean the stock is overvalued, or that investors expect high growth. Compare to industry average." 
           };
@@ -412,7 +412,7 @@ export const CATEGORIES: CategoryDef[] = [
           const val = vals.price / vals.bvps;
           return { 
             value: val, 
-            formatted: `${formatNumber(val)}x`, 
+            formatted: `${formatNumber(val)}×`, 
             interpretation: val < 1 ? 'good' : 'neutral', 
             interpretationText: "P/B < 1 may indicate an undervalued stock, or something is fundamentally wrong with the company." 
           };
@@ -432,9 +432,9 @@ export const CATEGORIES: CategoryDef[] = [
           const val = vals.ev / vals.ebitda;
           return { 
             value: val, 
-            formatted: `${formatNumber(val)}x`, 
+            formatted: `${formatNumber(val)}×`, 
             interpretation: val < 10 ? 'good' : 'average', 
-            interpretationText: "A ratio under 10x is generally viewed as healthy and below average (potentially undervalued). Highly industry-dependent." 
+            interpretationText: "A ratio under 10× is generally viewed as healthy and below average (potentially undervalued). Highly industry-dependent." 
           };
         }
       },

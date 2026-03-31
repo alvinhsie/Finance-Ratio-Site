@@ -228,7 +228,7 @@ export const translations = {
           debtService: "Total Debt Service",
         },
         interpretations: {
-          any: "A DSCR less than 1 means negative cash flow. Lenders usually require a DSCR of at least 1.2x to 1.25x.",
+          any: "A DSCR less than 1 means negative cash flow. Lenders usually require a DSCR of at least 1.2× to 1.25×.",
         },
       },
       "asset-turnover": {
@@ -300,7 +300,7 @@ export const translations = {
           ebitda: "EBITDA",
         },
         interpretations: {
-          any: "A ratio under 10x is generally viewed as healthy and below average (potentially undervalued). Highly industry-dependent.",
+          any: "A ratio under 10× is generally viewed as healthy and below average (potentially undervalued). Highly industry-dependent.",
         },
       },
       "dividend-yield": {
@@ -622,7 +622,7 @@ export const translations = {
           debtService: "Total Layanan Utang",
         },
         interpretations: {
-          any: "DSCR kurang dari 1 berarti arus kas negatif. Pemberi pinjaman biasanya mensyaratkan DSCR minimal 1,2x hingga 1,25x.",
+          any: "DSCR kurang dari 1 berarti arus kas negatif. Pemberi pinjaman biasanya mensyaratkan DSCR minimal 1,2× hingga 1,25×.",
         },
       },
       "asset-turnover": {
@@ -694,7 +694,7 @@ export const translations = {
           ebitda: "EBITDA",
         },
         interpretations: {
-          any: "Rasio di bawah 10x umumnya dipandang sehat dan di bawah rata-rata (berpotensi undervalued). Sangat bergantung pada industri.",
+          any: "Rasio di bawah 10× umumnya dipandang sehat dan di bawah rata-rata (berpotensi undervalued). Sangat bergantung pada industri.",
         },
       },
       "dividend-yield": {
