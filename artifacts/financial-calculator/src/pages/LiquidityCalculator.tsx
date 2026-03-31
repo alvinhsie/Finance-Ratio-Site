@@ -377,14 +377,20 @@ export function LiquidityCalculator() {
                       : !wcPos && cfoPos ? variants.recov
                       : variants.danger;
 
-              const subEn = wcPos && cfoPos  ? 'Working capital positive · Cash flow positive'
-                          : wcPos && !cfoPos  ? 'Working capital positive · Cash flow negative'
-                          : !wcPos && cfoPos  ? 'Working capital negative · Cash flow positive'
-                          : 'Working capital negative · Cash flow negative';
-              const subId = wcPos && cfoPos  ? 'Modal kerja positif · Arus kas positif'
-                          : wcPos && !cfoPos  ? 'Modal kerja positif · Arus kas negatif'
-                          : !wcPos && cfoPos  ? 'Modal kerja negatif · Arus kas positif'
-                          : 'Modal kerja negatif · Arus kas negatif';
+              const subEn = wcPos && cfoPos
+                ? 'Positive working capital and positive operating cash flow. The company is liquid and generating cash from operations.'
+                : wcPos && !cfoPos
+                ? 'Positive working capital but negative operating cash flow. The company has short-term buffer, but is burning cash from operations.'
+                : !wcPos && cfoPos
+                ? 'Negative working capital but positive operating cash flow. The company is generating cash, which may help recover its short-term position.'
+                : 'Negative working capital and negative operating cash flow. The company faces serious short-term liquidity risk.';
+              const subId = wcPos && cfoPos
+                ? 'Modal kerja positif dan arus kas operasi positif. Perusahaan likuid dan menghasilkan kas dari operasional.'
+                : wcPos && !cfoPos
+                ? 'Modal kerja positif namun arus kas operasi negatif. Perusahaan memiliki penyangga jangka pendek, tetapi membakar kas dari operasional.'
+                : !wcPos && cfoPos
+                ? 'Modal kerja negatif namun arus kas operasi positif. Perusahaan menghasilkan kas yang dapat membantu memulihkan posisi jangka pendeknya.'
+                : 'Modal kerja negatif dan arus kas operasi negatif. Perusahaan menghadapi risiko likuiditas jangka pendek yang serius.';
 
               return (
                 <motion.div
@@ -397,13 +403,10 @@ export function LiquidityCalculator() {
                 >
                   <div className="shrink-0">{v.icon}</div>
                   <div className="flex flex-col min-w-0">
-                    <p className={cn('text-[11px] font-semibold uppercase tracking-widest mb-0.5', v.sub)}>
-                      {language === 'en' ? 'Liquidity Health' : 'Kesehatan Likuiditas'}
-                    </p>
-                    <p className={cn('text-base font-extrabold leading-tight', v.text)}>
+                    <p className={cn('text-base font-extrabold leading-tight mb-1', v.text)}>
                       {language === 'en' ? v.label : v.labelId}
                     </p>
-                    <p className={cn('text-[11px] mt-0.5', v.sub)}>
+                    <p className={cn('text-[11px] leading-relaxed', v.sub)}>
                       {language === 'en' ? subEn : subId}
                     </p>
                   </div>
