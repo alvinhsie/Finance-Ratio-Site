@@ -12,7 +12,6 @@ import { EfficiencyCalculator } from "@/pages/EfficiencyCalculator";
 import { ValuationCalculator } from "@/pages/ValuationCalculator";
 import { FairValueCalculator } from "@/pages/FairValueCalculator";
 import { GlossaryPage } from "@/pages/GlossaryPage";
-import { SummaryPage } from "@/pages/SummaryPage";
 import { HomePage } from "@/pages/HomePage";
 import { LoginPage } from "@/pages/LoginPage";
 import NotFound from "@/pages/not-found";
@@ -31,7 +30,6 @@ function Router() {
         <Route path="/category/valuation" component={ValuationCalculator} />
         <Route path="/category/fair-value" component={FairValueCalculator} />
         <Route path="/category/:id" component={CategoryPage} />
-        <Route path="/summary" component={SummaryPage} />
         <Route path="/glossary" component={GlossaryPage} />
         <Route component={NotFound} />
       </Switch>
