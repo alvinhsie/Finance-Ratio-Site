@@ -36,7 +36,7 @@ const valueColor: Record<InterpretationType, string> = {
   good:    'text-green-600',
   average: 'text-yellow-400',
   poor:    'text-red-500',
-  neutral: 'text-blue-600',
+  neutral: 'text-foreground',
 };
 
 const directionConfig: Record<Direction, { labelEn: string; labelId: string; icon: React.ReactNode }> = {
