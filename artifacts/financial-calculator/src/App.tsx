@@ -41,7 +41,7 @@ function Router() {
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
-    () => localStorage.getItem("finratio_auth") === "true"
+    () => sessionStorage.getItem("finratio_auth") === "true"
   );
 
   if (!isAuthenticated) {
