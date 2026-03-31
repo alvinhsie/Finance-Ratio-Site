@@ -1,10 +1,9 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import {
   LIQUIDITY_EMPTY, PROFITABILITY_EMPTY, LEVERAGE_EMPTY,
   EFFICIENCY_EMPTY, VALUATION_EMPTY, FAIRVALUE_STD_EMPTY, FAIRVALUE_CYC_EMPTY,
 } from './calculatorDefaults';
 
-// Fields that exist in multiple calculators and should be kept in sync.
 const SHARED_FIELDS = new Set([
   'currentAssets',
   'currentLiabilities',
@@ -15,6 +14,9 @@ const SHARED_FIELDS = new Set([
   'ebitda',
   'sharesOutstanding',
 ]);
+
+const SESSION_STATE_KEY   = 'finratio_calc_state';
+const SESSION_FV_MODE_KEY = 'finratio_fv_mode';
 
 export type FairValueMode = 'standard' | 'cyclical';
 
@@ -47,17 +49,56 @@ const defaultState: CalculatorState = {
   fairValueCyc: { ...FAIRVALUE_CYC_EMPTY },
 };
 
+function loadStateFromSession(): CalculatorState {
+  try {
+    const saved = sessionStorage.getItem(SESSION_STATE_KEY);
+    if (!saved) return { ...defaultState };
+    const parsed = JSON.parse(saved) as Partial<CalculatorState>;
+    return {
+      liquidity:    { ...LIQUIDITY_EMPTY,      ...(parsed.liquidity    ?? {}) },
+      profitability: { ...PROFITABILITY_EMPTY, ...(parsed.profitability ?? {}) },
+      leverage:     { ...LEVERAGE_EMPTY,       ...(parsed.leverage     ?? {}) },
+      efficiency:   { ...EFFICIENCY_EMPTY,     ...(parsed.efficiency   ?? {}) },
+      valuation:    { ...VALUATION_EMPTY,      ...(parsed.valuation    ?? {}) },
+      fairValueStd: { ...FAIRVALUE_STD_EMPTY,  ...(parsed.fairValueStd ?? {}) },
+      fairValueCyc: { ...FAIRVALUE_CYC_EMPTY,  ...(parsed.fairValueCyc ?? {}) },
+    };
+  } catch {
+    return { ...defaultState };
+  }
+}
+
+function loadFvModeFromSession(): FairValueMode {
+  try {
+    const saved = sessionStorage.getItem(SESSION_FV_MODE_KEY);
+    if (saved === 'standard' || saved === 'cyclical') return saved;
+  } catch {}
+  return 'standard';
+}
+
 const CalculatorStateContext = createContext<CalculatorStateContextValue | null>(null);
 
 export function CalculatorStateProvider({ children }: { children: React.ReactNode }) {
-  const [state, setState] = useState<CalculatorState>({ ...defaultState });
-  const [fairValueMode, setFairValueMode] = useState<FairValueMode>('standard');
+  const [state, setState] = useState<CalculatorState>(() => loadStateFromSession());
+  const [fairValueMode, setFairValueModeInternal] = useState<FairValueMode>(() => loadFvModeFromSession());
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(SESSION_STATE_KEY, JSON.stringify(state));
+    } catch {}
+  }, [state]);
+
+  const setFairValueMode = useCallback((mode: FairValueMode) => {
+    setFairValueModeInternal(mode);
+    try {
+      sessionStorage.setItem(SESSION_FV_MODE_KEY, mode);
+    } catch {}
+  }, []);
 
   const setCalc = useCallback((key: keyof CalculatorState, vals: Record<string, string>) => {
     setState(prev => {
       const next: CalculatorState = { ...prev, [key]: vals };
 
-      // Collect which shared fields changed in this update
       const changed: Array<[string, string]> = [];
       for (const [field, value] of Object.entries(vals)) {
         if (SHARED_FIELDS.has(field) && value !== prev[key][field]) {
@@ -65,7 +106,6 @@ export function CalculatorStateProvider({ children }: { children: React.ReactNod
         }
       }
 
-      // Propagate each changed shared field to every other calculator that has it
       if (changed.length > 0) {
         const allKeys = Object.keys(next) as (keyof CalculatorState)[];
         for (const otherKey of allKeys) {
@@ -90,15 +130,12 @@ export function CalculatorStateProvider({ children }: { children: React.ReactNod
   }, []);
 
   const clearAll = useCallback(() => {
-    setState({
-      liquidity:    { ...LIQUIDITY_EMPTY },
-      profitability: { ...PROFITABILITY_EMPTY },
-      leverage:     { ...LEVERAGE_EMPTY },
-      efficiency:   { ...EFFICIENCY_EMPTY },
-      valuation:    { ...VALUATION_EMPTY },
-      fairValueStd: { ...FAIRVALUE_STD_EMPTY },
-      fairValueCyc: { ...FAIRVALUE_CYC_EMPTY },
-    });
+    try {
+      sessionStorage.removeItem(SESSION_STATE_KEY);
+      sessionStorage.removeItem(SESSION_FV_MODE_KEY);
+    } catch {}
+    setState({ ...defaultState });
+    setFairValueModeInternal('standard');
   }, []);
 
   return (
