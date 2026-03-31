@@ -408,7 +408,7 @@ function SectionCard({ title, titleId, icon, accentColor, headerBg, leftBorder, 
         </span>
       </div>
       <div className="px-4 py-3 flex flex-col flex-1">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 flex-1 content-start">
+        <div className="grid grid-cols-1 gap-y-1 flex-1 content-start">
           {metrics.map((m) => (
             <div key={m.label} className="flex items-center justify-between gap-2 py-1 border-b border-border/30 last:border-0">
               <span className="text-xs text-muted-foreground leading-tight">
@@ -551,7 +551,7 @@ export function SummaryPage() {
 
         {/* Main sections — always rendered once all required tabs are filled */}
         {allRequired && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:flex-1 lg:min-h-0 lg:auto-rows-fr">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 lg:flex-1 lg:min-h-0 lg:auto-rows-[minmax(min-content,1fr)]">
 
             {/* Liquidity */}
             <SectionCard
@@ -633,7 +633,7 @@ export function SummaryPage() {
                   </span>
                 </div>
                 <div className="px-4 py-3 flex-1">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
+                  <div className="grid grid-cols-1 gap-y-1">
                     <div className="flex items-center justify-between gap-2 py-1 border-b border-border/30">
                       <span className="text-xs text-muted-foreground">
                         {isEn ? 'Book Value / Share' : 'Nilai Buku / Saham'}
