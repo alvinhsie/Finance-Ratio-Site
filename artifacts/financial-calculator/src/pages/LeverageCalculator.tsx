@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { useCalculatorState, LEVERAGE_EMPTY } from '@/lib/CalculatorStateContext';
+import { useCalculatorState } from '@/lib/CalculatorStateContext';
+import { LEVERAGE_EMPTY } from '@/lib/calculatorDefaults';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Info, ChevronUp, ArrowUp, ArrowDown, Target } from 'lucide-react';
 import { useLanguage } from '@/lib/LanguageContext';

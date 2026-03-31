@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { useCalculatorState, FAIRVALUE_STD_EMPTY, FAIRVALUE_CYC_EMPTY } from '@/lib/CalculatorStateContext';
+import { useCalculatorState } from '@/lib/CalculatorStateContext';
+import { FAIRVALUE_STD_EMPTY, FAIRVALUE_CYC_EMPTY } from '@/lib/calculatorDefaults';
 import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, BookOpen, AlertCircle } from 'lucide-react';
 import { useLanguage } from '@/lib/LanguageContext';

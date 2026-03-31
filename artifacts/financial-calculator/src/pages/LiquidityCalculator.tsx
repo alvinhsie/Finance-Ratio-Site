@@ -4,7 +4,8 @@ import { Info, ChevronUp, ArrowUp, ArrowDown, Target, ShieldCheck, Flame, Trendi
 import { useLanguage } from '@/lib/LanguageContext';
 import { cn, formatNumber } from '@/lib/utils';
 import { NumericInput } from '@/components/ui/NumericInput';
-import { useCalculatorState, LIQUIDITY_EMPTY } from '@/lib/CalculatorStateContext';
+import { useCalculatorState } from '@/lib/CalculatorStateContext';
+import { LIQUIDITY_EMPTY } from '@/lib/calculatorDefaults';
 
 type InterpretationType = 'good' | 'average' | 'poor' | 'neutral';
 type Direction = 'higher' | 'lower' | 'range';
