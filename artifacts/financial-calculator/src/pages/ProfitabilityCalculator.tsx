@@ -48,8 +48,8 @@ function fmtPct(val: number): string {
 }
 
 const EMPTY: Record<string, string> = {
-  netIncome: '0', totalRevenue: '0', grossProfit: '0',
-  operatingIncome: '0', totalAssets: '0', totalEquity: '0', ebitda: '0',
+  netIncome: '', totalRevenue: '', grossProfit: '',
+  operatingIncome: '', totalAssets: '', totalEquity: '', ebitda: '',
 };
 
 export function ProfitabilityCalculator() {

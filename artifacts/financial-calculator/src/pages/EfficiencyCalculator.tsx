@@ -52,8 +52,8 @@ function fmtDays(val: number): string {
 }
 
 const EMPTY: Record<string, string> = {
-  totalRevenue: '0', accountsReceivable: '0', currentAssets: '0',
-  currentLiabilities: '0', netFixedAssets: '0',
+  totalRevenue: '', accountsReceivable: '', currentAssets: '',
+  currentLiabilities: '', netFixedAssets: '',
 };
 
 export function EfficiencyCalculator() {

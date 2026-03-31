@@ -62,8 +62,8 @@ function fmtLargeNumber(val: number): string {
 }
 
 const EMPTY: Record<string, string> = {
-  marketPrice: '0', eps: '0', bvps: '0', sharesOutstanding: '0',
-  totalDebt: '0', cashEquivalents: '0', ebitda: '0', dividendPerShare: '0',
+  marketPrice: '', eps: '', bvps: '', sharesOutstanding: '',
+  totalDebt: '', cashEquivalents: '', ebitda: '', dividendPerShare: '',
 };
 
 export function ValuationCalculator() {

@@ -55,8 +55,8 @@ function fmtCurrency(val: number): string {
 }
 
 const EMPTY: Record<string, string> = {
-  currentAssets: '0', currentLiabilities: '0', inventory: '0',
-  cash: '0', cfFromOps: '0', ebit: '0', interestExpense: '0',
+  currentAssets: '', currentLiabilities: '', inventory: '',
+  cash: '', cfFromOps: '', ebit: '', interestExpense: '',
 };
 
 export function LiquidityCalculator() {

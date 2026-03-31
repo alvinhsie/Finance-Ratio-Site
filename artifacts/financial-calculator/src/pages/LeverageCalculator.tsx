@@ -48,8 +48,8 @@ function fmt(val: number): string {
 }
 
 const EMPTY: Record<string, string> = {
-  totalLiabilities: '0', totalEquity: '0', totalAssets: '0',
-  totalDebt: '0', ebitda: '0',
+  totalLiabilities: '', totalEquity: '', totalAssets: '',
+  totalDebt: '', ebitda: '',
 };
 
 export function LeverageCalculator() {
