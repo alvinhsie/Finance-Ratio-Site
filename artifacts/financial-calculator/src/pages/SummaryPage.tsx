@@ -23,9 +23,6 @@ function dash() {
 function fmtX(v: number)   { return `${formatNumber(v, 2)}×`; }
 function fmtPct(v: number) { return `${formatNumber(v, 2)}%`; }
 function fmtDays(v: number){ return `${Math.round(v)} d`; }
-function fmtNum(v: number) {
-  return v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
 function fmtLarge(v: number) {
   const abs = Math.abs(v);
   const sign = v < 0 ? '-' : '';
@@ -34,11 +31,6 @@ function fmtLarge(v: number) {
   if (abs >= 1e3) return `${sign}${formatNumber(abs / 1e3, 2)}K`;
   return `${sign}${formatNumber(abs, 2)}`;
 }
-function fmtSignPct(v: number) {
-  const sign = v >= 0 ? '+' : '';
-  return `${sign}${formatNumber(v, 1)}%`;
-}
-
 // ── Row: a single metric line ──────────────────────────────────────────────
 interface RowDef { label: string; labelId: string; result: { color: string; text: string } }
 
@@ -68,7 +60,7 @@ function Section({ title, rows }: { title: string; rows: RowDef[] }) {
 // ── Main component ─────────────────────────────────────────────────────────
 export function SummaryPage() {
   const { language } = useLanguage();
-  const { state, fairValueMode: fvMode } = useCalculatorState();
+  const { state } = useCalculatorState();
   const isEn = language === 'en';
   const L = (en: string, id: string) => isEn ? en : id;
 
@@ -271,82 +263,12 @@ export function SummaryPage() {
     })(),
   ];
 
-  // ── FAIR VALUE ───────────────────────────────────────────────────────────
-  const fvVals = fvMode === 'standard' ? state.fairValueStd : state.fairValueCyc;
-  const fvN = (k: string) => parseFloat(fvVals[k] || '0') || 0;
-  const fvFilled = (k: string) => fvVals[k]?.trim() !== '';
-
-  const fvRequired = fvMode === 'standard'
-    ? fvFilled('currentEps') && fvFilled('totalEquity') && fvFilled('sharesOutstanding') &&
-      fvFilled('growthRate') && fvFilled('inflationRate') && fvN('inflationRate') > 0 && fvN('sharesOutstanding') > 0
-    : fvFilled('normalizedEps') && fvFilled('totalEquity') && fvFilled('sharesOutstanding') &&
-      fvFilled('shortTermCagr') && fvFilled('longTermCagr') && fvFilled('inflationRate') &&
-      fvN('inflationRate') > 0 && fvN('sharesOutstanding') > 0;
-
-  const hasFvPrice = fvFilled('currentPrice') && fvN('currentPrice') > 0;
-
-  let fvCalc: { bvps: number; intrinsic: number; upside: number | null; mos: number | null } | null = null;
-  if (fvRequired) {
-    const bvps = fvN('totalEquity') / fvN('sharesOutstanding');
-    const r = fvN('inflationRate') / 100;
-    const price = fvN('currentPrice');
-    let totalEps = 0;
-    if (fvMode === 'standard') {
-      const eps = fvN('currentEps');
-      const g = fvN('growthRate') / 100;
-      for (let i = 1; i <= 10; i++) totalEps += eps * Math.pow(1 + g, i);
-    } else {
-      const eps = fvN('normalizedEps');
-      const g1 = fvN('shortTermCagr') / 100;
-      const g2 = fvN('longTermCagr') / 100;
-      for (let i = 1; i <= 5; i++) totalEps += eps * Math.pow(1 + g1, i);
-      const eps5 = eps * Math.pow(1 + g1, 5);
-      for (let i = 1; i <= 5; i++) totalEps += eps5 * Math.pow(1 + g2, i);
-    }
-    const intrinsic = (totalEps + bvps) / Math.pow(1 + r, 10);
-    const upside = hasFvPrice && price > 0 ? ((intrinsic - price) / price) * 100 : null;
-    const mos = hasFvPrice && intrinsic !== 0 ? ((intrinsic - price) / intrinsic) * 100 : null;
-    fvCalc = { bvps, intrinsic, upside, mos };
-  }
-
-  const modeLabel = fvMode === 'standard'
-    ? L('Fair Value (Standard)', 'Nilai Wajar (Standar)')
-    : L('Fair Value (Cyclical)', 'Nilai Wajar (Siklus)');
-
-  const fairValueRows: RowDef[] = [
-    {
-      label: L('Book Value / Share', 'Nilai Buku / Saham'),
-      labelId: '',
-      result: fvCalc ? val('neutral', fmtNum(fvCalc.bvps)) : dash(),
-    },
-    {
-      label: L('Intrinsic Value', 'Nilai Intrinsik'),
-      labelId: '',
-      result: fvCalc ? val('neutral', fmtNum(fvCalc.intrinsic)) : dash(),
-    },
-    {
-      label: L('Upside / Downside', 'Potensi Naik / Turun'),
-      labelId: '',
-      result: fvCalc && fvCalc.upside !== null
-        ? { color: fvCalc.upside >= 0 ? 'text-green-600' : 'text-red-500', text: fmtSignPct(fvCalc.upside) }
-        : dash(),
-    },
-    {
-      label: L('Margin of Safety', 'Margin Keamanan'),
-      labelId: '',
-      result: fvCalc && fvCalc.mos !== null
-        ? { color: fvCalc.mos >= 0 ? 'text-green-600' : 'text-red-500', text: fmtSignPct(fvCalc.mos) }
-        : dash(),
-    },
-  ];
-
   const sections = [
     { title: L('Liquidity', 'Likuiditas'), rows: liquidityRows },
     { title: L('Profitability', 'Profitabilitas'), rows: profitabilityRows },
     { title: L('Leverage', 'Leverage'), rows: leverageRows },
     { title: L('Efficiency', 'Efisiensi'), rows: efficiencyRows },
     { title: L('Valuation', 'Valuasi'), rows: valuationRows },
-    { title: modeLabel, rows: fairValueRows },
   ];
 
   return (
