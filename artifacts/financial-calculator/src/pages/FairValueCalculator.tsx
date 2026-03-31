@@ -1,14 +1,12 @@
 import { useState } from 'react';
 import { useCalculatorState } from '@/lib/CalculatorStateContext';
+// useState kept for openInfo local state below
 import { FAIRVALUE_STD_EMPTY, FAIRVALUE_CYC_EMPTY } from '@/lib/calculatorDefaults';
 import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, BookOpen, AlertCircle } from 'lucide-react';
 import { useLanguage } from '@/lib/LanguageContext';
 import { cn } from '@/lib/utils';
 import { NumericInput } from '@/components/ui/NumericInput';
-
-type Mode = 'standard' | 'cyclical';
-
 
 function fmtNum(v: number, decimals = 2): string {
   return v.toLocaleString('en-US', {
@@ -24,8 +22,7 @@ function fmtPct(v: number, decimals = 1): string {
 
 export function FairValueCalculator() {
   const { language, t } = useLanguage();
-  const [mode, setMode] = useState<Mode>('standard');
-  const { state, setCalc, clearAll } = useCalculatorState();
+  const { state, fairValueMode: mode, setFairValueMode: setMode, setCalc, clearAll } = useCalculatorState();
   const stdVals = state.fairValueStd;
   const cycVals = state.fairValueCyc;
   const setStdVals = (v: Record<string, string> | ((p: Record<string, string>) => Record<string, string>)) =>

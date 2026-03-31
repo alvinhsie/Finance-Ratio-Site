@@ -16,6 +16,8 @@ const SHARED_FIELDS = new Set([
   'sharesOutstanding',
 ]);
 
+export type FairValueMode = 'standard' | 'cyclical';
+
 interface CalculatorState {
   liquidity:    Record<string, string>;
   profitability: Record<string, string>;
@@ -28,6 +30,8 @@ interface CalculatorState {
 
 interface CalculatorStateContextValue {
   state: CalculatorState;
+  fairValueMode: FairValueMode;
+  setFairValueMode: (mode: FairValueMode) => void;
   setCalc: (key: keyof CalculatorState, vals: Record<string, string>) => void;
   clearCalc: (key: keyof CalculatorState, empty: Record<string, string>) => void;
   clearAll: () => void;
@@ -47,6 +51,7 @@ const CalculatorStateContext = createContext<CalculatorStateContextValue | null>
 
 export function CalculatorStateProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<CalculatorState>({ ...defaultState });
+  const [fairValueMode, setFairValueMode] = useState<FairValueMode>('standard');
 
   const setCalc = useCallback((key: keyof CalculatorState, vals: Record<string, string>) => {
     setState(prev => {
@@ -97,7 +102,7 @@ export function CalculatorStateProvider({ children }: { children: React.ReactNod
   }, []);
 
   return (
-    <CalculatorStateContext.Provider value={{ state, setCalc, clearCalc, clearAll }}>
+    <CalculatorStateContext.Provider value={{ state, fairValueMode, setFairValueMode, setCalc, clearCalc, clearAll }}>
       {children}
     </CalculatorStateContext.Provider>
   );

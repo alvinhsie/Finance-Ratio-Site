@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { CATEGORIES } from '@/lib/ratios';
 import { Link, useLocation } from 'wouter';
 import { cn } from '@/lib/utils';
-import { Calculator, Menu, X, ChevronRight, Home, BookOpen } from 'lucide-react';
+import { Calculator, Menu, X, ChevronRight, Home, BookOpen, LayoutDashboard } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/lib/LanguageContext';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
@@ -30,6 +30,20 @@ function NavContent({ location, t, language }: { location: string; t: any; langu
         <Home className={cn('w-5 h-5 transition-colors', location === '/' ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground')} />
         <span className="flex-1">{t.layout.home}</span>
         {location === '/' && <motion.div layoutId="activeNav"><ChevronRight className="w-4 h-4" /></motion.div>}
+      </Link>
+
+      <Link
+        href="/summary"
+        className={cn(
+          'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group',
+          location === '/summary'
+            ? 'bg-primary/10 text-primary'
+            : 'text-foreground hover:bg-muted'
+        )}
+      >
+        <LayoutDashboard className={cn('w-5 h-5 transition-colors', location === '/summary' ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground')} />
+        <span className="flex-1">{language === 'id' ? 'Ringkasan' : 'Summary'}</span>
+        {location === '/summary' && <motion.div layoutId="activeNav"><ChevronRight className="w-4 h-4" /></motion.div>}
       </Link>
 
       {CATEGORIES.map((category) => {
