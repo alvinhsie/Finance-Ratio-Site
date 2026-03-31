@@ -1,3 +1,4 @@
+import { Info } from 'lucide-react';
 import { useLanguage } from '@/lib/LanguageContext';
 import { useCalculatorState } from '@/lib/CalculatorStateContext';
 import { formatNumber } from '@/lib/utils';
@@ -271,17 +272,70 @@ export function SummaryPage() {
     { title: L('Valuation', 'Valuasi'), rows: valuationRows },
   ];
 
+  // ── Readiness gate: at least one ratio calculable per category ────────────
+  const ready = {
+    liquidity:     has(lq, 'currentAssets')    && has(lq, 'currentLiabilities') && n(lq, 'currentLiabilities') !== 0,
+    profitability: has(pr, 'netIncome')         && has(pr, 'totalRevenue')       && n(pr, 'totalRevenue') !== 0,
+    leverage:      has(lv, 'totalLiabilities')  && has(lv, 'totalEquity')        && n(lv, 'totalEquity') !== 0,
+    efficiency:    has(ef, 'totalRevenue')      && has(ef, 'accountsReceivable') && n(ef, 'accountsReceivable') !== 0,
+    valuation:     has(va, 'marketPrice')       && has(va, 'eps')                && n(va, 'eps') !== 0,
+  };
+  const allReady = Object.values(ready).every(Boolean);
+
+  const categoryNames: Record<keyof typeof ready, string> = {
+    liquidity:     L('Liquidity',     'Likuiditas'),
+    profitability: L('Profitability', 'Profitabilitas'),
+    leverage:      L('Leverage',      'Leverage'),
+    efficiency:    L('Efficiency',    'Efisiensi'),
+    valuation:     L('Valuation',     'Valuasi'),
+  };
+
   return (
     <div className="flex-1 w-full max-w-5xl mx-auto p-4 sm:p-6">
       <h1 className="text-2xl sm:text-3xl font-extrabold font-display text-foreground tracking-tight mb-6">
         {L('Summary', 'Ringkasan')}
       </h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-        {sections.map(s => (
-          <Section key={s.title} title={s.title} rows={s.rows} />
-        ))}
-      </div>
+      {!allReady ? (
+        <div className="border border-border rounded-2xl p-5 flex gap-3 items-start max-w-lg">
+          <Info className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
+          <div className="space-y-2">
+            <p className="text-sm font-semibold text-foreground">
+              {L(
+                'Fill in all 5 tabs to view the summary.',
+                'Isi semua 5 tab untuk melihat ringkasan.'
+              )}
+            </p>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              {L(
+                'The summary is available once Liquidity, Profitability, Leverage, Efficiency, and Valuation each have at least one calculable ratio.',
+                'Ringkasan tersedia setelah Likuiditas, Profitabilitas, Leverage, Efisiensi, dan Valuasi masing-masing memiliki setidaknya satu rasio yang dapat dihitung.'
+              )}
+            </p>
+            <div className="flex flex-wrap gap-1.5 pt-1">
+              {(Object.keys(ready) as (keyof typeof ready)[]).map(k => (
+                <span
+                  key={k}
+                  className={cn(
+                    'text-[11px] font-medium px-2 py-0.5 rounded-full border',
+                    ready[k]
+                      ? 'text-green-700 border-green-200'
+                      : 'text-muted-foreground border-border'
+                  )}
+                >
+                  {ready[k] ? '✓ ' : ''}{categoryNames[k]}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          {sections.map(s => (
+            <Section key={s.title} title={s.title} rows={s.rows} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
