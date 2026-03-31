@@ -23,8 +23,10 @@ export function LoginPage({ onLogin }: LoginPageProps) {
 
     setTimeout(() => {
       if (username === "alvinhsie" && password === "17081996") {
-        sessionStorage.setItem("finratio_auth", "true");
-        localStorage.removeItem("finratio_auth");
+        const today = new Date().toISOString().slice(0, 10);
+        localStorage.setItem("finratio_auth", "true");
+        localStorage.setItem("finratio_auth_date", today);
+        sessionStorage.removeItem("finratio_auth");
         onLogin();
       } else {
         setError(t.login.error);

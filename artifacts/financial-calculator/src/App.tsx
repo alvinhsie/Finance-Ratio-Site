@@ -41,7 +41,14 @@ function Router() {
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(
-    () => sessionStorage.getItem("finratio_auth") === "true"
+    () => {
+      const today = new Date().toISOString().slice(0, 10);
+      const stored = localStorage.getItem("finratio_auth_date");
+      if (localStorage.getItem("finratio_auth") === "true" && stored === today) return true;
+      localStorage.removeItem("finratio_auth");
+      localStorage.removeItem("finratio_auth_date");
+      return false;
+    }
   );
 
   if (!isAuthenticated) {
