@@ -14,7 +14,7 @@ const COLOR: Record<Interp, string> = {
 };
 
 function val(color: Interp, text: string) {
-  return { color, text };
+  return { color: COLOR[color], text };
 }
 
 function dash() {
