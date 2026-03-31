@@ -32,20 +32,6 @@ function NavContent({ location, t, language }: { location: string; t: any; langu
         {location === '/' && <motion.div layoutId="activeNav"><ChevronRight className="w-4 h-4" /></motion.div>}
       </Link>
 
-      <Link
-        href="/summary"
-        className={cn(
-          'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group',
-          location === '/summary'
-            ? 'bg-primary/10 text-primary'
-            : 'text-foreground hover:bg-muted'
-        )}
-      >
-        <LayoutDashboard className={cn('w-5 h-5 transition-colors', location === '/summary' ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground')} />
-        <span className="flex-1">{language === 'id' ? 'Ringkasan' : 'Summary'}</span>
-        {location === '/summary' && <motion.div layoutId="activeNav"><ChevronRight className="w-4 h-4" /></motion.div>}
-      </Link>
-
       {CATEGORIES.map((category) => {
         const Icon = category.icon;
         const isActive = location.includes(`/category/${category.id}`);
@@ -65,6 +51,20 @@ function NavContent({ location, t, language }: { location: string; t: any; langu
           </Link>
         );
       })}
+
+      <Link
+        href="/summary"
+        className={cn(
+          'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group',
+          location === '/summary'
+            ? 'bg-primary/10 text-primary'
+            : 'text-foreground hover:bg-muted'
+        )}
+      >
+        <LayoutDashboard className={cn('w-5 h-5 transition-colors', location === '/summary' ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground')} />
+        <span className="flex-1">{language === 'id' ? 'Ringkasan' : 'Summary'}</span>
+        {location === '/summary' && <motion.div layoutId="activeNav"><ChevronRight className="w-4 h-4" /></motion.div>}
+      </Link>
 
       <div className="border-t border-border/60" />
 
