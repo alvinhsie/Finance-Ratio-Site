@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Info, ChevronUp, ArrowUp, ArrowDown, Target } from 'lucide-react';
+import { Info, ChevronUp, ArrowUp, ArrowDown, Target, ShieldCheck, Flame, TrendingUp, AlertTriangle } from 'lucide-react';
 import { useLanguage } from '@/lib/LanguageContext';
 import { cn, formatNumber } from '@/lib/utils';
 import { NumericInput } from '@/components/ui/NumericInput';
@@ -356,6 +356,61 @@ export function LiquidityCalculator() {
               );
             })}
           </div>
+
+          {/* ── Combined Liquidity Health ── */}
+          <AnimatePresence>
+            {has('currentAssets') && has('currentLiabilities') && has('cfFromOps') && (() => {
+              const wc  = n('currentAssets') - n('currentLiabilities');
+              const cfo = n('cfFromOps');
+              const wcPos  = wc  > 0;
+              const cfoPos = cfo > 0;
+
+              const variants = {
+                safe:   { label: 'Safe',                 labelId: 'Aman',               icon: <ShieldCheck  className="w-5 h-5 text-green-600"  />, card: 'bg-green-50  border-green-200',  text: 'text-green-700',  sub: 'text-green-600/70'  },
+                burn:   { label: 'Potential Cash Burner', labelId: 'Potensi Pembakar Kas', icon: <Flame       className="w-5 h-5 text-yellow-500" />, card: 'bg-yellow-50 border-yellow-200', text: 'text-yellow-700', sub: 'text-yellow-600/70' },
+                recov:  { label: 'Recovery',              labelId: 'Pemulihan',           icon: <TrendingUp   className="w-5 h-5 text-blue-600"   />, card: 'bg-blue-50   border-blue-200',   text: 'text-blue-700',   sub: 'text-blue-600/70'   },
+                danger: { label: 'Danger',                labelId: 'Bahaya',              icon: <AlertTriangle className="w-5 h-5 text-red-600"  />, card: 'bg-red-50    border-red-200',    text: 'text-red-700',    sub: 'text-red-600/70'    },
+              };
+
+              const v = wcPos && cfoPos ? variants.safe
+                      : wcPos && !cfoPos ? variants.burn
+                      : !wcPos && cfoPos ? variants.recov
+                      : variants.danger;
+
+              const subEn = wcPos && cfoPos  ? 'Working capital positive · Cash flow positive'
+                          : wcPos && !cfoPos  ? 'Working capital positive · Cash flow negative'
+                          : !wcPos && cfoPos  ? 'Working capital negative · Cash flow positive'
+                          : 'Working capital negative · Cash flow negative';
+              const subId = wcPos && cfoPos  ? 'Modal kerja positif · Arus kas positif'
+                          : wcPos && !cfoPos  ? 'Modal kerja positif · Arus kas negatif'
+                          : !wcPos && cfoPos  ? 'Modal kerja negatif · Arus kas positif'
+                          : 'Modal kerja negatif · Arus kas negatif';
+
+              return (
+                <motion.div
+                  key="health"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.25 }}
+                  className={cn('border rounded-2xl px-4 py-3.5 flex items-center gap-3.5', v.card)}
+                >
+                  <div className="shrink-0">{v.icon}</div>
+                  <div className="flex flex-col min-w-0">
+                    <p className={cn('text-[11px] font-semibold uppercase tracking-widest mb-0.5', v.sub)}>
+                      {language === 'en' ? 'Liquidity Health' : 'Kesehatan Likuiditas'}
+                    </p>
+                    <p className={cn('text-base font-extrabold leading-tight', v.text)}>
+                      {language === 'en' ? v.label : v.labelId}
+                    </p>
+                    <p className={cn('text-[11px] mt-0.5', v.sub)}>
+                      {language === 'en' ? subEn : subId}
+                    </p>
+                  </div>
+                </motion.div>
+              );
+            })()}
+          </AnimatePresence>
         </div>
 
         {/* ── INPUTS column — bottom on mobile, left on desktop ── */}
