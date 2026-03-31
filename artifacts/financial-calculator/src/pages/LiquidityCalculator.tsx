@@ -359,8 +359,8 @@ export function LiquidityCalculator() {
 
           {/* ── Combined Liquidity Health ── */}
           <AnimatePresence>
-            {has('currentAssets') && has('currentLiabilities') && has('cfFromOps') && (() => {
-              const wc  = n('currentAssets') - n('currentLiabilities');
+            {results[3].value !== null && results[4].value !== null && (() => {
+              const wc  = results[3].value as number;
               const cfo = n('cfFromOps');
               const wcPos  = wc  > 0;
               const cfoPos = cfo > 0;
