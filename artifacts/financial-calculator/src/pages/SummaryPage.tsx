@@ -383,31 +383,31 @@ interface SectionProps {
   title: string;
   titleId: string;
   icon: React.ReactNode;
-  borderColor: string;
-  bgColor: string;
-  textColor: string;
+  accentColor: string;
+  headerBg: string;
+  leftBorder: string;
   metrics: Metric[];
   extra?: React.ReactNode;
   language: string;
 }
 
-function SectionCard({ title, titleId, icon, borderColor, bgColor, textColor, metrics, extra, language }: SectionProps) {
+function SectionCard({ title, titleId, icon, accentColor, headerBg, leftBorder, metrics, extra, language }: SectionProps) {
   const visibleMetrics = metrics.filter(m => m.value !== null);
   const totalMetrics = metrics.length;
   const filledCount = visibleMetrics.length;
 
   return (
-    <div className={cn('rounded-2xl border border-border/50 overflow-hidden shadow-sm')}>
-      <div className={cn('flex items-center gap-3 px-5 py-4', bgColor)}>
-        <div className={cn('p-1.5 rounded-lg bg-white/20', textColor)}>{icon}</div>
-        <span className={cn('font-semibold text-base', textColor)}>
+    <div className={cn('rounded-2xl border border-border/50 bg-card shadow-sm overflow-hidden border-l-4', leftBorder)}>
+      <div className={cn('flex items-center gap-2.5 px-5 py-3', headerBg)}>
+        <span className={cn('shrink-0', accentColor)}>{icon}</span>
+        <span className="font-semibold text-sm text-foreground">
           {language === 'id' ? titleId : title}
         </span>
-        <span className={cn('ml-auto text-xs font-medium opacity-70', textColor)}>
+        <span className="ml-auto text-xs text-muted-foreground">
           {filledCount}/{totalMetrics}
         </span>
       </div>
-      <div className="p-5 bg-card">
+      <div className="px-5 py-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-3">
           {metrics.map((m) => (
             <div key={m.label} className="flex items-center justify-between gap-2 py-1 border-b border-border/30 last:border-0">
@@ -557,9 +557,9 @@ export function SummaryPage() {
             <SectionCard
               title="Liquidity" titleId="Likuiditas"
               icon={<Droplets className="w-4 h-4" />}
-              borderColor="border-sky-200 dark:border-sky-800"
-              bgColor="bg-sky-500 dark:bg-sky-700"
-              textColor="text-white"
+              accentColor="text-sky-500 dark:text-sky-400"
+              headerBg="bg-sky-50 dark:bg-sky-950/30"
+              leftBorder="border-l-sky-400 dark:border-l-sky-500"
               metrics={liqMetrics}
               language={language}
               extra={health !== null ? (
@@ -578,9 +578,9 @@ export function SummaryPage() {
             <SectionCard
               title="Profitability" titleId="Profitabilitas"
               icon={<TrendingUp className="w-4 h-4" />}
-              borderColor="border-emerald-200 dark:border-emerald-800"
-              bgColor="bg-emerald-500 dark:bg-emerald-700"
-              textColor="text-white"
+              accentColor="text-emerald-500 dark:text-emerald-400"
+              headerBg="bg-emerald-50 dark:bg-emerald-950/30"
+              leftBorder="border-l-emerald-400 dark:border-l-emerald-500"
               metrics={profMetrics}
               language={language}
             />
@@ -589,9 +589,9 @@ export function SummaryPage() {
             <SectionCard
               title="Leverage" titleId="Leverage"
               icon={<ShieldAlert className="w-4 h-4" />}
-              borderColor="border-orange-200 dark:border-orange-800"
-              bgColor="bg-orange-500 dark:bg-orange-700"
-              textColor="text-white"
+              accentColor="text-orange-500 dark:text-orange-400"
+              headerBg="bg-orange-50 dark:bg-orange-950/30"
+              leftBorder="border-l-orange-400 dark:border-l-orange-500"
               metrics={levMetrics}
               language={language}
             />
@@ -600,9 +600,9 @@ export function SummaryPage() {
             <SectionCard
               title="Efficiency" titleId="Efisiensi"
               icon={<Zap className="w-4 h-4" />}
-              borderColor="border-violet-200 dark:border-violet-800"
-              bgColor="bg-violet-500 dark:bg-violet-700"
-              textColor="text-white"
+              accentColor="text-violet-500 dark:text-violet-400"
+              headerBg="bg-violet-50 dark:bg-violet-950/30"
+              leftBorder="border-l-violet-400 dark:border-l-violet-500"
               metrics={effMetrics}
               language={language}
             />
@@ -611,30 +611,28 @@ export function SummaryPage() {
             <SectionCard
               title="Valuation" titleId="Valuasi"
               icon={<BarChart2 className="w-4 h-4" />}
-              borderColor="border-rose-200 dark:border-rose-800"
-              bgColor="bg-rose-500 dark:bg-rose-700"
-              textColor="text-white"
+              accentColor="text-rose-500 dark:text-rose-400"
+              headerBg="bg-rose-50 dark:bg-rose-950/30"
+              leftBorder="border-l-rose-400 dark:border-l-rose-500"
               metrics={valMetrics}
               language={language}
             />
 
             {/* Fair Value — conditional */}
             {fvResult !== null ? (
-              <div className="rounded-2xl border border-teal-200 dark:border-teal-800 overflow-hidden shadow-sm">
-                <div className="flex items-center gap-3 px-5 py-4 bg-teal-500 dark:bg-teal-700">
-                  <div className="p-1.5 rounded-lg bg-white/20 text-white">
-                    <Target className="w-4 h-4" />
-                  </div>
-                  <span className="font-semibold text-base text-white">
+              <div className="rounded-2xl border border-border/50 border-l-4 border-l-teal-400 dark:border-l-teal-500 bg-card shadow-sm overflow-hidden">
+                <div className="flex items-center gap-2.5 px-5 py-3 bg-teal-50 dark:bg-teal-950/30">
+                  <Target className="w-4 h-4 text-teal-500 dark:text-teal-400 shrink-0" />
+                  <span className="font-semibold text-sm text-foreground">
                     {isEn ? 'Fair Value' : 'Nilai Wajar'}
                   </span>
-                  <span className="ml-2 text-xs bg-white/20 text-white px-2 py-0.5 rounded-full font-medium">
+                  <span className="ml-1 text-xs bg-teal-100 dark:bg-teal-900/50 text-teal-600 dark:text-teal-400 px-2 py-0.5 rounded-full font-medium border border-teal-200 dark:border-teal-800">
                     {fairValueMode === 'standard'
                       ? (isEn ? 'Standard' : 'Standar')
                       : (isEn ? 'Cyclical' : 'Siklus')}
                   </span>
                 </div>
-                <div className="p-5 bg-card">
+                <div className="px-5 py-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-3">
                     <div className="flex items-center justify-between gap-2 py-1 border-b border-border/30">
                       <span className="text-xs text-muted-foreground">
