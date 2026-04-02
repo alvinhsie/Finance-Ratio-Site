@@ -17,7 +17,7 @@ const FADE_TRANSITION = { duration: 0.25, ease: 'easeInOut' };
 
 function NavContent({ location, t, language }: { location: string; t: any; language: string }) {
   return (
-    <nav className="flex flex-col flex-1 justify-evenly px-4 py-4">
+    <nav className="flex flex-col gap-1 px-4 py-4 overflow-y-auto">
       <Link
         href="/"
         className={cn(
