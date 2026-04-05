@@ -269,67 +269,60 @@ function buildPdf(
   doc.line(margin, y, W - margin, y);
   y += 16;
 
-  // ── Sections in 2-column layout ───────────────────────────────────────────
-  const ROW_H   = 18;
-  const SEC_PAD = 12;
+  // ── Sections in 2-column layout (left: 0-2, right: 3-4) ──────────────────
+  const ROW_H    = 18;
+  const SEC_PAD  = 12;
   const HEADER_H = 28;
+  const secW     = col - 8;
+  const colGap   = 16;
+  const leftX    = margin;
+  const rightX   = margin + col + colGap;
 
-  let colX = margin;
-  let colY = y;
-  let colIdx = 0;
-
-  for (const sec of sections) {
-    const sectionH = HEADER_H + sec.rows.length * ROW_H + SEC_PAD;
-
-    if (colY + sectionH > H - margin && colIdx < 1) {
-      colX = margin + col + 16;
-      colY = y;
-      colIdx = 1;
-    }
-
-    const secW = col - 8;
-
-    // Section title
+  const drawSection = (sec: { title: string; rows: RowDef[] }, startX: number, startY: number) => {
     doc.setFillColor(248, 250, 252);
-    doc.roundedRect(colX, colY, secW, HEADER_H, 4, 4, 'F');
+    doc.roundedRect(startX, startY, secW, HEADER_H, 4, 4, 'F');
     setSize(8);
     doc.setFont('helvetica', 'bold');
     setColor(...muted);
-    doc.text(sec.title.toUpperCase(), colX + 10, colY + 17);
-    colY += HEADER_H + 4;
-
-    // Rows
+    doc.text(sec.title.toUpperCase(), startX + 10, startY + 17);
+    const rowsStart = startY + HEADER_H + 4;
     for (let i = 0; i < sec.rows.length; i++) {
       const r = sec.rows[i];
-      const rowY = colY + i * ROW_H;
-
-      // Row divider
+      const rowY = rowsStart + i * ROW_H;
       if (i > 0) {
         doc.setDrawColor(...border);
         doc.setLineWidth(0.3);
-        doc.line(colX + 4, rowY, colX + secW - 4, rowY);
+        doc.line(startX + 4, rowY, startX + secW - 4, rowY);
       }
-
-      // Label
       setSize(8.5);
       doc.setFont('helvetica', 'normal');
       setColor(...muted);
-      doc.text(r.label, colX + 8, rowY + 12);
-
-      // Value with color
+      doc.text(r.label, startX + 8, rowY + 12);
       const rgb = PDF_COLOR[r.result.color] ?? dark;
       setColor(...rgb);
       doc.setFont('helvetica', 'bold');
       const vw = doc.getTextWidth(r.result.text);
-      doc.text(r.result.text, colX + secW - 8 - vw, rowY + 12);
+      doc.text(r.result.text, startX + secW - 8 - vw, rowY + 12);
     }
+    return rowsStart + sec.rows.length * ROW_H + SEC_PAD;
+  };
 
-    colY += sec.rows.length * ROW_H + SEC_PAD;
-  }
+  // Left column: Liquidity, Profitability, Leverage
+  const leftSecs  = sections.slice(0, 3);
+  // Right column: Efficiency, Valuation
+  const rightSecs = sections.slice(3);
+
+  let leftY  = y;
+  let rightY = y;
+
+  for (const sec of leftSecs)  { leftY  = drawSection(sec, leftX,  leftY);  }
+  for (const sec of rightSecs) { rightY = drawSection(sec, rightX, rightY); }
+
+  const sectionsBottom = Math.max(leftY, rightY);
 
   // ── Overview text (only when all outputs are filled) ───────────────────────
   if (overview) {
-    const overviewY = Math.max(colY, colX === margin ? colY : y + (sections.length * 120)) + 12;
+    const overviewY = sectionsBottom + 12;
     const overviewLabel = isEn ? 'OVERVIEW' : 'GAMBARAN UMUM';
     doc.setFillColor(248, 250, 252);
     doc.roundedRect(margin, overviewY, W - margin * 2, 14, 3, 3, 'F');
