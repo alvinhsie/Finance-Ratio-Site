@@ -1,8 +1,10 @@
-import { Info } from 'lucide-react';
+import { useState } from 'react';
+import { Info, Download, X } from 'lucide-react';
 import { useLanguage } from '@/lib/LanguageContext';
 import { useCalculatorState } from '@/lib/CalculatorStateContext';
 import { formatNumber } from '@/lib/utils';
 import { cn } from '@/lib/utils';
+import jsPDF from 'jspdf';
 
 type Interp = 'good' | 'average' | 'poor' | 'neutral';
 
@@ -13,6 +15,14 @@ const COLOR: Record<Interp, string> = {
   neutral: 'text-foreground',
 };
 
+const PDF_COLOR: Record<string, [number, number, number]> = {
+  'text-green-600':          [22,  163,  74],
+  'text-yellow-400':         [202, 138,   4],
+  'text-red-500':            [239,  68,  68],
+  'text-foreground':         [ 15,  23,  42],
+  'text-muted-foreground/40':[ 180, 180, 180],
+};
+
 function val(color: Interp, text: string) {
   return { color: COLOR[color], text };
 }
@@ -21,9 +31,9 @@ function dash() {
   return { color: 'text-muted-foreground/40' as string, text: '—' };
 }
 
-function fmtX(v: number)   { return `${formatNumber(v, 2)}×`; }
-function fmtPct(v: number) { return `${formatNumber(v, 2)}%`; }
-function fmtDays(v: number){ return `${Math.round(v)} d`; }
+function fmtX(v: number)    { return `${formatNumber(v, 2)}\u00d7`; }
+function fmtPct(v: number)  { return `${formatNumber(v, 2)}%`; }
+function fmtDays(v: number) { return `${Math.round(v)} d`; }
 function fmtLarge(v: number) {
   const abs = Math.abs(v);
   const sign = v < 0 ? '-' : '';
@@ -32,7 +42,7 @@ function fmtLarge(v: number) {
   if (abs >= 1e3) return `${sign}${formatNumber(abs / 1e3, 2)}K`;
   return `${sign}${formatNumber(abs, 2)}`;
 }
-// ── Row: a single metric line ──────────────────────────────────────────────
+
 interface RowDef { label: string; labelId: string; result: { color: string; text: string } }
 
 function Section({ title, rows }: { title: string; rows: RowDef[] }) {
@@ -58,18 +68,266 @@ function Section({ title, rows }: { title: string; rows: RowDef[] }) {
   );
 }
 
-// ── Main component ─────────────────────────────────────────────────────────
+type Period = 'Q1' | 'Q2' | 'Q3' | 'FY';
+
+interface PdfMeta { ticker: string; period: Period; year: string }
+
+function PdfModal({
+  onClose,
+  onDownload,
+  isEn,
+}: {
+  onClose: () => void;
+  onDownload: (meta: PdfMeta) => void;
+  isEn: boolean;
+}) {
+  const [ticker, setTicker] = useState('');
+  const [period, setPeriod] = useState<Period>('FY');
+  const [year, setYear]   = useState(String(new Date().getFullYear()));
+
+  const L = (en: string, id: string) => isEn ? en : id;
+
+  const handle = () => {
+    if (!ticker.trim() || !year.trim()) return;
+    onDownload({ ticker: ticker.trim().toUpperCase(), period, year: year.trim() });
+    onClose();
+  };
+
+  const periods: Period[] = ['Q1', 'Q2', 'Q3', 'FY'];
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center">
+      <div
+        className="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      <div className="relative z-10 w-full max-w-sm mx-4 bg-card border border-border rounded-2xl shadow-2xl p-6 space-y-5">
+        <div className="flex items-center justify-between">
+          <h2 className="text-base font-bold text-foreground">
+            {L('Download PDF Report', 'Unduh Laporan PDF')}
+          </h2>
+          <button
+            onClick={onClose}
+            className="p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+
+        <div className="space-y-4">
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+              {L('Ticker Symbol', 'Kode Saham')}
+            </label>
+            <input
+              type="text"
+              value={ticker}
+              onChange={e => setTicker(e.target.value.toUpperCase())}
+              placeholder={L('e.g. AAPL', 'mis. BBRI')}
+              className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm font-mono font-bold tracking-widest placeholder:font-normal placeholder:tracking-normal placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+              maxLength={10}
+              autoFocus
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+              {L('Period', 'Periode')}
+            </label>
+            <div className="grid grid-cols-4 gap-2">
+              {periods.map(p => (
+                <button
+                  key={p}
+                  onClick={() => setPeriod(p)}
+                  className={cn(
+                    'py-2 rounded-xl text-sm font-bold border transition-all',
+                    period === p
+                      ? 'bg-primary text-primary-foreground border-primary'
+                      : 'border-border text-muted-foreground hover:border-primary/50 hover:text-foreground'
+                  )}
+                >
+                  {p}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+              {L('Year', 'Tahun')}
+            </label>
+            <input
+              type="number"
+              value={year}
+              onChange={e => setYear(e.target.value)}
+              placeholder="2024"
+              className="w-full px-3 py-2.5 rounded-xl border border-border bg-background text-sm font-mono font-bold focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
+              min="1900"
+              max="2099"
+            />
+          </div>
+        </div>
+
+        <button
+          onClick={handle}
+          disabled={!ticker.trim() || !year.trim()}
+          className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-primary text-primary-foreground text-sm font-semibold disabled:opacity-40 disabled:cursor-not-allowed hover:bg-primary/90 active:scale-95 transition-all"
+        >
+          <Download className="w-4 h-4" />
+          {L('Download PDF', 'Unduh PDF')}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function buildPdf(
+  sections: { title: string; rows: RowDef[] }[],
+  meta: PdfMeta,
+  isEn: boolean,
+) {
+  const doc = new jsPDF({ unit: 'pt', format: 'a4' });
+  const W = doc.internal.pageSize.getWidth();
+  const H = doc.internal.pageSize.getHeight();
+  const margin = 48;
+  const col = (W - margin * 2) / 2;
+
+  let y = margin;
+
+  const setColor  = (r: number, g: number, b: number) => doc.setTextColor(r, g, b);
+  const setSize   = (s: number) => doc.setFontSize(s);
+
+  const dark: [number, number, number]   = [15,  23,  42];
+  const muted: [number, number, number]  = [107, 114, 128];
+  const border: [number, number, number] = [226, 232, 240];
+
+  // ── Header bar ────────────────────────────────────────────────────────────
+  doc.setFillColor(15, 23, 42);
+  doc.roundedRect(margin, y, W - margin * 2, 54, 8, 8, 'F');
+
+  doc.setTextColor(255, 255, 255);
+  setSize(18);
+  doc.setFont('helvetica', 'bold');
+  doc.text('FinRatio', margin + 18, y + 22);
+
+  setSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.text('by Slitherstocks', margin + 18, y + 35);
+
+  const label = `${meta.ticker}  •  ${meta.period} ${meta.year}`;
+  setSize(10);
+  doc.setFont('helvetica', 'bold');
+  const lw = doc.getTextWidth(label);
+  doc.text(label, W - margin - 18 - lw, y + 26);
+
+  y += 74;
+
+  // ── Generated date ─────────────────────────────────────────────────────────
+  setSize(8);
+  doc.setFont('helvetica', 'normal');
+  setColor(...muted);
+  const genLabel = isEn
+    ? `Generated on ${new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })}`
+    : `Dibuat pada ${new Date().toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}`;
+  doc.text(genLabel, margin, y);
+  y += 20;
+
+  // ── Separator ─────────────────────────────────────────────────────────────
+  doc.setDrawColor(...border);
+  doc.setLineWidth(0.5);
+  doc.line(margin, y, W - margin, y);
+  y += 16;
+
+  // ── Sections in 2-column layout ───────────────────────────────────────────
+  const ROW_H   = 18;
+  const SEC_PAD = 12;
+  const HEADER_H = 28;
+
+  let colX = margin;
+  let colY = y;
+  let colIdx = 0;
+
+  for (const sec of sections) {
+    const sectionH = HEADER_H + sec.rows.length * ROW_H + SEC_PAD;
+
+    if (colY + sectionH > H - margin && colIdx < 1) {
+      colX = margin + col + 16;
+      colY = y;
+      colIdx = 1;
+    }
+
+    const secW = col - 8;
+
+    // Section title
+    doc.setFillColor(248, 250, 252);
+    doc.roundedRect(colX, colY, secW, HEADER_H, 4, 4, 'F');
+    setSize(8);
+    doc.setFont('helvetica', 'bold');
+    setColor(...muted);
+    doc.text(sec.title.toUpperCase(), colX + 10, colY + 17);
+    colY += HEADER_H + 4;
+
+    // Rows
+    for (let i = 0; i < sec.rows.length; i++) {
+      const r = sec.rows[i];
+      const rowY = colY + i * ROW_H;
+
+      // Row divider
+      if (i > 0) {
+        doc.setDrawColor(...border);
+        doc.setLineWidth(0.3);
+        doc.line(colX + 4, rowY, colX + secW - 4, rowY);
+      }
+
+      // Label
+      setSize(8.5);
+      doc.setFont('helvetica', 'normal');
+      setColor(...muted);
+      doc.text(r.label, colX + 8, rowY + 12);
+
+      // Value with color
+      const rgb = PDF_COLOR[r.result.color] ?? dark;
+      setColor(...rgb);
+      doc.setFont('helvetica', 'bold');
+      const vw = doc.getTextWidth(r.result.text);
+      doc.text(r.result.text, colX + secW - 8 - vw, rowY + 12);
+    }
+
+    colY += sec.rows.length * ROW_H + SEC_PAD;
+  }
+
+  // ── Footer ─────────────────────────────────────────────────────────────────
+  const footerY = H - margin + 12;
+  doc.setDrawColor(...border);
+  doc.setLineWidth(0.5);
+  doc.line(margin, footerY - 8, W - margin, footerY - 8);
+  setSize(7.5);
+  doc.setFont('helvetica', 'normal');
+  setColor(...muted);
+  const disclaimer = isEn
+    ? 'This report is for informational purposes only and does not constitute financial advice.'
+    : 'Laporan ini hanya untuk tujuan informasi dan bukan merupakan saran keuangan.';
+  doc.text(disclaimer, margin, footerY);
+  const page = isEn ? 'Page 1 of 1' : 'Halaman 1 dari 1';
+  const pw = doc.getTextWidth(page);
+  doc.text(page, W - margin - pw, footerY);
+
+  doc.save(`FinRatio_${meta.ticker}_${meta.period}${meta.year}.pdf`);
+}
+
 export function SummaryPage() {
   const { language } = useLanguage();
-  const { state } = useCalculatorState();
+  const { state }   = useCalculatorState();
   const isEn = language === 'en';
   const L = (en: string, id: string) => isEn ? en : id;
 
-  // helpers
-  const n  = (vals: Record<string, string>, k: string) => parseFloat(vals[k]) || 0;
-  const has = (vals: Record<string, string>, k: string) => vals[k] !== '' && !isNaN(parseFloat(vals[k]));
+  const [showModal, setShowModal] = useState(false);
 
-  // ── LIQUIDITY ────────────────────────────────────────────────────────────
+  const n   = (vals: Record<string, string>, k: string) => parseFloat(vals[k]) || 0;
+  const has = (vals: Record<string, string>, k: string) =>
+    vals[k] !== '' && !isNaN(parseFloat(vals[k]));
+
+  // ── LIQUIDITY ─────────────────────────────────────────────────────────────
   const lq = state.liquidity;
   const liquidityRows: RowDef[] = [
     (() => {
@@ -116,7 +374,7 @@ export function SummaryPage() {
     })(),
   ];
 
-  // ── PROFITABILITY ────────────────────────────────────────────────────────
+  // ── PROFITABILITY ─────────────────────────────────────────────────────────
   const pr = state.profitability;
   const profitabilityRows: RowDef[] = [
     (() => {
@@ -142,14 +400,14 @@ export function SummaryPage() {
     })(),
     (() => {
       const ok = has(pr,'netIncome') && has(pr,'totalAssets') && n(pr,'totalAssets') !== 0;
-      if (!ok) return { label: L('ROA','ROA'), labelId: '', result: dash() };
+      if (!ok) return { label: L('Return on Assets (ROA)','Imbal Hasil Aset (ROA)'), labelId: '', result: dash() };
       const v = (n(pr,'netIncome') / n(pr,'totalAssets')) * 100;
       const c: Interp = v > 5 ? 'good' : v >= 2 ? 'average' : 'poor';
       return { label: L('Return on Assets (ROA)','Imbal Hasil Aset (ROA)'), labelId: '', result: val(c, fmtPct(v)) };
     })(),
     (() => {
       const ok = has(pr,'netIncome') && has(pr,'totalEquity') && n(pr,'totalEquity') !== 0;
-      if (!ok) return { label: L('ROE','ROE'), labelId: '', result: dash() };
+      if (!ok) return { label: L('Return on Equity (ROE)','Imbal Hasil Ekuitas (ROE)'), labelId: '', result: dash() };
       const v = (n(pr,'netIncome') / n(pr,'totalEquity')) * 100;
       const c: Interp = v > 15 ? 'good' : v >= 8 ? 'average' : 'poor';
       return { label: L('Return on Equity (ROE)','Imbal Hasil Ekuitas (ROE)'), labelId: '', result: val(c, fmtPct(v)) };
@@ -163,7 +421,7 @@ export function SummaryPage() {
     })(),
   ];
 
-  // ── LEVERAGE ─────────────────────────────────────────────────────────────
+  // ── LEVERAGE ──────────────────────────────────────────────────────────────
   const lv = state.leverage;
   const leverageRows: RowDef[] = [
     (() => {
@@ -189,7 +447,7 @@ export function SummaryPage() {
     })(),
   ];
 
-  // ── EFFICIENCY ───────────────────────────────────────────────────────────
+  // ── EFFICIENCY ────────────────────────────────────────────────────────────
   const ef = state.efficiency;
   const efficiencyRows: RowDef[] = [
     (() => {
@@ -223,7 +481,7 @@ export function SummaryPage() {
     })(),
   ];
 
-  // ── VALUATION ────────────────────────────────────────────────────────────
+  // ── VALUATION ─────────────────────────────────────────────────────────────
   const va = state.valuation;
   const mktCap = n(va,'marketPrice') * n(va,'sharesOutstanding');
   const ev = mktCap + n(va,'totalDebt') - n(va,'cashEquivalents');
@@ -265,20 +523,20 @@ export function SummaryPage() {
   ];
 
   const sections = [
-    { title: L('Liquidity', 'Likuiditas'), rows: liquidityRows },
+    { title: L('Liquidity',     'Likuiditas'),     rows: liquidityRows     },
     { title: L('Profitability', 'Profitabilitas'), rows: profitabilityRows },
-    { title: L('Leverage', 'Leverage'), rows: leverageRows },
-    { title: L('Efficiency', 'Efisiensi'), rows: efficiencyRows },
-    { title: L('Valuation', 'Valuasi'), rows: valuationRows },
+    { title: L('Leverage',      'Leverage'),       rows: leverageRows      },
+    { title: L('Efficiency',    'Efisiensi'),      rows: efficiencyRows    },
+    { title: L('Valuation',     'Valuasi'),        rows: valuationRows     },
   ];
 
-  // ── Readiness gate: at least one ratio calculable per category ────────────
+  // ── Readiness gate ─────────────────────────────────────────────────────────
   const ready = {
-    liquidity:     has(lq, 'currentAssets')    && has(lq, 'currentLiabilities') && n(lq, 'currentLiabilities') !== 0,
-    profitability: has(pr, 'netIncome')         && has(pr, 'totalRevenue')       && n(pr, 'totalRevenue') !== 0,
-    leverage:      has(lv, 'totalLiabilities')  && has(lv, 'totalEquity')        && n(lv, 'totalEquity') !== 0,
-    efficiency:    has(ef, 'totalRevenue')      && has(ef, 'accountsReceivable') && n(ef, 'accountsReceivable') !== 0,
-    valuation:     has(va, 'marketPrice')       && has(va, 'eps')                && n(va, 'eps') !== 0,
+    liquidity:     has(lq,'currentAssets')   && has(lq,'currentLiabilities') && n(lq,'currentLiabilities') !== 0,
+    profitability: has(pr,'netIncome')        && has(pr,'totalRevenue')       && n(pr,'totalRevenue') !== 0,
+    leverage:      has(lv,'totalLiabilities') && has(lv,'totalEquity')        && n(lv,'totalEquity') !== 0,
+    efficiency:    has(ef,'totalRevenue')     && has(ef,'accountsReceivable') && n(ef,'accountsReceivable') !== 0,
+    valuation:     has(va,'marketPrice')      && has(va,'eps')                && n(va,'eps') !== 0,
   };
   const allReady = Object.values(ready).every(Boolean);
 
@@ -292,19 +550,28 @@ export function SummaryPage() {
 
   return (
     <div className="flex-1 w-full max-w-5xl mx-auto p-4 sm:p-6">
-      <h1 className="text-2xl sm:text-3xl font-extrabold font-display text-foreground tracking-tight mb-6">
-        {L('Summary', 'Ringkasan')}
-      </h1>
+      <div className="flex items-center justify-between mb-6 gap-4">
+        <h1 className="text-2xl sm:text-3xl font-extrabold font-display text-foreground tracking-tight">
+          {L('Summary', 'Ringkasan')}
+        </h1>
+
+        {allReady && (
+          <button
+            onClick={() => setShowModal(true)}
+            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 active:scale-95 transition-all shadow-sm shrink-0"
+          >
+            <Download className="w-4 h-4" />
+            {L('Download PDF', 'Unduh PDF')}
+          </button>
+        )}
+      </div>
 
       {!allReady ? (
         <div className="border border-border rounded-2xl p-5 flex gap-3 items-start max-w-lg">
           <Info className="w-4 h-4 text-muted-foreground shrink-0 mt-0.5" />
           <div className="space-y-2">
             <p className="text-sm font-semibold text-foreground">
-              {L(
-                'Fill in all 5 tabs to view the summary.',
-                'Isi semua 5 tab untuk melihat ringkasan.'
-              )}
+              {L('Fill in all 5 tabs to view the summary.', 'Isi semua 5 tab untuk melihat ringkasan.')}
             </p>
             <p className="text-xs text-muted-foreground leading-relaxed">
               {L(
@@ -335,6 +602,14 @@ export function SummaryPage() {
             <Section key={s.title} title={s.title} rows={s.rows} />
           ))}
         </div>
+      )}
+
+      {showModal && (
+        <PdfModal
+          isEn={isEn}
+          onClose={() => setShowModal(false)}
+          onDownload={(meta) => buildPdf(sections, meta, isEn)}
+        />
       )}
     </div>
   );
