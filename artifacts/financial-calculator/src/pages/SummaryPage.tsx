@@ -214,7 +214,7 @@ function buildPdf(
   sections: { title: string; rows: RowDef[] }[],
   meta: PdfMeta,
   isEn: boolean,
-  overview: { p1: string; p2: string },
+  overview: { p1: string; p2: string } | null,
 ) {
   const doc = new jsPDF({ unit: 'pt', format: 'a4' });
   const W = doc.internal.pageSize.getWidth();
@@ -327,25 +327,27 @@ function buildPdf(
     colY += sec.rows.length * ROW_H + SEC_PAD;
   }
 
-  // ── Overview text ──────────────────────────────────────────────────────────
-  const overviewY = Math.max(colY, colX === margin ? colY : y + (sections.length * 120)) + 12;
-  const overviewLabel = isEn ? 'OVERVIEW' : 'GAMBARAN UMUM';
-  doc.setFillColor(248, 250, 252);
-  doc.roundedRect(margin, overviewY, W - margin * 2, 14, 3, 3, 'F');
-  setSize(7.5);
-  doc.setFont('helvetica', 'bold');
-  setColor(...muted);
-  doc.text(overviewLabel, margin + 8, overviewY + 10);
+  // ── Overview text (only when all outputs are filled) ───────────────────────
+  if (overview) {
+    const overviewY = Math.max(colY, colX === margin ? colY : y + (sections.length * 120)) + 12;
+    const overviewLabel = isEn ? 'OVERVIEW' : 'GAMBARAN UMUM';
+    doc.setFillColor(248, 250, 252);
+    doc.roundedRect(margin, overviewY, W - margin * 2, 14, 3, 3, 'F');
+    setSize(7.5);
+    doc.setFont('helvetica', 'bold');
+    setColor(...muted);
+    doc.text(overviewLabel, margin + 8, overviewY + 10);
 
-  const overviewTextY = overviewY + 22;
-  setSize(8.5);
-  doc.setFont('helvetica', 'normal');
-  setColor(...dark);
-  const textWidth = W - margin * 2;
-  const p1Lines = doc.splitTextToSize(overview.p1, textWidth);
-  const p2Lines = doc.splitTextToSize(overview.p2, textWidth);
-  doc.text(p1Lines, margin, overviewTextY);
-  doc.text(p2Lines, margin, overviewTextY + p1Lines.length * 12 + 6);
+    const overviewTextY = overviewY + 22;
+    setSize(8.5);
+    doc.setFont('helvetica', 'normal');
+    setColor(...dark);
+    const textWidth = W - margin * 2;
+    const p1Lines = doc.splitTextToSize(overview.p1, textWidth);
+    const p2Lines = doc.splitTextToSize(overview.p2, textWidth);
+    doc.text(p1Lines, margin, overviewTextY);
+    doc.text(p2Lines, margin, overviewTextY + p1Lines.length * 12 + 6);
+  }
 
   // ── Footer ─────────────────────────────────────────────────────────────────
   const footerY = H - margin + 12;
@@ -683,6 +685,10 @@ export function SummaryPage() {
   };
   const allReady = Object.values(ready).every(Boolean);
 
+  const allOutputsFilled = sections.every(s =>
+    s.rows.every(r => r.result.color !== 'text-muted-foreground/40')
+  );
+
   const categoryNames: Record<keyof typeof ready, string> = {
     liquidity:     L('Liquidity',     'Likuiditas'),
     profitability: L('Profitability', 'Profitabilitas'),
@@ -747,8 +753,8 @@ export function SummaryPage() {
             ))}
           </div>
 
-          {/* ── Big-picture narrative ── */}
-          {(() => {
+          {/* ── Big-picture narrative (only when every ratio is filled) ── */}
+          {allOutputsFilled && (() => {
             const { p1, p2 } = generateBigPicture(sections, isEn);
             return (
               <div className="mt-8 pt-6 border-t border-border space-y-2">
@@ -767,7 +773,7 @@ export function SummaryPage() {
         <PdfModal
           isEn={isEn}
           onClose={() => setShowModal(false)}
-          onDownload={(meta) => buildPdf(sections, meta, isEn, generateBigPicture(sections, isEn))}
+          onDownload={(meta) => buildPdf(sections, meta, isEn, allOutputsFilled ? generateBigPicture(sections, isEn) : null)}
         />
       )}
     </div>
