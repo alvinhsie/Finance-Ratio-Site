@@ -214,6 +214,7 @@ function buildPdf(
   sections: { title: string; rows: RowDef[] }[],
   meta: PdfMeta,
   isEn: boolean,
+  overview: { p1: string; p2: string },
 ) {
   const doc = new jsPDF({ unit: 'pt', format: 'a4' });
   const W = doc.internal.pageSize.getWidth();
@@ -326,6 +327,26 @@ function buildPdf(
     colY += sec.rows.length * ROW_H + SEC_PAD;
   }
 
+  // ── Overview text ──────────────────────────────────────────────────────────
+  const overviewY = Math.max(colY, colX === margin ? colY : y + (sections.length * 120)) + 12;
+  const overviewLabel = isEn ? 'OVERVIEW' : 'GAMBARAN UMUM';
+  doc.setFillColor(248, 250, 252);
+  doc.roundedRect(margin, overviewY, W - margin * 2, 14, 3, 3, 'F');
+  setSize(7.5);
+  doc.setFont('helvetica', 'bold');
+  setColor(...muted);
+  doc.text(overviewLabel, margin + 8, overviewY + 10);
+
+  const overviewTextY = overviewY + 22;
+  setSize(8.5);
+  doc.setFont('helvetica', 'normal');
+  setColor(...dark);
+  const textWidth = W - margin * 2;
+  const p1Lines = doc.splitTextToSize(overview.p1, textWidth);
+  const p2Lines = doc.splitTextToSize(overview.p2, textWidth);
+  doc.text(p1Lines, margin, overviewTextY);
+  doc.text(p2Lines, margin, overviewTextY + p1Lines.length * 12 + 6);
+
   // ── Footer ─────────────────────────────────────────────────────────────────
   const footerY = H - margin + 12;
   doc.setDrawColor(...border);
@@ -344,6 +365,97 @@ function buildPdf(
 
   const rtSlug = meta.reportType ? `_${meta.reportType}` : '';
   doc.save(`FinRatio_${meta.ticker}_${meta.period}${rtSlug}_${meta.year}.pdf`);
+}
+
+// ── Big-picture narrative ───────────────────────────────────────────────────
+type SectionProfile = 'strong' | 'mixed' | 'weak' | 'neutral';
+
+function profileSection(rows: RowDef[]): SectionProfile {
+  let good = 0, poor = 0, avg = 0, total = 0;
+  for (const r of rows) {
+    if (r.result.color === 'text-muted-foreground/40') continue;
+    total++;
+    if (r.result.color === 'text-green-600') good++;
+    else if (r.result.color === 'text-red-500') poor++;
+    else if (r.result.color === 'text-yellow-400') avg++;
+  }
+  if (total === 0) return 'neutral';
+  if (good / total > 0.5) return 'strong';
+  if (poor / total > 0.5) return 'weak';
+  return 'mixed';
+}
+
+function generateBigPicture(
+  sections: { title: string; rows: RowDef[] }[],
+  isEn: boolean,
+): { p1: string; p2: string } {
+  const [liq, pro, lev, eff, val] = sections.map(s => profileSection(s.rows));
+
+  const profiles = [liq, pro, lev, eff, val];
+  const strongCount  = profiles.filter(p => p === 'strong').length;
+  const weakCount    = profiles.filter(p => p === 'weak').length;
+
+  // ── Section-level descriptors ────────────────────────────────────────────
+  const DESC: Record<string, Record<SectionProfile, { en: string; id: string }>> = {
+    liquidity: {
+      strong:  { en: 'Liquidity is solid, with short-term assets comfortably covering near-term obligations.',            id: 'Likuiditas terbilang solid, dengan aset lancar yang cukup untuk menutupi kewajiban jangka pendek.' },
+      mixed:   { en: 'Liquidity is adequate, though some short-term coverage metrics show room for improvement.',         id: 'Likuiditas cukup memadai, meski beberapa rasio perlindungan jangka pendek masih perlu ditingkatkan.' },
+      weak:    { en: 'Liquidity appears strained, with short-term assets falling short relative to near-term obligations.', id: 'Likuiditas terlihat tertekan, dengan aset lancar yang belum cukup menutupi kewajiban jangka pendek.' },
+      neutral: { en: 'Liquidity data provides a neutral picture of short-term coverage.',                                 id: 'Data likuiditas memberikan gambaran netral terhadap kemampuan pemenuhan kewajiban jangka pendek.' },
+    },
+    profitability: {
+      strong:  { en: 'Profitability margins are healthy, reflecting effective cost management and earnings generation.',   id: 'Margin profitabilitas terlihat sehat, mencerminkan manajemen biaya yang efektif dan kemampuan menghasilkan laba.' },
+      mixed:   { en: 'Profitability shows a mixed picture, with some margins at acceptable levels and others under pressure.', id: 'Profitabilitas menunjukkan gambaran campuran, dengan sebagian margin yang cukup dan sebagian lain masih tertekan.' },
+      weak:    { en: 'Profitability is under pressure, with margins reflecting difficulty in converting revenue into earnings.', id: 'Profitabilitas berada di bawah tekanan, dengan margin yang mencerminkan kesulitan dalam menghasilkan laba dari pendapatan.' },
+      neutral: { en: 'Profitability metrics reflect a neutral earnings picture relative to revenue and assets.',           id: 'Metrik profitabilitas mencerminkan gambaran laba yang netral relatif terhadap pendapatan dan aset.' },
+    },
+    leverage: {
+      strong:  { en: 'Leverage is conservative, with manageable debt levels relative to equity and earnings capacity.',   id: 'Leverage terbilang konservatif, dengan tingkat utang yang terkendali relatif terhadap ekuitas dan kapasitas laba.' },
+      mixed:   { en: 'Leverage sits at a moderate level, indicating meaningful but not excessive use of debt financing.',  id: 'Leverage berada di tingkat moderat, mencerminkan penggunaan utang yang berarti namun tidak berlebihan.' },
+      weak:    { en: 'Leverage is elevated, with debt levels running high relative to equity, assets, and earnings capacity.', id: 'Leverage tergolong tinggi, dengan tingkat utang yang cukup besar relatif terhadap ekuitas, aset, dan kapasitas laba.' },
+      neutral: { en: 'Leverage metrics reflect a balanced use of debt relative to the company\'s capital structure.',     id: 'Metrik leverage mencerminkan penggunaan utang yang seimbang dalam struktur modal perusahaan.' },
+    },
+    efficiency: {
+      strong:  { en: 'Operational efficiency is high, with strong asset utilization and receivables collection.',          id: 'Efisiensi operasional tinggi, dengan pemanfaatan aset dan pengumpulan piutang yang baik.' },
+      mixed:   { en: 'Operational efficiency is moderate, with turnover metrics operating within an acceptable range.',    id: 'Efisiensi operasional tergolong moderat, dengan rasio perputaran yang berada dalam kisaran yang dapat diterima.' },
+      weak:    { en: 'Operational efficiency appears sluggish, with slower asset turnover and extended collection cycles.', id: 'Efisiensi operasional terlihat lambat, dengan perputaran aset yang rendah dan siklus penagihan yang panjang.' },
+      neutral: { en: 'Efficiency metrics paint a neutral picture of how the company manages its operational resources.',   id: 'Metrik efisiensi menggambarkan gambaran netral tentang bagaimana perusahaan mengelola sumber daya operasionalnya.' },
+    },
+    valuation: {
+      strong:  { en: 'Valuation metrics suggest the stock is reasonably priced relative to earnings and book value.',      id: 'Metrik valuasi menunjukkan saham diperdagangkan pada harga yang wajar relatif terhadap laba dan nilai buku.' },
+      mixed:   { en: 'Valuation metrics reflect a mixed pricing picture, with some multiples elevated and others moderate.', id: 'Metrik valuasi mencerminkan gambaran harga yang beragam, dengan sebagian kelipatan tinggi dan sebagian lain moderat.' },
+      weak:    { en: 'Valuation metrics indicate a premium market price, trading at a high multiple relative to fundamentals.', id: 'Metrik valuasi mengindikasikan harga pasar yang premium, diperdagangkan pada kelipatan tinggi relatif terhadap fundamental.' },
+      neutral: { en: 'Valuation data reflects current market pricing, with metrics that vary across different measures.',   id: 'Data valuasi mencerminkan harga pasar saat ini, dengan metrik yang bervariasi di berbagai ukuran.' },
+    },
+  };
+
+  const keys = ['liquidity', 'profitability', 'leverage', 'efficiency', 'valuation'];
+
+  // ── Overall tone ─────────────────────────────────────────────────────────
+  let overallEn: string, overallId: string;
+  if (strongCount >= 4)      { overallEn = 'The ratios collectively point to a robust financial profile across most dimensions analyzed.'; overallId = 'Secara keseluruhan, rasio-rasio ini menunjukkan profil keuangan yang kuat di sebagian besar dimensi yang dianalisis.'; }
+  else if (strongCount >= 3) { overallEn = 'The ratios collectively suggest a broadly solid financial profile, with a few areas showing moderate signals.'; overallId = 'Secara keseluruhan, rasio-rasio ini mencerminkan profil keuangan yang cukup solid, dengan beberapa area yang menunjukkan sinyal moderat.'; }
+  else if (weakCount >= 3)   { overallEn = 'The ratios collectively indicate a challenging financial profile, with several areas reflecting notable pressure.'; overallId = 'Secara keseluruhan, rasio-rasio ini mengindikasikan profil keuangan yang menantang, dengan beberapa area yang mencerminkan tekanan yang signifikan.'; }
+  else                        { overallEn = 'The ratios collectively present a mixed financial profile, with varying signals across the categories analyzed.'; overallId = 'Secara keseluruhan, rasio-rasio ini menunjukkan profil keuangan yang beragam, dengan sinyal yang bervariasi di seluruh kategori yang dianalisis.'; }
+
+  // ── Category sentences ────────────────────────────────────────────────────
+  const sentences = keys.map((k, i) => {
+    const prof = profiles[i];
+    const d = DESC[k][prof];
+    return isEn ? d.en : d.id;
+  });
+
+  const [liqS, proS, levS, effS, valS] = sentences;
+
+  const p1 = isEn
+    ? `${overallEn} ${liqS} ${proS}`
+    : `${overallId} ${liqS} ${proS}`;
+
+  const p2 = isEn
+    ? `${levS} ${effS} ${valS}`
+    : `${levS} ${effS} ${valS}`;
+
+  return { p1, p2 };
 }
 
 export function SummaryPage() {
@@ -628,18 +740,34 @@ export function SummaryPage() {
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-          {sections.map(s => (
-            <Section key={s.title} title={s.title} rows={s.rows} />
-          ))}
-        </div>
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+            {sections.map(s => (
+              <Section key={s.title} title={s.title} rows={s.rows} />
+            ))}
+          </div>
+
+          {/* ── Big-picture narrative ── */}
+          {(() => {
+            const { p1, p2 } = generateBigPicture(sections, isEn);
+            return (
+              <div className="mt-8 pt-6 border-t border-border space-y-2">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-3">
+                  {L('Overview', 'Gambaran Umum')}
+                </p>
+                <p className="text-sm text-muted-foreground leading-relaxed">{p1}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed">{p2}</p>
+              </div>
+            );
+          })()}
+        </>
       )}
 
       {showModal && (
         <PdfModal
           isEn={isEn}
           onClose={() => setShowModal(false)}
-          onDownload={(meta) => buildPdf(sections, meta, isEn)}
+          onDownload={(meta) => buildPdf(sections, meta, isEn, generateBigPicture(sections, isEn))}
         />
       )}
     </div>
