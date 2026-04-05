@@ -70,7 +70,8 @@ function Section({ title, rows }: { title: string; rows: RowDef[] }) {
 
 type Period = 'Q1' | 'Q2' | 'Q3' | 'FY';
 
-interface PdfMeta { ticker: string; period: Period; year: string }
+type ReportType = 'TTM' | 'Quarterly';
+interface PdfMeta { ticker: string; period: Period; reportType: ReportType | null; year: string }
 
 function PdfModal({
   onClose,
@@ -81,15 +82,16 @@ function PdfModal({
   onDownload: (meta: PdfMeta) => void;
   isEn: boolean;
 }) {
-  const [ticker, setTicker] = useState('');
-  const [period, setPeriod] = useState<Period>('FY');
-  const [year, setYear]   = useState(String(new Date().getFullYear()));
+  const [ticker, setTicker]         = useState('');
+  const [period, setPeriod]         = useState<Period>('FY');
+  const [reportType, setReportType] = useState<ReportType | null>(null);
+  const [year, setYear]             = useState(String(new Date().getFullYear()));
 
   const L = (en: string, id: string) => isEn ? en : id;
 
   const handle = () => {
     if (!ticker.trim() || !year.trim()) return;
-    onDownload({ ticker: ticker.trim().toUpperCase(), period, year: year.trim() });
+    onDownload({ ticker: ticker.trim().toUpperCase(), period, reportType, year: year.trim() });
     onClose();
   };
 
@@ -147,6 +149,33 @@ function PdfModal({
                   )}
                 >
                   {p}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-1.5">
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+                {L('Report Type', 'Jenis Laporan')}
+              </label>
+              <span className="text-[10px] text-muted-foreground/60 italic">
+                {L('(optional)', '(opsional)')}
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {(['TTM', 'Quarterly'] as ReportType[]).map(rt => (
+                <button
+                  key={rt}
+                  onClick={() => setReportType(prev => prev === rt ? null : rt)}
+                  className={cn(
+                    'py-2 rounded-xl text-sm font-bold border transition-all',
+                    reportType === rt
+                      ? 'bg-primary text-primary-foreground border-primary'
+                      : 'border-border text-muted-foreground hover:border-primary/50 hover:text-foreground'
+                  )}
+                >
+                  {rt}
                 </button>
               ))}
             </div>
@@ -214,7 +243,8 @@ function buildPdf(
   doc.setFont('helvetica', 'normal');
   doc.text('by Slitherstocks', margin + 18, y + 35);
 
-  const label = `${meta.ticker}  •  ${meta.period} ${meta.year}`;
+  const rtPart = meta.reportType ? ` ${meta.reportType}` : '';
+  const label  = `${meta.ticker}  •  ${meta.period}${rtPart} ${meta.year}`;
   setSize(10);
   doc.setFont('helvetica', 'bold');
   const lw = doc.getTextWidth(label);
@@ -312,7 +342,8 @@ function buildPdf(
   const pw = doc.getTextWidth(page);
   doc.text(page, W - margin - pw, footerY);
 
-  doc.save(`FinRatio_${meta.ticker}_${meta.period}${meta.year}.pdf`);
+  const rtSlug = meta.reportType ? `_${meta.reportType}` : '';
+  doc.save(`FinRatio_${meta.ticker}_${meta.period}${rtSlug}_${meta.year}.pdf`);
 }
 
 export function SummaryPage() {
