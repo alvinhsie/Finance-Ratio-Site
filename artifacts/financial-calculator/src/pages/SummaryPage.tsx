@@ -68,7 +68,7 @@ function Section({ title, rows }: { title: string; rows: RowDef[] }) {
   );
 }
 
-type Period = 'TTM Q1' | 'TTM Q2' | 'TTM Q3' | 'FY';
+type Period = 'Q1' | 'Q2' | 'Q3' | 'FY';
 
 interface PdfMeta { ticker: string; period: Period; year: string }
 
@@ -82,7 +82,7 @@ function PdfModal({
   isEn: boolean;
 }) {
   const [ticker, setTicker] = useState('');
-  const [period, setPeriod] = useState<Period>('TTM Q1');
+  const [period, setPeriod] = useState<Period>('FY');
   const [year, setYear]   = useState(String(new Date().getFullYear()));
 
   const L = (en: string, id: string) => isEn ? en : id;
@@ -93,7 +93,7 @@ function PdfModal({
     onClose();
   };
 
-  const periods: Period[] = ['TTM Q1', 'TTM Q2', 'TTM Q3', 'FY'];
+  const periods: Period[] = ['Q1', 'Q2', 'Q3', 'FY'];
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
@@ -134,7 +134,7 @@ function PdfModal({
             <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
               {L('Period', 'Periode')}
             </label>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-4 gap-2">
               {periods.map(p => (
                 <button
                   key={p}
@@ -312,8 +312,7 @@ function buildPdf(
   const pw = doc.getTextWidth(page);
   doc.text(page, W - margin - pw, footerY);
 
-  const periodSlug = meta.period.replace(/\s+/g, '_');
-  doc.save(`FinRatio_${meta.ticker}_${periodSlug}_${meta.year}.pdf`);
+  doc.save(`FinRatio_${meta.ticker}_${meta.period}${meta.year}.pdf`);
 }
 
 export function SummaryPage() {
