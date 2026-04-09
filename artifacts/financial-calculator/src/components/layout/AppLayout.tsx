@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { CATEGORIES } from '@/lib/ratios';
 import { Link, useLocation } from 'wouter';
 import { cn } from '@/lib/utils';
-import { Calculator, Menu, X, ChevronRight, Home, BookOpen, LayoutDashboard } from 'lucide-react';
+import { Calculator, Menu, X, ChevronRight, Home, BookOpen, LayoutDashboard, Globe } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/lib/LanguageContext';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
@@ -62,6 +62,18 @@ function NavContent({ location, t, language }: { location: string; t: any; langu
         <LayoutDashboard className={cn('w-5 h-5 transition-colors', location === '/summary' ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground')} />
         <span className="flex-1">{language === 'id' ? 'Ringkasan' : 'Summary'}</span>
         {location === '/summary' && <motion.div layoutId="activeNav"><ChevronRight className="w-4 h-4" /></motion.div>}
+      </Link>
+
+      <Link
+        href="/macro"
+        className={cn(
+          'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group',
+          location === '/macro' ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
+        )}
+      >
+        <Globe className={cn('w-5 h-5 transition-colors', location === '/macro' ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground')} />
+        <span className="flex-1">{language === 'id' ? 'Makro' : 'Macro'}</span>
+        {location === '/macro' && <motion.div layoutId="activeNav"><ChevronRight className="w-4 h-4" /></motion.div>}
       </Link>
 
       <div className="border-t border-border/60" />
