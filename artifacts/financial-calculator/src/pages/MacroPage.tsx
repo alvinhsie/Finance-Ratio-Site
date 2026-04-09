@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { X, ExternalLink, TrendingUp, TrendingDown, BarChart2, RefreshCw } from 'lucide-react';
+import { X, TrendingUp, TrendingDown, BarChart2, RefreshCw } from 'lucide-react';
 import { useLanguage } from '@/lib/LanguageContext';
 import { cn } from '@/lib/utils';
 
@@ -31,7 +31,6 @@ interface MetricDef {
   descEn: string;
   descId: string;
   tvSymbol?: string;
-  isForeignFlow?: boolean;
 }
 
 const METRICS: MetricDef[] = [
@@ -43,7 +42,6 @@ const METRICS: MetricDef[] = [
   { id: 'wti',          nameEn: 'Crude Oil WTI',    nameId: 'Minyak Mentah WTI',  descEn: 'West Texas Intermediate',descId: 'Minyak Mentah WTI',     tvSymbol: 'TVC:USOIL' },
   { id: 'nyse',         nameEn: 'NYSE',             nameId: 'NYSE',               descEn: 'NYSE Composite Index',   descId: 'Indeks Komposit NYSE',  tvSymbol: 'NYSE:NYA' },
   { id: 'ihsg',         nameEn: 'IHSG',             nameId: 'IHSG',               descEn: 'Indonesia Composite',    descId: 'Indeks Harga Saham',    tvSymbol: 'IDX:COMPOSITE' },
-  { id: 'foreign-flow', nameEn: 'Foreign Flow',     nameId: 'Aliran Asing',       descEn: 'Net foreign buy/sell',   descId: 'Net beli/jual asing',   isForeignFlow: true },
 ];
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -208,34 +206,6 @@ function QuoteCard({ metric, quote, isEn, onClick }: {
   );
 }
 
-// ── Foreign Flow Card ──────────────────────────────────────────────────────
-function ForeignFlowCard({ isEn }: { isEn: boolean }) {
-  return (
-    <div className="bg-card border border-border rounded-2xl p-5 flex flex-col gap-3">
-      <div className="flex items-start justify-between gap-2">
-        <div>
-          <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{isEn ? 'Foreign Flow' : 'Aliran Asing'}</p>
-          <p className="text-[11px] text-muted-foreground/60 mt-0.5">{isEn ? 'Net foreign buy / sell on IDX' : 'Net beli / jual asing di IDX'}</p>
-        </div>
-      </div>
-      <p className="text-sm text-muted-foreground leading-relaxed">
-        {isEn
-          ? 'Published by IDX after market close each day. Click below to view the latest figures.'
-          : 'Dipublikasikan oleh IDX setelah pasar tutup setiap hari. Klik di bawah untuk melihat data terbaru.'}
-      </p>
-      <a
-        href="https://www.idx.co.id/id/data-pasar/perdagangan-saham/foreign-activities/"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary/90 transition-colors self-start"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <ExternalLink className="w-3.5 h-3.5" />
-        {isEn ? 'Open IDX Data' : 'Buka Data IDX'}
-      </a>
-    </div>
-  );
-}
 
 // ── Main Page ──────────────────────────────────────────────────────────────
 const REFRESH_INTERVAL = 30_000; // 30 s
@@ -306,23 +276,19 @@ export function MacroPage() {
 
       {/* Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {METRICS.map((m) =>
-          m.isForeignFlow ? (
-            <ForeignFlowCard key={m.id} isEn={isEn} />
-          ) : (
-            <QuoteCard
-              key={m.id}
-              metric={m}
-              quote={data[m.id]}
-              isEn={isEn}
-              onClick={() => setSelected(m)}
-            />
-          )
-        )}
+        {METRICS.map((m) => (
+          <QuoteCard
+            key={m.id}
+            metric={m}
+            quote={data[m.id]}
+            isEn={isEn}
+            onClick={() => setSelected(m)}
+          />
+        ))}
       </div>
 
       {/* Chart Modal */}
-      {selected && !selected.isForeignFlow && (
+      {selected && (
         <ChartModal metric={selected} isEn={isEn} onClose={() => setSelected(null)} />
       )}
     </div>
