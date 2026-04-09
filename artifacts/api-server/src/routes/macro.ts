@@ -10,7 +10,7 @@ const METRICS = [
   { id: "vix",    symbol: "^VIX",     unitHint: null },
   { id: "dxy",    symbol: "DX-Y.NYB", unitHint: null },
   { id: "coal",   symbol: "MTF=F",    unitHint: null },
-  { id: "nickel", symbol: "NI=F",     unitHint: null },
+  { id: "nickel", symbol: "JJN",      unitHint: null },
   { id: "wti",    symbol: "CL=F",     unitHint: null },
   { id: "nyse",   symbol: "^NYA",     unitHint: null },
   { id: "ihsg",   symbol: "^JKSE",    unitHint: null },

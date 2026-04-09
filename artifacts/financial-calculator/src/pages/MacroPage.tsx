@@ -38,7 +38,7 @@ const METRICS: MetricDef[] = [
   { id: 'vix',          nameEn: 'VIX',              nameId: 'VIX',                descEn: 'CBOE Volatility Index',  descId: 'Indeks Volatilitas',    tvSymbol: 'CBOE:VIX' },
   { id: 'dxy',          nameEn: 'DXY',              nameId: 'DXY',                descEn: 'US Dollar Index',        descId: 'Indeks Dolar AS',       tvSymbol: 'TVC:DXY' },
   { id: 'coal',         nameEn: 'Coal',             nameId: 'Batu Bara',          descEn: 'Newcastle Coal Futures', descId: 'Futures Batu Bara',     tvSymbol: 'TVC:COAL' },
-  { id: 'nickel',       nameEn: 'Nickel',           nameId: 'Nikel',              descEn: 'LME Nickel Price',       descId: 'Harga Nikel LME',       tvSymbol: 'TVC:NICKEL' },
+  { id: 'nickel',       nameEn: 'Nickel',           nameId: 'Nikel',              descEn: 'Bloomberg Nickel ETN (JJN)', descId: 'ETN Nikel Bloomberg (JJN)', tvSymbol: 'TVC:NICKEL' },
   { id: 'wti',          nameEn: 'Crude Oil WTI',    nameId: 'Minyak Mentah WTI',  descEn: 'West Texas Intermediate',descId: 'Minyak Mentah WTI',     tvSymbol: 'TVC:USOIL' },
   { id: 'nyse',         nameEn: 'NYSE',             nameId: 'NYSE',               descEn: 'NYSE Composite Index',   descId: 'Indeks Komposit NYSE',  tvSymbol: 'NYSE:NYA' },
   { id: 'ihsg',         nameEn: 'IHSG',             nameId: 'IHSG',               descEn: 'Indonesia Composite',    descId: 'Indeks Harga Saham',    tvSymbol: 'IDX:COMPOSITE' },
