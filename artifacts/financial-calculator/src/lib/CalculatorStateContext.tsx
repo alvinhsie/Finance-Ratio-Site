@@ -1,9 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import {
   LIQUIDITY_EMPTY, PROFITABILITY_EMPTY, LEVERAGE_EMPTY,
-  EFFICIENCY_EMPTY, VALUATION_EMPTY,
-  FAIRVALUE_STD_EMPTY, FAIRVALUE_CYC_EMPTY,
-  FAIRVALUE_DCF_EMPTY, FAIRVALUE_DDM_EMPTY, FAIRVALUE_NAV_EMPTY,
+  EFFICIENCY_EMPTY, VALUATION_EMPTY, FAIRVALUE_STD_EMPTY, FAIRVALUE_CYC_EMPTY,
 } from './calculatorDefaults';
 
 const SHARED_FIELDS = new Set([
@@ -11,7 +9,6 @@ const SHARED_FIELDS = new Set([
   'currentLiabilities',
   'totalRevenue',
   'totalAssets',
-  'totalLiabilities',
   'totalEquity',
   'totalDebt',
   'ebitda',
@@ -21,19 +18,16 @@ const SHARED_FIELDS = new Set([
 const SESSION_STATE_KEY   = 'finratio_calc_state';
 const SESSION_FV_MODE_KEY = 'finratio_fv_mode';
 
-export type FairValueMode = 'standard' | 'cyclical' | 'dcf' | 'ddm' | 'nav';
+export type FairValueMode = 'standard' | 'cyclical';
 
 interface CalculatorState {
-  liquidity:     Record<string, string>;
+  liquidity:    Record<string, string>;
   profitability: Record<string, string>;
-  leverage:      Record<string, string>;
-  efficiency:    Record<string, string>;
-  valuation:     Record<string, string>;
-  fairValueStd:  Record<string, string>;
-  fairValueCyc:  Record<string, string>;
-  fairValueDcf:  Record<string, string>;
-  fairValueDdm:  Record<string, string>;
-  fairValueNav:  Record<string, string>;
+  leverage:     Record<string, string>;
+  efficiency:   Record<string, string>;
+  valuation:    Record<string, string>;
+  fairValueStd: Record<string, string>;
+  fairValueCyc: Record<string, string>;
 }
 
 interface CalculatorStateContextValue {
@@ -46,16 +40,13 @@ interface CalculatorStateContextValue {
 }
 
 const defaultState: CalculatorState = {
-  liquidity:     { ...LIQUIDITY_EMPTY },
+  liquidity:    { ...LIQUIDITY_EMPTY },
   profitability: { ...PROFITABILITY_EMPTY },
-  leverage:      { ...LEVERAGE_EMPTY },
-  efficiency:    { ...EFFICIENCY_EMPTY },
-  valuation:     { ...VALUATION_EMPTY },
-  fairValueStd:  { ...FAIRVALUE_STD_EMPTY },
-  fairValueCyc:  { ...FAIRVALUE_CYC_EMPTY },
-  fairValueDcf:  { ...FAIRVALUE_DCF_EMPTY },
-  fairValueDdm:  { ...FAIRVALUE_DDM_EMPTY },
-  fairValueNav:  { ...FAIRVALUE_NAV_EMPTY },
+  leverage:     { ...LEVERAGE_EMPTY },
+  efficiency:   { ...EFFICIENCY_EMPTY },
+  valuation:    { ...VALUATION_EMPTY },
+  fairValueStd: { ...FAIRVALUE_STD_EMPTY },
+  fairValueCyc: { ...FAIRVALUE_CYC_EMPTY },
 };
 
 function loadStateFromSession(): CalculatorState {
@@ -64,28 +55,23 @@ function loadStateFromSession(): CalculatorState {
     if (!saved) return { ...defaultState };
     const parsed = JSON.parse(saved) as Partial<CalculatorState>;
     return {
-      liquidity:     { ...LIQUIDITY_EMPTY,      ...(parsed.liquidity     ?? {}) },
-      profitability: { ...PROFITABILITY_EMPTY,  ...(parsed.profitability ?? {}) },
-      leverage:      { ...LEVERAGE_EMPTY,       ...(parsed.leverage      ?? {}) },
-      efficiency:    { ...EFFICIENCY_EMPTY,     ...(parsed.efficiency    ?? {}) },
-      valuation:     { ...VALUATION_EMPTY,      ...(parsed.valuation     ?? {}) },
-      fairValueStd:  { ...FAIRVALUE_STD_EMPTY,  ...(parsed.fairValueStd  ?? {}) },
-      fairValueCyc:  { ...FAIRVALUE_CYC_EMPTY,  ...(parsed.fairValueCyc  ?? {}) },
-      fairValueDcf:  { ...FAIRVALUE_DCF_EMPTY,  ...(parsed.fairValueDcf  ?? {}) },
-      fairValueDdm:  { ...FAIRVALUE_DDM_EMPTY,  ...(parsed.fairValueDdm  ?? {}) },
-      fairValueNav:  { ...FAIRVALUE_NAV_EMPTY,  ...(parsed.fairValueNav  ?? {}) },
+      liquidity:    { ...LIQUIDITY_EMPTY,      ...(parsed.liquidity    ?? {}) },
+      profitability: { ...PROFITABILITY_EMPTY, ...(parsed.profitability ?? {}) },
+      leverage:     { ...LEVERAGE_EMPTY,       ...(parsed.leverage     ?? {}) },
+      efficiency:   { ...EFFICIENCY_EMPTY,     ...(parsed.efficiency   ?? {}) },
+      valuation:    { ...VALUATION_EMPTY,      ...(parsed.valuation    ?? {}) },
+      fairValueStd: { ...FAIRVALUE_STD_EMPTY,  ...(parsed.fairValueStd ?? {}) },
+      fairValueCyc: { ...FAIRVALUE_CYC_EMPTY,  ...(parsed.fairValueCyc ?? {}) },
     };
   } catch {
     return { ...defaultState };
   }
 }
 
-const VALID_MODES: FairValueMode[] = ['standard', 'cyclical', 'dcf', 'ddm', 'nav'];
-
 function loadFvModeFromSession(): FairValueMode {
   try {
     const saved = sessionStorage.getItem(SESSION_FV_MODE_KEY);
-    if (saved && VALID_MODES.includes(saved as FairValueMode)) return saved as FairValueMode;
+    if (saved === 'standard' || saved === 'cyclical') return saved;
   } catch {}
   return 'standard';
 }
