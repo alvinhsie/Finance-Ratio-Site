@@ -137,7 +137,7 @@ function MetricCard({ metric, quote, isEn }: {
           <p className="text-[11px] text-muted-foreground/50 italic">{isEn ? 'No history available' : 'Riwayat tidak tersedia'}</p>
         ) : (
           <div className="flex flex-col gap-0.5">
-            {history.map((row) => (
+            {[...history].reverse().map((row) => (
               <div key={row.date} className="flex items-center justify-between">
                 <span className="text-[11px] text-muted-foreground">{fmtDate(row.date, isEn)}</span>
                 <span className="text-[11px] font-semibold text-foreground tabular-nums">
