@@ -3,17 +3,8 @@ import { CATEGORIES } from '@/lib/ratios';
 import { Link, useLocation } from 'wouter';
 import { cn } from '@/lib/utils';
 import { Calculator, Menu, X, ChevronRight, Home, BookOpen, LayoutDashboard } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '@/lib/LanguageContext';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher';
-
-const DRAWER_TRANSITION = {
-  type: 'tween' as const,
-  ease: [0.25, 0.46, 0.45, 0.94],
-  duration: 0.3,
-};
-
-const FADE_TRANSITION = { duration: 0.25, ease: 'easeInOut' };
 
 function NavContent({ location, t, language }: { location: string; t: any; language: string }) {
   return (
@@ -113,39 +104,26 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           <LanguageSwitcher />
           <button
             onClick={() => setMobileMenuOpen(v => !v)}
-            className="p-2 -mr-2 text-foreground"
+            className="p-2 -mr-2 text-foreground relative w-10 h-10 flex items-center justify-center"
             aria-label="Toggle menu"
           >
-            <AnimatePresence mode="wait" initial={false}>
-              {mobileMenuOpen ? (
-                <motion.span
-                  key="close"
-                  initial={{ rotate: -90, opacity: 0 }}
-                  animate={{ rotate: 0, opacity: 1 }}
-                  exit={{ rotate: 90, opacity: 0 }}
-                  transition={{ duration: 0.18 }}
-                  className="block"
-                >
-                  <X className="w-6 h-6" />
-                </motion.span>
-              ) : (
-                <motion.span
-                  key="open"
-                  initial={{ rotate: 90, opacity: 0 }}
-                  animate={{ rotate: 0, opacity: 1 }}
-                  exit={{ rotate: -90, opacity: 0 }}
-                  transition={{ duration: 0.18 }}
-                  className="block"
-                >
-                  <Menu className="w-6 h-6" />
-                </motion.span>
+            <Menu
+              className={cn(
+                'w-6 h-6 absolute transition-all duration-200',
+                mobileMenuOpen ? 'opacity-0 rotate-90 scale-75' : 'opacity-100 rotate-0 scale-100'
               )}
-            </AnimatePresence>
+            />
+            <X
+              className={cn(
+                'w-6 h-6 absolute transition-all duration-200',
+                mobileMenuOpen ? 'opacity-100 rotate-0 scale-100' : 'opacity-0 -rotate-90 scale-75'
+              )}
+            />
           </button>
         </div>
       </header>
 
-      {/* ── Desktop Sidebar (always rendered, no animation needed) ── */}
+      {/* ── Desktop Sidebar ── */}
       <aside className="hidden md:flex sticky top-0 h-screen w-72 bg-card border-r border-border flex-col">
         <div className="p-6 flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -162,35 +140,25 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         <NavContent location={location} t={t} language={language} />
       </aside>
 
-      {/* ── Mobile Drawer + Backdrop ── */}
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              key="backdrop"
-              className="md:hidden fixed inset-0 z-20 bg-black/50"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={FADE_TRANSITION}
-              onClick={() => setMobileMenuOpen(false)}
-            />
-
-            {/* Drawer panel */}
-            <motion.aside
-              key="drawer"
-              className="md:hidden fixed top-[65px] bottom-0 left-0 z-30 w-72 bg-card border-r border-border flex flex-col"
-              initial={{ x: -288 }}
-              animate={{ x: 0 }}
-              exit={{ x: -288 }}
-              transition={DRAWER_TRANSITION}
-            >
-              <NavContent location={location} t={t} language={language} />
-            </motion.aside>
-          </>
+      {/* ── Mobile Backdrop (always in DOM, CSS transition) ── */}
+      <div
+        className={cn(
+          'md:hidden fixed inset-0 z-20 bg-black/50 transition-opacity duration-250',
+          mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         )}
-      </AnimatePresence>
+        onClick={() => setMobileMenuOpen(false)}
+      />
+
+      {/* ── Mobile Drawer (always in DOM, CSS transition) ── */}
+      <aside
+        className={cn(
+          'md:hidden fixed top-[65px] bottom-0 left-0 z-30 w-72 bg-card border-r border-border flex flex-col',
+          'transition-transform duration-250 ease-[cubic-bezier(0.25,0.46,0.45,0.94)]',
+          mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        )}
+      >
+        <NavContent location={location} t={t} language={language} />
+      </aside>
 
       {/* ── Main Content ── */}
       <main className="flex-1 flex flex-col min-h-[calc(100vh-65px)] md:min-h-screen">
