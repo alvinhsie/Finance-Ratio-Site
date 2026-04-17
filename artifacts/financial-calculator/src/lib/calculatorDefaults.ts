@@ -32,3 +32,9 @@ export const FAIRVALUE_CYC_EMPTY: Record<string, string> = {
   normalizedEps: '', totalEquity: '', sharesOutstanding: '',
   shortTermCagr: '', longTermCagr: '', inflationRate: '', currentPrice: '',
 };
+
+export const FAIRVALUE_DCF_EMPTY: Record<string, string> = {
+  freeCashFlow: '', sharesOutstanding: '',
+  growthRate: '', terminalGrowthRate: '', discountRate: '',
+  netDebt: '', currentPrice: '',
+};

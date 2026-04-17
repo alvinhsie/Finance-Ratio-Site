@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import {
   LIQUIDITY_EMPTY, PROFITABILITY_EMPTY, LEVERAGE_EMPTY,
-  EFFICIENCY_EMPTY, VALUATION_EMPTY, FAIRVALUE_STD_EMPTY, FAIRVALUE_CYC_EMPTY,
+  EFFICIENCY_EMPTY, VALUATION_EMPTY, FAIRVALUE_STD_EMPTY, FAIRVALUE_CYC_EMPTY, FAIRVALUE_DCF_EMPTY,
 } from './calculatorDefaults';
 
 const SHARED_FIELDS = new Set([
@@ -18,7 +18,7 @@ const SHARED_FIELDS = new Set([
 const SESSION_STATE_KEY   = 'finratio_calc_state';
 const SESSION_FV_MODE_KEY = 'finratio_fv_mode';
 
-export type FairValueMode = 'standard' | 'cyclical';
+export type FairValueMode = 'standard' | 'cyclical' | 'dcf';
 
 interface CalculatorState {
   liquidity:    Record<string, string>;
@@ -28,6 +28,7 @@ interface CalculatorState {
   valuation:    Record<string, string>;
   fairValueStd: Record<string, string>;
   fairValueCyc: Record<string, string>;
+  fairValueDcf: Record<string, string>;
 }
 
 interface CalculatorStateContextValue {
@@ -47,6 +48,7 @@ const defaultState: CalculatorState = {
   valuation:    { ...VALUATION_EMPTY },
   fairValueStd: { ...FAIRVALUE_STD_EMPTY },
   fairValueCyc: { ...FAIRVALUE_CYC_EMPTY },
+  fairValueDcf: { ...FAIRVALUE_DCF_EMPTY },
 };
 
 function loadStateFromSession(): CalculatorState {
@@ -62,6 +64,7 @@ function loadStateFromSession(): CalculatorState {
       valuation:    { ...VALUATION_EMPTY,      ...(parsed.valuation    ?? {}) },
       fairValueStd: { ...FAIRVALUE_STD_EMPTY,  ...(parsed.fairValueStd ?? {}) },
       fairValueCyc: { ...FAIRVALUE_CYC_EMPTY,  ...(parsed.fairValueCyc ?? {}) },
+      fairValueDcf: { ...FAIRVALUE_DCF_EMPTY,  ...(parsed.fairValueDcf ?? {}) },
     };
   } catch {
     return { ...defaultState };
@@ -71,7 +74,7 @@ function loadStateFromSession(): CalculatorState {
 function loadFvModeFromSession(): FairValueMode {
   try {
     const saved = sessionStorage.getItem(SESSION_FV_MODE_KEY);
-    if (saved === 'standard' || saved === 'cyclical') return saved;
+    if (saved === 'standard' || saved === 'cyclical' || saved === 'dcf') return saved;
   } catch {}
   return 'standard';
 }
