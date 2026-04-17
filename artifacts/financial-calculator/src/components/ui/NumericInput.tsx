@@ -17,8 +17,6 @@ function applyCommas(raw: string): string {
 }
 
 function stripLeadingZeros(s: string): string {
-  // Keep: "", "-", "0", "0.", "-0", "-0.", "0.5", "-0.5"
-  // Strip: "0287" → "287", "-0287" → "-287"
   return s.replace(/^(-?)0+([1-9])/, '$1$2');
 }
 
@@ -41,8 +39,37 @@ export function NumericInput({ value, onChange, placeholder, id, className }: Nu
   });
 
   const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-    // Select all on focus so typing immediately replaces the current value
     e.target.select();
+  };
+
+  // Intercept comma key BEFORE the browser inserts it.
+  // On many mobile keyboards (Indonesian/European locale), the decimal key on the
+  // number pad sends a comma. Some browsers silently drop it in inputMode="decimal",
+  // so we must catch it here at the keydown level and insert a period ourselves.
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key !== ',') return;
+    e.preventDefault();
+
+    const el = e.currentTarget;
+    const currentDisplay = el.value;
+
+    // Do nothing if a decimal point is already present
+    if (currentDisplay.includes('.')) return;
+
+    const start = el.selectionStart ?? currentDisplay.length;
+    const end   = el.selectionEnd   ?? currentDisplay.length;
+
+    const before = currentDisplay.slice(0, start);
+    const after  = currentDisplay.slice(end);
+    const newDisplay = before + '.' + after;
+
+    const stripped = stripLeadingZeros(newDisplay.replace(/,/g, ''));
+    if (stripped !== '' && !/^-?\d*\.?\d*$/.test(stripped)) return;
+
+    const formatted = applyCommas(stripped);
+    cursorRef.current = start + 1;
+    setDisplay(formatted);
+    onChange(stripped);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,9 +77,8 @@ export function NumericInput({ value, onChange, placeholder, id, className }: Nu
     const typed = el.value;
     const cursorPos = el.selectionStart ?? typed.length;
 
-    // If no period exists yet, check whether any comma is a decimal separator.
-    // A comma is a decimal separator when it is NOT followed by exactly 3 digits
-    // then a comma or end-of-string (which is the thousand-separator pattern).
+    // Fallback: if a comma reached onChange (some browsers do send it),
+    // treat it as a decimal separator using the same heuristic.
     let normalized = typed;
     if (!normalized.includes('.')) {
       normalized = normalized.replace(/,(?!\d{3}(?:,|$))/, '.');
@@ -61,7 +87,6 @@ export function NumericInput({ value, onChange, placeholder, id, className }: Nu
     let stripped = normalized.replace(/,/g, '');
     if (stripped !== '' && !/^-?\d*\.?\d*$/.test(stripped)) return;
 
-    // Remove invalid leading zeros (e.g. "0287" → "287")
     stripped = stripLeadingZeros(stripped);
 
     const formatted = applyCommas(stripped);
@@ -88,6 +113,7 @@ export function NumericInput({ value, onChange, placeholder, id, className }: Nu
       autoComplete="off"
       placeholder={placeholder ?? '0'}
       value={display}
+      onKeyDown={handleKeyDown}
       onChange={handleChange}
       onFocus={handleFocus}
       className={cn(
