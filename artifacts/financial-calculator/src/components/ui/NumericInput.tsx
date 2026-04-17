@@ -50,7 +50,15 @@ export function NumericInput({ value, onChange, placeholder, id, className }: Nu
     const typed = el.value;
     const cursorPos = el.selectionStart ?? typed.length;
 
-    let stripped = typed.replace(/,/g, '');
+    // If no period exists yet, check whether any comma is a decimal separator.
+    // A comma is a decimal separator when it is NOT followed by exactly 3 digits
+    // then a comma or end-of-string (which is the thousand-separator pattern).
+    let normalized = typed;
+    if (!normalized.includes('.')) {
+      normalized = normalized.replace(/,(?!\d{3}(?:,|$))/, '.');
+    }
+
+    let stripped = normalized.replace(/,/g, '');
     if (stripped !== '' && !/^-?\d*\.?\d*$/.test(stripped)) return;
 
     // Remove invalid leading zeros (e.g. "0287" → "287")
