@@ -221,7 +221,7 @@ export function FairValueCalculator() {
       </motion.div>
 
       {/* ── Primary toggle: tab-style, full width, above results ── */}
-      <div className="flex border-b border-border mb-6">
+      <div className="flex justify-center md:justify-start border-b border-border mb-6">
         <button
           onClick={() => { if (mode === 'dcf') setMode('standard'); }}
           className={cn(
