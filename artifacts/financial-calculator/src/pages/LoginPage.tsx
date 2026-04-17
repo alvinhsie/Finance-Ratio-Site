@@ -52,7 +52,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
           </div>
           <div className="flex flex-col items-center leading-none">
             <h1 className="text-xl font-bold tracking-tight text-foreground">FinRatio</h1>
-            <span className="text-xs font-normal italic text-muted-foreground">by Slitherstocks</span>
+            <span className="text-xs font-normal italic text-muted-foreground">by SlitherStocks</span>
           </div>
           <p className="text-xs text-muted-foreground mt-1">{t.login.tagline}</p>
         </div>

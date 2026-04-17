@@ -242,7 +242,7 @@ function buildPdf(
 
   setSize(9);
   doc.setFont('helvetica', 'normal');
-  doc.text('by Slitherstocks', margin + 18, y + 35);
+  doc.text('by SlitherStocks', margin + 18, y + 35);
 
   const rtPart = meta.reportType ? ` ${meta.reportType}` : '';
   const label  = `${meta.ticker}  •  ${meta.period}${rtPart} ${meta.year}`;

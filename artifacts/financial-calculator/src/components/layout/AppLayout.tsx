@@ -106,7 +106,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           </div>
           <div className="flex flex-col leading-none">
             <span className="font-bold font-display text-lg tracking-tight">FinRatio</span>
-            <span className="text-xs font-normal italic text-muted-foreground">by Slitherstocks</span>
+            <span className="text-xs font-normal italic text-muted-foreground">by SlitherStocks</span>
           </div>
         </Link>
         <div className="flex items-center gap-2">
@@ -154,7 +154,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             </div>
             <div className="flex flex-col leading-none">
               <span className="font-bold font-display text-xl tracking-tight">FinRatio</span>
-              <span className="text-xs font-normal italic text-muted-foreground">by Slitherstocks</span>
+              <span className="text-xs font-normal italic text-muted-foreground">by SlitherStocks</span>
             </div>
           </div>
           <LanguageSwitcher />
