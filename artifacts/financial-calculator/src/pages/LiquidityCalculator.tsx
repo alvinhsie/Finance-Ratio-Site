@@ -280,9 +280,6 @@ export function LiquidityCalculator() {
               return (
                 <motion.div
                   key={result.label}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.04 }}
                   className="bg-card border border-border rounded-2xl overflow-hidden"
                 >
                   {/* Header row */}
@@ -445,9 +442,6 @@ export function LiquidityCalculator() {
               return (
                 <motion.div
                   key={inp.id}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.04 }}
                   className="bg-card border border-border rounded-2xl px-4 py-3.5"
                 >
                   <p className="font-bold text-sm text-foreground mb-0.5">{label}</p>

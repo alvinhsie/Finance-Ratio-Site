@@ -21,7 +21,7 @@ function NavContent({ location, t, language }: { location: string; t: any; langu
       <Link
         href="/"
         className={cn(
-          'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group',
+          'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors group',
           location === '/'
             ? 'bg-primary/10 text-primary'
             : 'text-foreground hover:bg-muted'
@@ -29,7 +29,7 @@ function NavContent({ location, t, language }: { location: string; t: any; langu
       >
         <Home className={cn('w-5 h-5 transition-colors', location === '/' ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground')} />
         <span className="flex-1">{t.layout.home}</span>
-        {location === '/' && <motion.div layoutId="activeNav"><ChevronRight className="w-4 h-4" /></motion.div>}
+        {location === '/' && <ChevronRight className="w-4 h-4" />}
       </Link>
 
       {CATEGORIES.map((category) => {
@@ -41,13 +41,13 @@ function NavContent({ location, t, language }: { location: string; t: any; langu
             key={category.id}
             href={`/category/${category.id}`}
             className={cn(
-              'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group',
+              'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors group',
               isActive ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
             )}
           >
             <Icon className={cn('w-5 h-5 transition-colors', isActive ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground')} />
             <span className="flex-1">{catT.name}</span>
-            {isActive && <motion.div layoutId="activeNav"><ChevronRight className="w-4 h-4" /></motion.div>}
+            {isActive && <ChevronRight className="w-4 h-4" />}
           </Link>
         );
       })}
@@ -55,13 +55,13 @@ function NavContent({ location, t, language }: { location: string; t: any; langu
       <Link
         href="/summary"
         className={cn(
-          'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group',
+          'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors group',
           location === '/summary' ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
         )}
       >
         <LayoutDashboard className={cn('w-5 h-5 transition-colors', location === '/summary' ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground')} />
         <span className="flex-1">{language === 'id' ? 'Ringkasan' : 'Summary'}</span>
-        {location === '/summary' && <motion.div layoutId="activeNav"><ChevronRight className="w-4 h-4" /></motion.div>}
+        {location === '/summary' && <ChevronRight className="w-4 h-4" />}
       </Link>
 
       <div className="border-t border-border/60" />
@@ -69,13 +69,13 @@ function NavContent({ location, t, language }: { location: string; t: any; langu
       <Link
         href="/glossary"
         className={cn(
-          'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all group',
+          'flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors group',
           location === '/glossary' ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-muted'
         )}
       >
         <BookOpen className={cn('w-5 h-5 transition-colors', location === '/glossary' ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground')} />
         <span className="flex-1">{language === 'id' ? 'Glosarium' : 'Glossary'}</span>
-        {location === '/glossary' && <motion.div layoutId="activeNav"><ChevronRight className="w-4 h-4" /></motion.div>}
+        {location === '/glossary' && <ChevronRight className="w-4 h-4" />}
       </Link>
     </nav>
   );
@@ -169,7 +169,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             {/* Backdrop */}
             <motion.div
               key="backdrop"
-              className="md:hidden fixed inset-0 z-20 bg-black/40 backdrop-blur-sm"
+              className="md:hidden fixed inset-0 z-20 bg-black/50"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
