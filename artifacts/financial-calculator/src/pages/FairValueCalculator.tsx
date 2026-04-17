@@ -495,31 +495,59 @@ export function FairValueCalculator() {
             </div>
           </div>
 
-          {/* ── Mode toggle ── */}
+          {/* ── Primary toggle: EPS-Based DCF vs DCF ── */}
           <div className="flex rounded-2xl border border-border bg-muted/40 p-1 gap-1">
-            {(['standard', 'cyclical', 'dcf'] as const).map(m => (
+            <button
+              onClick={() => { if (mode === 'dcf') setMode('standard'); }}
+              className={cn(
+                'flex-1 py-2 text-xs font-semibold rounded-xl transition-all',
+                mode !== 'dcf'
+                  ? 'bg-background text-foreground shadow-sm border border-border'
+                  : 'text-muted-foreground hover:text-foreground'
+              )}
+            >
+              {language === 'en' ? 'EPS-Based DCF' : 'DCF Berbasis EPS'}
+            </button>
+            <button
+              onClick={() => setMode('dcf')}
+              className={cn(
+                'flex-1 py-2 text-xs font-semibold rounded-xl transition-all',
+                mode === 'dcf'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              )}
+            >
+              {language === 'en' ? 'Free Cash Flow DCF' : 'DCF Arus Kas Bebas'}
+            </button>
+          </div>
+
+          {/* ── Sub-toggle: Standard vs Cyclical (only for EPS-Based) ── */}
+          {mode !== 'dcf' && (
+            <div className="flex rounded-2xl border border-border bg-muted/40 p-1 gap-1">
               <button
-                key={m}
-                onClick={() => setMode(m)}
+                onClick={() => setMode('standard')}
                 className={cn(
-                  'flex-1 py-2 text-xs font-semibold rounded-xl transition-all',
-                  mode === m
-                    ? m === 'cyclical'
-                      ? 'bg-amber-500 text-white shadow-sm'
-                      : m === 'dcf'
-                      ? 'bg-blue-600 text-white shadow-sm'
-                      : 'bg-background text-foreground shadow-sm border border-border'
+                  'flex-1 py-2 text-sm font-semibold rounded-xl transition-all',
+                  mode === 'standard'
+                    ? 'bg-background text-foreground shadow-sm border border-border'
                     : 'text-muted-foreground hover:text-foreground'
                 )}
               >
-                {m === 'standard'
-                  ? (language === 'en' ? 'Standard' : 'Standar')
-                  : m === 'cyclical'
-                  ? (language === 'en' ? 'Cyclical' : 'Siklus')
-                  : 'DCF'}
+                {language === 'en' ? 'Standard' : 'Standar'}
               </button>
-            ))}
-          </div>
+              <button
+                onClick={() => setMode('cyclical')}
+                className={cn(
+                  'flex-1 py-2 text-sm font-semibold rounded-xl transition-all',
+                  mode === 'cyclical'
+                    ? 'bg-amber-500 text-white shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                )}
+              >
+                {language === 'en' ? 'Cyclical' : 'Siklus'}
+              </button>
+            </div>
+          )}
 
           {/* ── Mode notice ── */}
           {mode === 'cyclical' && (
