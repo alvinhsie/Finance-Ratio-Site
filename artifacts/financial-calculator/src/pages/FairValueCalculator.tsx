@@ -207,7 +207,7 @@ export function FairValueCalculator() {
 
   return (
     <div className="flex-1 w-full max-w-5xl mx-auto p-4 sm:p-6">
-      <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
+      <motion.div initial={{ opacity: 0, y: -16 }} animate={{ opacity: 1, y: 0 }} className="mb-4">
         <h1 className="text-2xl sm:text-3xl font-extrabold font-display text-foreground tracking-tight mb-1">
           {catT?.name ?? 'Fair Value'}
         </h1>
@@ -219,6 +219,32 @@ export function FairValueCalculator() {
             : (language === 'en' ? 'Free Cash Flow · Multi-Stage DCF' : 'Arus Kas Bebas · DCF Multi-Tahap')}
         </p>
       </motion.div>
+
+      {/* ── Primary toggle: tab-style, full width, above results ── */}
+      <div className="flex border-b border-border mb-6">
+        <button
+          onClick={() => { if (mode === 'dcf') setMode('standard'); }}
+          className={cn(
+            'px-5 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors',
+            mode !== 'dcf'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
+          )}
+        >
+          {language === 'en' ? 'EPS-Based DCF' : 'DCF Berbasis EPS'}
+        </button>
+        <button
+          onClick={() => setMode('dcf')}
+          className={cn(
+            'px-5 py-2.5 text-sm font-semibold border-b-2 -mb-px transition-colors',
+            mode === 'dcf'
+              ? 'border-blue-600 text-blue-600'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
+          )}
+        >
+          {language === 'en' ? 'Free Cash Flow DCF' : 'DCF Arus Kas Bebas'}
+        </button>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
 
@@ -493,32 +519,6 @@ export function FairValueCalculator() {
                 {language === 'en' ? 'Clear All' : 'Hapus Semua'}
               </button>
             </div>
-          </div>
-
-          {/* ── Primary toggle: EPS-Based DCF vs DCF ── */}
-          <div className="flex rounded-2xl border border-border bg-muted/40 p-1 gap-1">
-            <button
-              onClick={() => { if (mode === 'dcf') setMode('standard'); }}
-              className={cn(
-                'flex-1 py-2 text-xs font-semibold rounded-xl transition-all',
-                mode !== 'dcf'
-                  ? 'bg-background text-foreground shadow-sm border border-border'
-                  : 'text-muted-foreground hover:text-foreground'
-              )}
-            >
-              {language === 'en' ? 'EPS-Based DCF' : 'DCF Berbasis EPS'}
-            </button>
-            <button
-              onClick={() => setMode('dcf')}
-              className={cn(
-                'flex-1 py-2 text-xs font-semibold rounded-xl transition-all',
-                mode === 'dcf'
-                  ? 'bg-blue-600 text-white shadow-sm'
-                  : 'text-muted-foreground hover:text-foreground'
-              )}
-            >
-              {language === 'en' ? 'Free Cash Flow DCF' : 'DCF Arus Kas Bebas'}
-            </button>
           </div>
 
           {/* ── Sub-toggle: Standard vs Cyclical (only for EPS-Based) ── */}
