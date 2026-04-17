@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Calculator, Eye, EyeOff, Lock, User } from "lucide-react";
+import { Calculator } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLanguage } from "@/lib/LanguageContext";
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
@@ -10,29 +10,19 @@ interface LoginPageProps {
 
 export function LoginPage({ onLogin }: LoginPageProps) {
   const { t } = useLanguage();
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setError("");
     setIsLoading(true);
-
     setTimeout(() => {
-      if (username === "alvinhsie" && password === "17081996") {
-        const today = new Date().toISOString().slice(0, 10);
-        localStorage.setItem("finratio_auth", "true");
-        localStorage.setItem("finratio_auth_date", today);
-        sessionStorage.removeItem("finratio_auth");
-        onLogin();
-      } else {
-        setError(t.login.error);
-      }
+      const today = new Date().toISOString().slice(0, 10);
+      localStorage.setItem("finratio_auth", "true");
+      localStorage.setItem("finratio_auth_date", today);
+      sessionStorage.removeItem("finratio_auth");
+      onLogin();
       setIsLoading(false);
-    }, 500);
+    }, 400);
   }
 
   return (
@@ -58,68 +48,11 @@ export function LoginPage({ onLogin }: LoginPageProps) {
         </div>
 
         <div className="bg-card border border-border rounded-2xl p-6 shadow-sm">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-foreground" htmlFor="username">
-                {t.login.username}
-              </label>
-              <div className="relative">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <input
-                  id="username"
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder={t.login.usernamePlaceholder}
-                  autoCapitalize="none"
-                  autoCorrect="off"
-                  autoComplete="username"
-                  className="w-full pl-9 pr-4 py-2.5 rounded-xl border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <label className="text-sm font-medium text-foreground" htmlFor="password">
-                {t.login.password}
-              </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder={t.login.passwordPlaceholder}
-                  autoComplete="current-password"
-                  className="w-full pl-9 pr-10 py-2.5 rounded-xl border border-border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all"
-                  required
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
-              </div>
-            </div>
-
-            {error && (
-              <motion.p
-                initial={{ opacity: 0, y: -4 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-sm text-red-500 bg-red-50 border border-red-200 rounded-lg px-3 py-2"
-              >
-                {error}
-              </motion.p>
-            )}
-
+          <form onSubmit={handleSubmit}>
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed mt-2"
+              className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary/90 active:scale-[0.98] transition-all disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {isLoading ? t.login.signingIn : t.login.signIn}
             </button>
